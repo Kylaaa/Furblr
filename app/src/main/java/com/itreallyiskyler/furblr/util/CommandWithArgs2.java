@@ -1,5 +1,5 @@
 package com.itreallyiskyler.furblr.util;
 
-public interface CommandWithArgs1<T, A> {
-    T invoke(A a);
+public interface CommandWithArgs2<T, A, B> {
+    T invoke(A a, B b);
 }

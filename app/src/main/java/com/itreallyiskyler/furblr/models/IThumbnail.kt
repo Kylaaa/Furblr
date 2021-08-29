@@ -1,11 +1,11 @@
 package com.itreallyiskyler.furblr.models
 
-interface BaseThumbnail {
-    val postId: Long
-    val creatorName: String
-    val creatorId: Long
-    val imageId: Long
-    val imageHeight: Float
-    val imageWidth: Float
-    val title: String
+interface IThumbnail {
+    var postId: Long
+    var creatorName: String
+    var creatorId: Long
+    var imageId: Long
+    var imageHeight: Float
+    var imageWidth: Float
+    var title: String
 }

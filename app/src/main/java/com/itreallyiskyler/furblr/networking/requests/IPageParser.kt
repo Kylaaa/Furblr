@@ -1,4 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
-interface IPageParser {
+import javax.security.auth.callback.Callback
+
+interface IPageParser<T> {
+    fun getContent(callback: (T)-> Unit);
 }

@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.models
 
-abstract class ThumbnailWriting(httpBlob: String) : IThumbnail {
+abstract class ThumbnailSubmission(httpBlob: String) : IThumbnail {
     init {
         postId = 0
         creatorName = "Test Creator Name"

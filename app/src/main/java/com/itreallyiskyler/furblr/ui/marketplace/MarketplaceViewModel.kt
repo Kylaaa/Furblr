@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui
+package com.itreallyiskyler.furblr.ui.marketplace
 
 import androidx.lifecycle.ViewModel
 

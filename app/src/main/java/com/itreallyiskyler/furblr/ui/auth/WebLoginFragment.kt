@@ -1,32 +1,23 @@
-package com.itreallyiskyler.furblr
+package com.itreallyiskyler.furblr.ui.auth
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
+import android.webkit.WebView
+import com.itreallyiskyler.furblr.R
+import com.itreallyiskyler.furblr.networking.WebLoginWebViewClient
+import com.itreallyiskyler.furblr.networking.requests.RequestLogin
+import com.itreallyiskyler.furblr.util.AuthManager
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [WebLoginFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class WebLoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var _wv : WebView;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -37,23 +28,34 @@ class WebLoginFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_web_login, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        // grab the webview from the view
+        _wv = view?.findViewById(R.id.webview)!!
+
+        // enable JavaScript to allow ReCaptcha to work
+        _wv.settings.javaScriptEnabled = true
+
+        // attach a client to handle special navigation logic
+        var wvClient = WebLoginWebViewClient();
+        wvClient.initCookieSettings(_wv);
+        _wv.webViewClient = wvClient;
+
+        // load the login page
+        var targetUrl = RequestLogin().getUrl().toString()
+        _wv.loadUrl(targetUrl)
+    }
+
     companion object {
         /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment WebLoginFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             WebLoginFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                arguments = Bundle().apply {}
             }
     }
 }

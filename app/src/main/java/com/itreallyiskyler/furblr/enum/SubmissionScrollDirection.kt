@@ -1,4 +1,7 @@
 package com.itreallyiskyler.furblr.enum
 
-class SubmissionScrollDirection {
+enum class SubmissionScrollDirection(val value : String) {
+    DEFAULT(""),
+    NEWEST("new"),
+    OLDEST("old")
 }

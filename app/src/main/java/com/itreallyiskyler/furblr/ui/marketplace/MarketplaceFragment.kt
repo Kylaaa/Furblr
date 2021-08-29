@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui
+package com.itreallyiskyler.furblr.ui.marketplace
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -20,7 +20,7 @@ class MarketplaceFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.marketplace_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_marketplace, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
