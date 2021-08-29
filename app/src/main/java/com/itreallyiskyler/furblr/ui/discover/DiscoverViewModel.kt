@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui.dashboard
+package com.itreallyiskyler.furblr.ui.discover
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
