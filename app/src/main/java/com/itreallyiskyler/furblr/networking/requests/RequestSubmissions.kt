@@ -6,6 +6,7 @@ import com.itreallyiskyler.furblr.models.PageSubmissions
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import okhttp3.ResponseBody
 import java.io.IOException
 
 class RequestSubmissions(
@@ -37,11 +38,16 @@ class RequestSubmissions(
             }
 
             override fun onResponse(call: Call, response: Response) {
-                var pageText = getUrl().readText();
-                println(pageText);
-
-                val httpBody :String = response.body.toString()
-                callback(PageSubmissions(httpBody));
+                val httpBody : ResponseBody? = response.body
+                if (httpBody != null) {
+                    val responseString = httpBody.string();
+                    callback(PageSubmissions(responseString));
+                    httpBody.close()
+                }
+               else
+                {
+                    callback(PageSubmissions(""));
+                }
             }
         })
     }

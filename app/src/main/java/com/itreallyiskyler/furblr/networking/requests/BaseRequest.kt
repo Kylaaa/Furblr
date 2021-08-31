@@ -9,8 +9,9 @@ import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.concurrent.thread
 
+val CookieHandler :WebviewCookieHandler = WebviewCookieHandler();
 val RequestClient : OkHttpClient = OkHttpClient.Builder()
-    .cookieJar(WebviewCookieHandler())
+    .cookieJar(CookieHandler)
     .build()
 
 open class BaseRequest() : IUrlFetcher  {
