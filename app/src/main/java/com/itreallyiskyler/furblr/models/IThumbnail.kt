@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.models
 
-import java.net.URI
+import com.itreallyiskyler.furblr.enum.AgeRating
 
 interface IThumbnail {
     var postId: Long
@@ -9,4 +9,5 @@ interface IThumbnail {
     var imageHeight: Float
     var imageWidth: Float
     var title: String
+    var ageRating : AgeRating
 }
