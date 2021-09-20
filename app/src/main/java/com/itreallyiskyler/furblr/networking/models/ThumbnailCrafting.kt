@@ -1,6 +1,4 @@
-package com.itreallyiskyler.furblr.models
-
-import java.net.URI
+package com.itreallyiskyler.furblr.networking.models
 
 abstract class ThumbnailCrafting(httpBlob: String) : IThumbnail {
     init {

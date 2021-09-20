@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.models
+package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.enum.AgeRating
 

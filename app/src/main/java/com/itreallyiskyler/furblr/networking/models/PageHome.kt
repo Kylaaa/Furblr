@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.models
+package com.itreallyiskyler.furblr.networking.models
 
 class PageHome (private val httpBody : String) {
     val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(httpBody);

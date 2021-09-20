@@ -1,10 +1,9 @@
-package com.itreallyiskyler.furblr.models
+package com.itreallyiskyler.furblr.networking.models
 
 import okhttp3.internal.toImmutableList
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.lang.Exception
 
 class PageSubmissions (httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody);

@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
-import com.itreallyiskyler.furblr.models.PageSubmissions
+import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response

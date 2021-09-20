@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.models.PageHome
+import com.itreallyiskyler.furblr.networking.models.PageHome
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response

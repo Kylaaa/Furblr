@@ -31,10 +31,15 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
+        /*val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
+        })*/
+
+        homeViewModel.getPosts().observe(viewLifecycleOwner, Observer {
+
         })
+
         return root
     }
 

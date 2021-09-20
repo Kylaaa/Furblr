@@ -7,14 +7,14 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.room.Room
 import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
+import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.util.AuthManager
 import com.itreallyiskyler.furblr.util.Command
 import com.itreallyiskyler.furblr.util.CommandWithArgs1
 import com.itreallyiskyler.furblr.util.ContentManager
 
-// TODO : Create webview login to site
-// TODO : Capture session information
 // TODO : Fetch different pages
 // TODO : Scrape image URLs from page source
 // TODO : Download images to local storage
@@ -22,12 +22,21 @@ import com.itreallyiskyler.furblr.util.ContentManager
 
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding;
     private var connections : ArrayList<Command<Unit>> = arrayListOf();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val contentDB = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "furblr-db"
+        ).build()
+        contentDB.run {
+            clearAllTables()
+        }
+        ContentManager.setDB(contentDB)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

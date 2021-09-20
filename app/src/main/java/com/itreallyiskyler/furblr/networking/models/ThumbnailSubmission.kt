@@ -1,8 +1,7 @@
-package com.itreallyiskyler.furblr.models
+package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.enum.AgeRating
 import org.jsoup.nodes.Element
-import java.net.URI
 
 /*
     Example Submission :
