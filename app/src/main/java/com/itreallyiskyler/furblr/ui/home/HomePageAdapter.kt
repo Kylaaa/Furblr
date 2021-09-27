@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.util.ContentManager
 
-class HomePageAdapter(private val dataSet : List<HomePagePost>) :
+class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
     RecyclerView.Adapter<HomePageAdapter.ViewHolder>()
 {
+    private var dataSet : List<HomePagePost> = initialDataSet
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {
         //
@@ -52,5 +54,11 @@ class HomePageAdapter(private val dataSet : List<HomePagePost>) :
 
     override fun getItemCount(): Int {
         return dataSet.count()
+    }
+
+    fun updateData(newDataSet : List<HomePagePost> = listOf())
+    {
+        dataSet = newDataSet
+        notifyDataSetChanged()
     }
 }

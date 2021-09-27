@@ -11,19 +11,19 @@ import okhttp3.internal.toImmutableList
 
 object ContentManager {
     // DATABASE CONNECTIONS
-    private lateinit var db : AppDatabase;
-    fun setDB(appDB : AppDatabase) { db = appDB; }
+    private lateinit var db : AppDatabase
+    fun setDB(appDB : AppDatabase) { db = appDB }
 
     // HOME PAGE CONTENT
-    private var homePagePostIds : MutableList<Long> = mutableListOf();
-    private var homePagePosts : MutableList<HomePagePost> = mutableListOf();
-    public val HomePageContentReady = Signal<List<HomePagePost>>();
-    fun getHomePagePosts() : List<HomePagePost> { return homePagePosts.toImmutableList() }
+    private var homePagePostIds : MutableList<Long> = mutableListOf()
+    private var homePagePosts : MutableList<HomePagePost> = mutableListOf()
+    val HomePageContentReady = Signal<List<HomePagePost>>()
+    private fun getHomePagePosts() : List<HomePagePost> { return homePagePosts.toImmutableList() }
 
     // LOADING FUNCTIONS
-    private var totalPostsToLoad = 0;
+    private var totalPostsToLoad = 0
     private fun markPostLoaded() {
-        totalPostsToLoad = totalPostsToLoad - 1
+        totalPostsToLoad -= 1
         if (totalPostsToLoad <= 0) {
             clobberHomePageContent()
         }
@@ -62,12 +62,12 @@ object ContentManager {
         RequestSubmissions().getContent { pageSubmissions ->
             // collect a list of the most recent postIds
             pageSubmissions.Submissions.forEach { submission -> homePagePostIds.add(submission.postId) }
-            println(homePagePostIds)
+            //println(homePagePostIds)
 
             // check if we have pulled down that content yet
-            var missingIds = homePagePostIds.toMutableSet()
-            var existingPosts = db.postsDao().getExistingPostsWithIds(homePagePostIds.toImmutableList())
-            println(existingPosts)
+            val missingIds = homePagePostIds.toMutableSet()
+            val existingPosts = db.postsDao().getExistingPostsWithIds(homePagePostIds.toImmutableList())
+            //println(existingPosts)
             existingPosts.forEach{ post -> missingIds.remove(post.id) }
 
             // pull down details for each of the missing posts
@@ -123,6 +123,6 @@ object ContentManager {
                     }
                 }
             }
-        };
+        }
     }
 }
