@@ -5,28 +5,27 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.itreallyiskyler.furblr.util.CommandWithArgs1
 import com.itreallyiskyler.furblr.util.ContentManager
+import okhttp3.internal.notifyAll
 
 class HomeViewModel : ViewModel() {
     init {
         ContentManager.HomePageContentReady.connect(object : CommandWithArgs1<Unit, List<HomePagePost>> {
-            override fun invoke(posts : List<HomePagePost>) { loadPosts() }
+            override fun invoke(posts : List<HomePagePost>) { loadPosts(posts) }
         })
         ContentManager.fetchSubmissions()
     }
 
-    private val _posts : MutableLiveData<List<HomePagePost>> by lazy {
-        MutableLiveData<List<HomePagePost>>().also {
-            loadPosts()
-        }
-    }
-
     // TODO : figure out how to page this nonsense
-    fun getPosts() : LiveData<List<HomePagePost>> {
-        return _posts
-    }
-    private fun loadPosts()
+    private val _posts = MutableLiveData<List<HomePagePost>>();
+    val posts : LiveData<List<HomePagePost>>
+        get() = _posts
+
+    private fun loadPosts(updatedList : List<HomePagePost>)
     {
-       _posts.value = ContentManager.getHomePagePosts()
+        _posts.postValue(updatedList)
+        synchronized(posts){
+            posts.notifyAll()
+        }
     }
 
 }

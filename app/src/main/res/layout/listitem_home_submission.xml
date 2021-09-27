@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/design_default_color_on_secondary">
 
     <ImageView
         android:id="@+id/imgPost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:minHeight="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="20dp"
         android:layout_marginBottom="30dp"
+        android:textColor="@color/design_default_color_on_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
@@ -38,6 +41,7 @@
         android:layout_height="18dp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="4dp"
+        android:textColor="@color/design_default_color_on_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
         tools:text="123" />
@@ -48,6 +52,7 @@
         android:layout_height="18dp"
         android:layout_marginStart="12dp"
         android:layout_marginBottom="4dp"
+        android:textColor="@color/design_default_color_on_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgViewsIcon"
         tools:text="123" />
@@ -58,6 +63,7 @@
         android:layout_height="18dp"
         android:layout_marginStart="12dp"
         android:layout_marginBottom="4dp"
+        android:textColor="@color/design_default_color_on_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgCommentsIcon"
         tools:text="123" />

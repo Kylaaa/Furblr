@@ -8,49 +8,48 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentHomeBinding
 import com.itreallyiskyler.furblr.util.ContentManager
+import javax.sql.DataSource
 
 class HomeFragment : Fragment() {
 
-    //private var homeViewModel: HomeViewModel = HomeViewModel()
-    //private var _binding: FragmentHomeBinding? = null
-    //private var adapter : HomePageAdapter? = HomePageAdapter(listOf())
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    //private val binding get() = _binding!!
+    private var homeViewModel: HomeViewModel = HomeViewModel()
+    private var _binding: FragmentHomeBinding? = null
+    private var adapter : HomePageAdapter? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        _binding?.homeViewModel = homeViewModel
+        adapter = HomePageAdapter()
+
+        homeViewModel.posts.observe(viewLifecycleOwner, {
+            it?.let {
+                // TODO : FIGURE OUT WHY DATA IS DOUBLING
+                adapter?.updateData(it)
+            }
+        })
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        /*val rvHomeList : RecyclerView = view.findViewById(R.id.rvHomeList)
-        rvHomeList.adapter = adapter
-        val root: View = binding.root*/
-
         super.onViewCreated(view, savedInstanceState)
 
-        /*val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })*/
-
-
-        /*homeViewModel.getPosts().observe(viewLifecycleOwner, Observer {
-            notifyDataChanged
-        })*/
+        val rvHomeList : RecyclerView = view.findViewById(R.id.rvHomeList)
+        rvHomeList.adapter = adapter
+        rvHomeList.layoutManager = LinearLayoutManager(context)
+        rvHomeList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
-    /*override fun onDestroyView() {
+    override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }*/
+    }
 }
