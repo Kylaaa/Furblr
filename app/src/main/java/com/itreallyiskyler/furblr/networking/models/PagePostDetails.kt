@@ -67,7 +67,15 @@ class PagePostDetails (private val httpBody : String) {
     }
     private fun parseComments(commentContainers : Elements) : Array<IPostComment> {
         var comments : MutableList<IPostComment> = mutableListOf()
-        commentContainers.forEach { element -> comments.add(PostComment(element)) }
+        commentContainers.forEach { element -> run {
+            try {
+                val c = PostComment(element)
+                comments.add(c)
+            } catch (e : Exception)
+            {
+                println(e)
+            }
+        } }
         return comments.toImmutableList().toTypedArray();
     }
 }

@@ -11,12 +11,8 @@ class HomeViewModel : ViewModel() {
         ContentManager.HomePageContentReady.connect(object : CommandWithArgs1<Unit, List<HomePagePost>> {
             override fun invoke(posts : List<HomePagePost>) { loadPosts() }
         })
+        ContentManager.fetchSubmissions()
     }
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
 
     private val _posts : MutableLiveData<List<HomePagePost>> by lazy {
         MutableLiveData<List<HomePagePost>>().also {

@@ -1,5 +1,6 @@
-package com.itreallyiskyler.furblr
+package com.itreallyiskyler.furblr.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -8,8 +9,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
+import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.ui.auth.LoginActivity
 import com.itreallyiskyler.furblr.util.AuthManager
 import com.itreallyiskyler.furblr.util.Command
 import com.itreallyiskyler.furblr.util.CommandWithArgs1
@@ -33,10 +36,16 @@ class MainActivity : AppCompatActivity() {
             AppDatabase::class.java,
             "furblr-db"
         ).build()
-        contentDB.run {
+        /*contentDB.run {
             clearAllTables()
-        }
+        }*/
         ContentManager.setDB(contentDB)
+
+        // connect to some signals
+        val logoutCnx = AuthManager.UserLoggedOut.connect(object : CommandWithArgs1<Unit, Unit> {
+            override fun invoke(unit : Unit) { gotoLogin() }
+        });
+        connections.add(logoutCnx);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -51,7 +60,8 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_home,
             R.id.navigation_discover,
             R.id.navigation_notifications,
-            R.id.navigation_marketplace)
+            R.id.navigation_marketplace
+        )
         val appBarConfiguration = AppBarConfiguration(tabNavigationIds)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -59,36 +69,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        if (!AuthManager.isAuthenticated())
+        {
+            gotoLogin()
+        }
+    }
+
+    private fun gotoLogin() {
+        val loginIntent : Intent = Intent(this, LoginActivity::class.java).apply {
+            putExtra("test", "test")
+        }
+        startActivity(loginIntent)
     }
 
     private fun fetchContent() {
         ContentManager.fetchSubmissions()
     }
-    private fun onUserLogin() {
-        AuthManager.hideLogin()
-        fetchContent()
-    }
-    private fun onUserLogout() {
-        AuthManager.showLogin(supportFragmentManager, R.id.container)
-    }
 
     override fun onResume() {
         super.onResume()
 
-        // connect to some signals
-        val loginCnx = AuthManager.UserLoggedIn.connect(object : CommandWithArgs1<Unit, Unit> {
-            override fun invoke(unit : Unit) { onUserLogin() }
-        });
-        val logoutCnx = AuthManager.UserLoggedOut.connect(object : CommandWithArgs1<Unit, Unit> {
-            override fun invoke(unit : Unit) { onUserLogout() }
-        });
-        connections.add(loginCnx);
-        connections.add(logoutCnx);
-
-        //
+        // double check that we're still logged in
         if (!AuthManager.isAuthenticated())
         {
-            AuthManager.showLogin(supportFragmentManager, R.id.container);
+            gotoLogin()
         }
         else
         {
@@ -96,13 +101,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
+    override fun onDestroy() {
         // disconnect all the connections
         for (cnx in connections)
         {
             cnx.invoke()
         }
+
+        super.onDestroy()
     }
 }

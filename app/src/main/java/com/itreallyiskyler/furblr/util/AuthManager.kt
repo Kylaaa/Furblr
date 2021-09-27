@@ -1,28 +1,28 @@
 package com.itreallyiskyler.furblr.util
-import android.app.Activity
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback
+
+import android.webkit.CookieManager
 import android.webkit.WebView
-import androidx.fragment.app.FragmentManager
-import com.itreallyiskyler.furblr.R
-import com.itreallyiskyler.furblr.ui.auth.WebLoginFragment
-import okhttp3.Cookie
+import com.itreallyiskyler.furblr.BuildConfig
 
 object AuthManager {
-
-    private lateinit var _mainFragmentManager : FragmentManager;
-    private lateinit var _currentLoginFragment : WebLoginFragment;
-
     val UserLoggedIn : Signal<Unit> = Signal();
     val UserLoggedOut : Signal<Unit> = Signal();
 
-
     fun isAuthenticated() : Boolean {
-        return CookieManager.getInstance().hasCookies();
+        //val hasCookies = CookieManager.getInstance().hasCookies();
+        val sessionCookies = CookieManager.getInstance().getCookie(BuildConfig.BASE_URL)
+        val cookiesArr = sessionCookies.split(";")
 
-        /*var COOKIE_NAME : String = ""
-        var sessionCookie = CookieManager.getInstance().getCookie(COOKIE_NAME)
-        return sessionCookie.isNotEmpty()*/
+        val cookieDict : MutableMap<String, String> = mutableMapOf()
+        cookiesArr.forEach { c : String -> run {
+            val parts = c.split("=")
+            cookieDict.set(parts[0].trim(), parts[1])
+        } }
+
+        // Thank you https://github.com/Deer-Spangle/faexport for describing how the
+        // authentication system works
+        val isAuthenticated = cookieDict.containsKey("a") and cookieDict.containsKey("b")
+        return isAuthenticated
     }
 
     fun enableCookieSettingsOnWebView(wv : WebView) {
@@ -40,29 +40,4 @@ object AuthManager {
             print("Logging out and removing cookies : $value");
         };
     }
-
-    fun showLogin(fm : FragmentManager, rootLayoutId : Int)
-    {
-        _currentLoginFragment = WebLoginFragment()
-
-        val tr = fm.beginTransaction()
-        tr.add(rootLayoutId, _currentLoginFragment)
-        tr.commitAllowingStateLoss()
-
-        _mainFragmentManager = fm
-    }
-
-    fun hideLogin(){
-        val tr = _mainFragmentManager.beginTransaction()
-        tr.remove(_currentLoginFragment)
-        tr.commitAllowingStateLoss()
-
-        // clean up
-        //_mainFragmentManager = null
-        //_currentLoginFragment = null
-
-        // DEBUG
-        ContentManager.fetchSubmissions();
-    }
-
 }

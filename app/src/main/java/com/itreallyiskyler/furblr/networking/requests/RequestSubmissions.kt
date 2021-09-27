@@ -18,7 +18,7 @@ class RequestSubmissions(
     init {
         // If extra information has been passed in, update the url to include extra details
         if (scrollDirection != SubmissionScrollDirection.DEFAULT || offsetId != null) {
-            var scrollString :String = scrollDirection.value;
+            var scrollString : String = scrollDirection.value;
             if (scrollDirection == SubmissionScrollDirection.DEFAULT) {
                 scrollString = SubmissionScrollDirection.NEWEST.value;
             }

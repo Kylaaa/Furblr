@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.networking;
+package com.itreallyiskyler.furblr.ui.auth;
 // pulled from https://gist.github.com/scitbiz/8cb6d8484bb20e47d241cc8e117fa705
 
 import android.webkit.CookieManager;

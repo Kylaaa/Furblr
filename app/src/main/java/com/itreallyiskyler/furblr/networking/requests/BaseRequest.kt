@@ -2,14 +2,15 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.LogLevel
-import com.itreallyiskyler.furblr.networking.WebviewCookieHandler
+import com.itreallyiskyler.furblr.ui.auth.WebviewCookieHandler
 import java.net.URL
 import java.net.URLEncoder
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.concurrent.thread
 
-val CookieHandler :WebviewCookieHandler = WebviewCookieHandler();
+val CookieHandler : WebviewCookieHandler =
+    WebviewCookieHandler();
 val RequestClient : OkHttpClient = OkHttpClient.Builder()
     .cookieJar(CookieHandler)
     .build()

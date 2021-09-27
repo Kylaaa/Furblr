@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.networking;
+package com.itreallyiskyler.furblr.ui.auth;
 
 import android.text.TextUtils;
 import android.util.Log;

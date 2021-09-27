@@ -41,7 +41,23 @@ import org.jsoup.nodes.Element
     </div>
  */
 
+// HIDDEN COMMENTS
+/*
+    <div class="comment_container collapsed_height" style="width:94%">
+        <a id="cid:159349538" class="comment_anchor"></a>
+        <div class="avatar avatar-desktop">
+            &nbsp;
+        </div>
+        <div class="base">
+            <div class="body">
+                <strong>Comment hidden by its owner</strong>
+            </div>
+        </div>
+    </div>
+ */
+
 class PostComment(elementData: Element) : IPostComment {
+    // TODO : detect hidden comments
 
     private val idString : String = elementData.child(0).id()
     override var Id : Long = idString.split(":")[1].toLong()

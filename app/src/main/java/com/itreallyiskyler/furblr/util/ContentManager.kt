@@ -41,9 +41,9 @@ object ContentManager {
 
         // clobber together the data
         posts.forEach { post -> run {
-            var postTags = tags.filter { tag -> tag.parentPostId == post.id }
-            var postComments = comments.filter { comment -> comment.postId == post.id }
-            var hpp = HomePagePost(post, postTags, postComments)
+            val postTags = tags.filter { tag -> tag.parentPostId == post.id }
+            val postComments = comments.filter { comment -> comment.postId == post.id }
+            val hpp = HomePagePost(post, postTags, postComments)
 
             // filter out any blacklisted content
             var isBlacklisted = false
