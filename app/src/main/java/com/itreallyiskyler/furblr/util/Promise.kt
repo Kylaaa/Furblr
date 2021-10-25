@@ -9,6 +9,7 @@ enum class PromiseState {
     Rejected,
 }
 typealias GenericCallback = (Any)->Any?
+typealias TypedCallback<T> = (T)->Any?
 
 class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Unit) {
     private var _promiseState : PromiseState = PromiseState.Pending
@@ -17,18 +18,31 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
     private var _failureObservers : MutableList<GenericCallback> = mutableListOf()
 
     init {
-        thread(start=true) {
-            try {
-                _promiseState = PromiseState.Started
-                action(::_resolver, ::_rejector)
-            } catch (ex: Exception) {
-                reject(ex)
-            }
+        try {
+            _promiseState = PromiseState.Started
+            action(::_resolver, ::_rejector)
+        } catch (ex: Exception) {
+            reject(ex)
         }
     }
     private fun _resolver(resolvedValue : Any){
         if (_promiseState != PromiseState.Started) {
             // cannot resolve multiple times
+            println("Promise tried to resolve twice!")
+            return
+        }
+
+        // if the resolved value is a Promise, chain onto it
+        if (resolvedValue === Promise) {
+            (resolvedValue as Promise).then(
+                fun(result) {
+                    _resolver(result)
+                },
+                fun(err) {
+                    _rejector(err)
+                })
+
+            // escape and wait for the next result
             return
         }
 
@@ -50,7 +64,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
     }
     private fun _createAdvancer(action : GenericCallback,
                                 resolve : GenericCallback,
-                                reject : GenericCallback) : GenericCallback{
+                                reject : GenericCallback) : GenericCallback {
         val advancer = fun(futurePromiseValue : Any) {
             var result : Any?
             try {
@@ -112,8 +126,31 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
             return Promise(action)
         }
 
-        fun all(promises : Array<Promise>){
-            throw NotImplementedError("This is not yet ready.")
+        fun all(promises : Array<Promise>) : Promise {
+            if (promises.isEmpty()) {
+                return Promise.resolve({})
+            }
+
+            val action = fun(resolve : GenericCallback, reject : GenericCallback) {
+                val resolvedValues : MutableList<Any> = mutableListOf()
+                var resolvedCount = 0
+
+                val createPromiseResolver = fun(i : Int) : GenericCallback {
+                    return fun(results : Any) {
+                        resolvedValues[i] = results
+                        resolvedCount++
+
+                        if (resolvedCount == promises.size) {
+                            resolve(resolvedValues.toList())
+                        }
+                    }
+                }
+
+                for (i in 1 .. promises.size) {
+                    promises[i].then(createPromiseResolver(i), reject)
+                }
+            }
+            return Promise(action)
         }
     }
 }

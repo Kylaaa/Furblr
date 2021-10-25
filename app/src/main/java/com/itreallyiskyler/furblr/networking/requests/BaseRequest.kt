@@ -2,11 +2,15 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.LogLevel
+import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.ui.auth.WebviewCookieHandler
+import com.itreallyiskyler.furblr.util.GenericCallback
+import com.itreallyiskyler.furblr.util.Promise
 import java.net.URL
 import java.net.URLEncoder
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import kotlin.concurrent.thread
 
 val CookieHandler : WebviewCookieHandler =
@@ -58,26 +62,41 @@ open class BaseRequest() : IUrlFetcher  {
         }
         return URL(baseUrl + path + argString);
     }
-    private fun fetch(requestBody: String? = null, callback: Callback){
-        thread(start=true, name=_url.toString()) {
-            var request: Request;
-            if (requestBody == null)
-                request = Request.Builder()
-                    .url(_url)
-                    .build()
-            else
-                request = Request.Builder()
-                    .url(_url)
-                    .post(requestBody.toRequestBody())
-                    .build()
+    private fun fetch(requestBody: String? = null) : Promise {
+        // TODO : figure out PUT and DELETE support
+        val action = fun(resolve : GenericCallback, reject : GenericCallback) {
+            thread(start=true, name=_url.toString()) {
+                var request: Request;
+                if (requestBody == null)
+                    request = Request.Builder()
+                        .url(_url)
+                        .build()
+                else
+                    request = Request.Builder()
+                        .url(_url)
+                        .post(requestBody.toRequestBody())
+                        .build()
 
-            RequestClient.newCall(request).enqueue(callback);
+                RequestClient.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        reject(e)
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        val httpBody: String = response.body.toString()
+                        resolve(httpBody)
+                    }
+                });
+            }
         }
+        return Promise(action)
     }
-    protected fun GET(callback: Callback){
-        fetch(null, callback)
+
+    // explicit request types
+    protected fun GET() : Promise {
+        return fetch(null)
     }
-    protected fun POST(requestBody : String? = null, callback: Callback){
-        fetch(requestBody, callback);
+    protected fun POST(requestBody : String? = null) : Promise {
+        return fetch(requestBody);
     }
 }

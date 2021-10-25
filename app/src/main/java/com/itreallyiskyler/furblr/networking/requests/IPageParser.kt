@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
-import javax.security.auth.callback.Callback
+import com.itreallyiskyler.furblr.util.Promise
 
 interface IPageParser<T> {
-    fun getContent(callback: (T)-> Unit);
+    fun fetchContent() : Promise;
 }

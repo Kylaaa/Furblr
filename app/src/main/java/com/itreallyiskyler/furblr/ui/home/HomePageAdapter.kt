@@ -36,6 +36,7 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
             favesTextView.text = postDetails.postData.favoriteCount.toString()
             commentsTextView.text = postDetails.postComments.count().toString()
 
+
             //postImageView.setImageBitmap()
             //avatarImageView.setImageBitmap()
         }

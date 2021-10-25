@@ -2,12 +2,15 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
+import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.util.Promise
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.IOException
+import java.lang.Exception
 
 class RequestSubmissions(
     val scrollDirection : SubmissionScrollDirection = SubmissionScrollDirection.DEFAULT,
@@ -31,24 +34,15 @@ class RequestSubmissions(
         }
     }
 
-    override fun getContent(callback: (PageSubmissions) -> Unit) {
-        GET(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                println(e.message);
-            }
+    override fun fetchContent() : Promise {
+        var success = fun(httpBody : Any) : PageSubmissions {
+            return PageSubmissions(httpBody as String);
+        }
+        var failure = fun(message : Any) {
+            TODO("Not yet implemented")
+            println(message as Exception);
+        }
 
-            override fun onResponse(call: Call, response: Response) {
-                val httpBody : ResponseBody? = response.body
-                if (httpBody != null) {
-                    val responseString = httpBody.string();
-                    callback(PageSubmissions(responseString));
-                    httpBody.close()
-                }
-               else
-                {
-                    callback(PageSubmissions(""));
-                }
-            }
-        })
+        return GET().then(success, failure)
     }
 }

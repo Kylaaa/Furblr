@@ -2,25 +2,19 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.networking.models.PageHome
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import java.io.IOException
+import com.itreallyiskyler.furblr.util.Promise
 
 class RequestHome : IPageParser<PageHome>,
     BaseRequest(BuildConfig.BASE_URL, "") {
 
-    override fun getContent(callback: (PageHome) -> Unit) {
-        GET(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                TODO("Not yet implemented")
-            }
+    override fun fetchContent() : Promise {
+        var success = fun(httpBody : Any) : PageHome {
+            return PageHome(httpBody as String);
+        }
+        var failure = fun(message : Any) {
+            TODO("Not yet implemented")
+        }
 
-            override fun onResponse(call: Call, response: Response) {
-                val httpBody :String = response.body.toString()
-                callback(PageHome(httpBody));
-            }
-        })
-
+        return GET().then(success, failure)
     }
 }
