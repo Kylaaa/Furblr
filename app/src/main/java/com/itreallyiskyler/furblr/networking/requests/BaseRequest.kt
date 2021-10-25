@@ -2,7 +2,6 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.LogLevel
-import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.ui.auth.WebviewCookieHandler
 import com.itreallyiskyler.furblr.util.GenericCallback
 import com.itreallyiskyler.furblr.util.Promise
@@ -14,18 +13,18 @@ import java.io.IOException
 import kotlin.concurrent.thread
 
 val CookieHandler : WebviewCookieHandler =
-    WebviewCookieHandler();
+    WebviewCookieHandler()
 val RequestClient : OkHttpClient = OkHttpClient.Builder()
     .cookieJar(CookieHandler)
     .build()
 
 open class BaseRequest() : IUrlFetcher  {
     // Properties
-    private var _baseUrl: String = BuildConfig.BASE_URL;
-    private var _path:String = "";
-    private var _args: Map<String, Any>? = null;
-    private var _url : URL = rebuildUrl();
-    private var _logLevel : LogLevel = LogLevel.NONE;
+    private var _baseUrl: String = BuildConfig.BASE_URL
+    private var _path:String = ""
+    private var _args: Map<String, Any>? = null
+    private var _url : URL = rebuildUrl()
+    private var _logLevel : LogLevel = LogLevel.NONE
 
     // Secondary Constructor
     constructor(baseUrl: String,
@@ -38,35 +37,35 @@ open class BaseRequest() : IUrlFetcher  {
     }
 
     // Accessors and Mutators
-    fun getBaseUrl() : String { return _baseUrl; }
-    fun getPath() : String { return _path; }
-    fun getArgs() : Map<String, Any>? { return _args; }
-    override fun getUrl() : URL { return _url; }
-    fun setBaseUrl(newBase : String) { _baseUrl = newBase; _url = rebuildUrl(); }
-    fun setPath(newPath : String) { _path = newPath; _url = rebuildUrl(); }
-    fun setArgs(newArgs : Map<String, Any>? = null) { _args = newArgs; _url = rebuildUrl(); }
-    fun setLogLevel(ll : LogLevel) { _logLevel = ll};
+    fun getBaseUrl() : String { return _baseUrl }
+    fun getPath() : String { return _path }
+    fun getArgs() : Map<String, Any>? { return _args }
+    override fun getUrl() : URL { return _url }
+    fun setBaseUrl(newBase : String) { _baseUrl = newBase; _url = rebuildUrl() }
+    fun setPath(newPath : String) { _path = newPath; _url = rebuildUrl() }
+    fun setArgs(newArgs : Map<String, Any>? = null) { _args = newArgs; _url = rebuildUrl() }
+    fun setLogLevel(ll : LogLevel) { _logLevel = ll}
 
     // Functions
     private fun rebuildUrl() : URL {
         return build(_baseUrl, _path, _args)
     }
     private fun build(baseUrl: String, path: String, args: Map<String, Any>? = null) : URL {
-        var argString = "";
+        var argString = ""
         if (!args.isNullOrEmpty()){
-            var argList = "?";
+            var argList = "?"
             for ((k, v) in args){
-                argList += URLEncoder.encode(k) + "=" + URLEncoder.encode(v.toString()) + "&";
+                argList += URLEncoder.encode(k) + "=" + URLEncoder.encode(v.toString()) + "&"
             }
-            argString = argList.substringBeforeLast('&');
+            argString = argList.substringBeforeLast('&')
         }
-        return URL(baseUrl + path + argString);
+        return URL(baseUrl + path + argString)
     }
     private fun fetch(requestBody: String? = null) : Promise {
         // TODO : figure out PUT and DELETE support
         val action = fun(resolve : GenericCallback, reject : GenericCallback) {
             thread(start=true, name=_url.toString()) {
-                var request: Request;
+                val request: Request
                 if (requestBody == null)
                     request = Request.Builder()
                         .url(_url)
@@ -86,7 +85,7 @@ open class BaseRequest() : IUrlFetcher  {
                         val httpBody: String = response.body.toString()
                         resolve(httpBody)
                     }
-                });
+                })
             }
         }
         return Promise(action)
@@ -97,6 +96,6 @@ open class BaseRequest() : IUrlFetcher  {
         return fetch(null)
     }
     protected fun POST(requestBody : String? = null) : Promise {
-        return fetch(requestBody);
+        return fetch(requestBody)
     }
 }
