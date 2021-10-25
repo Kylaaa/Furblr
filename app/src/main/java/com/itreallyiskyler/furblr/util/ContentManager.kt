@@ -2,6 +2,8 @@ package com.itreallyiskyler.furblr.util
 
 import com.itreallyiskyler.furblr.networking.models.IPostComment
 import com.itreallyiskyler.furblr.networking.models.IPostTag
+import com.itreallyiskyler.furblr.networking.models.PagePostDetails
+import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.networking.requests.RequestView
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
@@ -21,13 +23,6 @@ object ContentManager {
     private fun getHomePagePosts() : List<HomePagePost> { return homePagePosts.toImmutableList() }
 
     // LOADING FUNCTIONS
-    private var totalPostsToLoad = 0
-    private fun markPostLoaded() {
-        totalPostsToLoad -= 1
-        if (totalPostsToLoad <= 0) {
-            clobberHomePageContent()
-        }
-    }
     private fun clobberHomePageContent(){
         // TODO : figure out how to properly page this nonsense
         homePagePostIds.clear()
@@ -59,69 +54,84 @@ object ContentManager {
     }
 
     fun fetchSubmissions() {
-        RequestSubmissions().getContent { pageSubmissions ->
-            // collect a list of the most recent postIds
-            pageSubmissions.Submissions.forEach { submission -> homePagePostIds.add(submission.postId) }
-            //println(homePagePostIds)
+        RequestSubmissions().fetchContent()
+            .then(fun(pageSubmissions : Any) : Set<Long> {
+                // collect a list of the most recent postIds
+                val submissions = pageSubmissions as PageSubmissions
+                submissions.Submissions.forEach { submission -> homePagePostIds.add(submission.postId) }
 
-            // check if we have pulled down that content yet
-            val missingIds = homePagePostIds.toMutableSet()
-            val existingPosts = db.postsDao().getExistingPostsWithIds(homePagePostIds.toImmutableList())
-            //println(existingPosts)
-            existingPosts.forEach{ post -> missingIds.remove(post.id) }
+                // check if we have pulled down that content yet
+                val missingIds = homePagePostIds.toMutableSet()
+                val existingPosts = db.postsDao().getExistingPostsWithIds(homePagePostIds.toImmutableList())
+                existingPosts.forEach{ post -> missingIds.remove(post.id) }
 
-            // pull down details for each of the missing posts
-            totalPostsToLoad = missingIds.size
-            if (totalPostsToLoad == 0) {
-                clobberHomePageContent()
-            }
-            else {
+                return missingIds.toSet()
+            }, fun(submissionsFetchFailureDetails : Any) : Set<Long> {
+                // TODO : Signal that the original fetch failed
+                println(submissionsFetchFailureDetails)
+                return emptySet<Long>()
+            })
+            .then(fun(setOfMissingIds : Any) : Promise {
+                val missingIds = setOfMissingIds as Set<Long>
+                // pull down details for each of the missing posts
+                val fetchPromises : MutableList<Promise> = mutableListOf()
                 missingIds.forEach { postId: Long ->
-                    RequestView(postId).getContent { pagePostDetails ->
-                        run {
-                            // Add the post to the Posts table
-                            val post = Post(
-                                postId,
-                                pagePostDetails.Artist,
-                                pagePostDetails.Title,
-                                pagePostDetails.Description,
-                                postId.toString(),
-                                pagePostDetails.TotalViews,
-                                pagePostDetails.Comments.count().toLong(),
-                                pagePostDetails.TotalFavorites,
-                                pagePostDetails.Rating.toString(),
-                                pagePostDetails.UploadDate
-                            )
-                            db.postsDao().insertOrUpdate(post)
+                    run {
+                        // fetch the details for each id that we are missing
+                        val parsePromise = RequestView(postId).fetchContent().then(fun(details : Any) {
+                            storePagePostDetails(postId, details as PagePostDetails)
+                        }, fun(errorDetails : Any) {
+                            // TODO : signal that a page failed to load somehow
+                            println("$postId failed to load : $errorDetails")
+                        })
+                        fetchPromises.add(parsePromise)
+                    } // end run-block
+                } // end for-each
 
-                            // add each comment to the Comments table
-                            pagePostDetails.Comments.forEach { comment: IPostComment ->
-                                run {
-                                    val commentEntity = Comment(
-                                        comment.Id,
-                                        postId,
-                                        comment.UploaderName,
-                                        comment.Content,
-                                        comment.Date
-                                    )
-                                    db.commentsDao().insertOrUpdateComment(commentEntity)
-                                }
-                            }
+                return Promise.all(fetchPromises.toTypedArray())
+            }, fun(missingPostsFetchFailureDetails : Any) {
+                // TODO : handle the error
+                println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+            })
+            .then(fun(_ : Any){
+                clobberHomePageContent()
+            }, null)
+    }
+    private fun storePagePostDetails(postId : Long, pagePostDetails : PagePostDetails) {
+        // Add the post to the Posts table
+        val post = Post(
+            postId,
+            pagePostDetails.Artist,
+            pagePostDetails.Title,
+            pagePostDetails.Description,
+            postId.toString(),
+            pagePostDetails.TotalViews,
+            pagePostDetails.Comments.count().toLong(),
+            pagePostDetails.TotalFavorites,
+            pagePostDetails.Rating.toString(),
+            pagePostDetails.UploadDate
+        )
+        db.postsDao().insertOrUpdate(post)
 
-                            // Add each tag to the Tags table
-                            pagePostDetails.Tags.forEach { tag: IPostTag ->
-                                run {
-                                    val tagEntity = Tag(postId, tag.Content)
-                                    db.tagsDao().insertOrUpdateTag(tagEntity)
-                                }
-                            }
+        // add each comment to the Comments table
+        pagePostDetails.Comments.forEach { comment: IPostComment ->
+            run {
+                val commentEntity = Comment(
+                    comment.Id,
+                    postId,
+                    comment.UploaderName,
+                    comment.Content,
+                    comment.Date
+                )
+                db.commentsDao().insertOrUpdateComment(commentEntity)
+            }
+        }
 
-                            // decrement the counter for total items left to load...
-                            markPostLoaded()
-                        }
-
-                    }
-                }
+        // Add each tag to the Tags table
+        pagePostDetails.Tags.forEach { tag: IPostTag ->
+            run {
+                val tagEntity = Tag(postId, tag.Content)
+                db.tagsDao().insertOrUpdateTag(tagEntity)
             }
         }
     }
