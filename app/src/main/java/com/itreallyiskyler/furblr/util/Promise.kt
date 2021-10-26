@@ -81,15 +81,15 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
     }
 
     fun then(successHandler : GenericCallback?, failureHandler : GenericCallback?) : Promise {
-        val action = fun(resolve : GenericCallback, reject : GenericCallback) {
-            var successCallback = resolve
+        val action = fun(resolveFunc : GenericCallback, rejectFunc : GenericCallback) {
+            var successCallback = resolveFunc
             if (successHandler != null) {
-                successCallback = _createAdvancer(successHandler, resolve, reject)
+                successCallback = _createAdvancer(successHandler, resolveFunc, rejectFunc)
             }
 
-            var failureCallback = reject
+            var failureCallback = rejectFunc
             if (failureHandler != null) {
-                failureCallback = _createAdvancer(failureHandler, resolve, reject)
+                failureCallback = _createAdvancer(failureHandler, resolveFunc, rejectFunc)
             }
 
             if (_promiseState == PromiseState.Resolved) {
