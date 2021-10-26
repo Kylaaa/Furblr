@@ -113,15 +113,15 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
 
     companion object{
         fun resolve(value : Any) : Promise {
-            val action = fun(resolve : GenericCallback, _ : GenericCallback) {
-                resolve(value)
+            val action = fun(resolveFunc : GenericCallback, _ : GenericCallback) {
+                resolveFunc(value)
             }
             return Promise(action)
         }
 
         fun reject(value : Any) : Promise {
-            val action = fun(_ : GenericCallback, reject : GenericCallback) {
-                reject(value)
+            val action = fun(_ : GenericCallback, rejectFunc : GenericCallback) {
+                rejectFunc(value)
             }
             return Promise(action)
         }

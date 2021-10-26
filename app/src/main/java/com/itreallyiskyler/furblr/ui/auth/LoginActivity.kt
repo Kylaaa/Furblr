@@ -37,9 +37,7 @@ class LoginActivity : AppCompatActivity() {
         _wv.loadUrl(targetUrl)
 
         // listen for the login signal to fire
-        val loginCnx = AuthManager.UserLoggedIn.connect(object : CommandWithArgs1<Unit, Unit> {
-            override fun invoke(unit : Unit) { onUserLogin() }
-        });
+        val loginCnx = AuthManager.UserLoggedIn.connect { onUserLogin() };
         connections.add(loginCnx)
     }
 

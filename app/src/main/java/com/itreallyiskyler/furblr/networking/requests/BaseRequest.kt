@@ -82,8 +82,14 @@ open class BaseRequest() : IUrlFetcher  {
                     }
 
                     override fun onResponse(call: Call, response: Response) {
-                        val httpBody: String = response.body.toString()
-                        resolve(httpBody)
+                        val httpBody: ResponseBody? = response.body
+                        if (httpBody != null) {
+                            resolve(httpBody.string())
+                            httpBody.close()
+                        }
+                        else {
+                            resolve("")
+                        }
                     }
                 })
             }

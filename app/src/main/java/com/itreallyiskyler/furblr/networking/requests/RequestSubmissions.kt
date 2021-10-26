@@ -39,7 +39,7 @@ class RequestSubmissions(
             return PageSubmissions(httpBody as String);
         }
         var failure = fun(message : Any) {
-            TODO("Not yet implemented")
+            //TODO("Not yet implemented")
             println(message as Exception);
         }
 

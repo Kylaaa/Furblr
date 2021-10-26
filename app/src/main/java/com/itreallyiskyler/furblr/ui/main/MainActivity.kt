@@ -42,9 +42,7 @@ class MainActivity : AppCompatActivity() {
         ContentManager.setDB(contentDB)
 
         // connect to some signals
-        val logoutCnx = AuthManager.UserLoggedOut.connect(object : CommandWithArgs1<Unit, Unit> {
-            override fun invoke(unit : Unit) { gotoLogin() }
-        });
+        val logoutCnx = AuthManager.UserLoggedOut.connect { gotoLogin() };
         connections.add(logoutCnx);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -83,10 +81,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(loginIntent)
     }
 
-    private fun fetchContent() {
-        ContentManager.fetchSubmissions()
-    }
-
     override fun onResume() {
         super.onResume()
 
@@ -94,10 +88,6 @@ class MainActivity : AppCompatActivity() {
         if (!AuthManager.isAuthenticated())
         {
             gotoLogin()
-        }
-        else
-        {
-            fetchContent()
         }
     }
 

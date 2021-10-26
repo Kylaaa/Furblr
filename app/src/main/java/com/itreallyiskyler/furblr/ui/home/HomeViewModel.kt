@@ -9,10 +9,8 @@ import okhttp3.internal.notifyAll
 
 class HomeViewModel : ViewModel() {
     init {
-        ContentManager.HomePageContentReady.connect(object : CommandWithArgs1<Unit, List<HomePagePost>> {
-            override fun invoke(posts : List<HomePagePost>) { loadPosts(posts) }
-        })
-        ContentManager.fetchSubmissions()
+        ContentManager.HomePageContentReady.connect { posts -> loadPosts(posts) }
+        ContentManager.fetchSubmissions(forceReload = false)
     }
 
     // TODO : figure out how to page this nonsense
