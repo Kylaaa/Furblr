@@ -1,0 +1,77 @@
+package com.itreallyiskyler.furblr.util.thunks
+
+import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
+import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
+import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.ui.home.HomePagePost
+import com.itreallyiskyler.furblr.util.Promise
+import okhttp3.internal.toImmutableList
+
+
+fun FetchHomePageContent(dbImpl : AppDatabase,
+                         page : Int = 0,
+                         pageSize : Int = 48,
+                         forceRefresh : Boolean) : Promise {
+
+    val foundHomePageIds : MutableList<Long> = mutableListOf()
+    val fetchLastIdInSet = fun(page : Int, pageSize : Int) : Long {
+        val posts = dbImpl.homePageDao().getHomePagePostsByPage(pageSize, page * pageSize)
+        val lastItem = posts.last()
+        return lastItem.id
+    }
+
+    val previousPostId : Long? = if (page == 0) null else fetchLastIdInSet(page, pageSize)
+
+    // fetch all of the content from the submissions list
+    return RequestSubmissions(
+        SubmissionScrollDirection.DEFAULT,
+        pageSize,
+        previousPostId).fetchContent()
+
+            // Next figure out which posts to fetch up-to-date information for
+        .then(fun(pageSubmissions: Any): Set<Long> {
+            // collect a list of the most recent postIds
+            val submissions = pageSubmissions as PageSubmissions
+            submissions.Submissions.forEach { submission ->
+                foundHomePageIds.add(submission.postId)
+            }
+
+            if (forceRefresh) {
+                // fetch all of the data regardless of whether
+                // we have the information locally already
+                return foundHomePageIds.toSet()
+            }
+            else {
+                // check if we have pulled down that content yet
+                val missingIds = foundHomePageIds.toMutableSet()
+                val existingPosts = dbImpl.postsDao()
+                    .getExistingPostsWithIds(foundHomePageIds.toImmutableList())
+                existingPosts.forEach { post -> missingIds.remove(post.id) }
+
+                // return the set of missing IDs so that we can fetch them in the next step
+                return missingIds.toSet()
+            }
+        }, fun(submissionsFetchFailureDetails: Any): Set<Long> {
+            // TODO : Signal that the original fetch failed
+            println(submissionsFetchFailureDetails)
+            return emptySet<Long>()
+        })
+
+            // Next fetch the most recent data for those submissions
+        .then(fun(setOfMissingIds: Any): Promise {
+            // fetch all of the missing data and persist it in local storage
+            return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>)
+        }, fun(missingPostsFetchFailureDetails: Any) {
+            // TODO : handle the error
+            println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+        })
+
+            // Next clobber all of the data from those postIds into content for the HomePage
+        .then(fun(contentViews : Any) : List<HomePagePost> {
+            return ClobberHomePageContentById(dbImpl, foundHomePageIds.toList())
+        }, fun(fetchContentFailureDetails : Any) : List<Long>{
+            // TODO : handle the error
+            return emptyList<Long>()
+        })
+}
