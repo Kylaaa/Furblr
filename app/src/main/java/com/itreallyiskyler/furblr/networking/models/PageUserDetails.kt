@@ -1,16 +1,25 @@
 package com.itreallyiskyler.furblr.networking.models
 
+import com.itreallyiskyler.furblr.BuildConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 class PageUserDetails (private val httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody);
 
-    val username: String = ""
-    val nickname : String = ""
-    val avatarId : Long = 0
-    val description : String = ""
+    private var headerContainer = doc.getElementById("user-profile")
+    private var namesContainer = headerContainer.getElementsByClass("username")[0]
+    private var usernameContainer = namesContainer.child(0)
+    val username: String = usernameContainer.getElementsByTag("span")[0].text().trim().substring(1)
+    val nickname : String = "" //namesContainer.child(1).text()
     val dateJoined : String = ""
+
+    private var avatarContainer = headerContainer.getElementsByClass("user-nav-avatar")[0]
+    private var avatarSrc :String = avatarContainer.attr("src")!!.substring(BuildConfig.ASSET_URL.length - "https:".length)
+    val avatarId : Long = avatarSrc.split("/")[0].toLong()
+
+    val description : String = ""
+
 
     // stats
     val statsViewsCount : Long = 0

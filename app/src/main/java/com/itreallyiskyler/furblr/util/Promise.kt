@@ -33,14 +33,15 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
         }
 
         // if the resolved value is a Promise, chain onto it
-        if (resolvedValue === Promise) {
-            (resolvedValue as Promise).then(
-                fun(result) {
+        if (resolvedValue is Promise) {
+            resolvedValue.then(
+                fun(result : Any) {
                     _resolver(result)
                 },
-                fun(err) {
+                fun(err : Any){
                     _rejector(err)
-                })
+                }
+            )
 
             // escape and wait for the next result
             return
@@ -63,19 +64,19 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
         _promiseState = PromiseState.Rejected
     }
     private fun _createAdvancer(action : GenericCallback,
-                                resolve : GenericCallback,
-                                reject : GenericCallback) : GenericCallback {
+                                resolverFunc : GenericCallback,
+                                rejectorFunc : GenericCallback) : GenericCallback {
         val advancer = fun(futurePromiseValue : Any) {
             var result : Any?
             try {
                 result = action(futurePromiseValue)
             }
             catch (ex : Exception) {
-                reject(ex)
+                rejectorFunc(ex)
                 return
             }
 
-            resolve(result!!)
+            resolverFunc(result!!)
         }
         return advancer
     }

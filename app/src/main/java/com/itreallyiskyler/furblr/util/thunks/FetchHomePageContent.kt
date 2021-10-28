@@ -15,41 +15,46 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
                          pageSize : Int = 48,
                          forceRefresh : Boolean) : Promise {
 
-    val foundHomePageIds : MutableList<Long> = mutableListOf()
-    val fetchLastIdInSet = fun(page : Int, pageSize : Int) : Long {
+    val foundHomePageIds: MutableList<Long> = mutableListOf()
+    val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long {
         val posts = dbImpl.homePageDao().getHomePagePostsByPage(pageSize, page * pageSize)
         val lastItem = posts.last()
         return lastItem.id
     }
-
-    val previousPostId : Long? = if (page == 0) null else fetchLastIdInSet(page, pageSize)
+    val previousPostId: Long? = if (page == 0) null else fetchLastIdInSet(page, pageSize)
 
     // fetch all of the content from the submissions list
-    var fetchSubmissionsPromise = RequestSubmissions(
+    return RequestSubmissions(
         SubmissionScrollDirection.DEFAULT,
         pageSize,
-        previousPostId).fetchContent()
+        previousPostId
+    ).fetchContent()
 
-    // first figure out which creators we need to fetch information
-    var fetchCreatorInformationPromise = fetchSubmissionsPromise
-        .then(fun(pageSubmissions: Any) : Promise {
-            // cast the results
+        .then(fun(pageSubmissions: Any): Promise {
             val submissions = pageSubmissions as PageSubmissions
-            val creatorIds : Set<String> = submissions.Submissions.map { submission -> submission.creatorName }.toSet()
+
+            // first figure out which creators we need to fetch information
+            val creatorIds: Set<String> =
+                submissions.Submissions.map { submission -> submission.creatorName }.toSet()
 
             // figure out which creators we don't have information for
             val missingUserIds = creatorIds.toMutableSet()
-            val users : List<User> = dbImpl.usersDao().getExistingUsersForUsernames(creatorIds.toList())
+            val users: List<User> =
+                dbImpl.usersDao().getExistingUsersForUsernames(creatorIds.toList())
             users.forEach { user -> missingUserIds.remove(user.username) }
 
             // fetch the creator information
             return FetchUsersByUsernames(dbImpl, missingUserIds)
-        }, fun(fetchCreatorFailureDetails : Any) {
-            println(fetchCreatorFailureDetails)
+                .then(fun(_: Any): Any {
+                    return pageSubmissions
+                }, fun(_: Any): Promise {
+                    return Promise.resolve(pageSubmissions)
+                })
+        }, fun(_: Any) {
+            println("Failed to fetch user info!")
         })
 
-    // also, first figure out which posts to fetch up-to-date information
-    var fetchUpToDateContentPromise = fetchSubmissionsPromise
+        // next, also figure out which posts to fetch up-to-date information
         .then(fun(pageSubmissions: Any): Set<Long> {
             // cast the results
             val submissions = pageSubmissions as PageSubmissions
@@ -61,8 +66,7 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
                 // fetch all of the data regardless of whether
                 // we have the information locally already
                 return foundHomePageIds.toSet()
-            }
-            else {
+            } else {
                 // check if we have pulled down that content yet
                 val missingIds = foundHomePageIds.toMutableSet()
                 val existingPosts = dbImpl.postsDao()
@@ -87,14 +91,10 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
             println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
         })
 
-
-
-    // once we have both of those pieces of information
-return Promise.all(arrayOf<Promise>(fetchCreatorInformationPromise, fetchUpToDateContentPromise))
-            // Next clobber all of the data from those postIds into content for the HomePage
-        .then(fun(contentViews : Any) : List<HomePagePost> {
+        // Next clobber all of the data from those postIds into content for the HomePage
+        .then(fun(contentViews: Any): List<HomePagePost> {
             return ClobberHomePageContentById(dbImpl, foundHomePageIds.toList())
-        }, fun(fetchContentFailureDetails : Any) : List<Long>{
+        }, fun(fetchContentFailureDetails: Any): List<Long> {
             // TODO : handle the error
             return emptyList<Long>()
         })
