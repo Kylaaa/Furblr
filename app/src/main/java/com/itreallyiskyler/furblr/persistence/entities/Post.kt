@@ -24,14 +24,14 @@ const val POSTS_COLUMN_NAME_DATE = "date"
 
 @Entity
 data class Post(
-    @PrimaryKey @ColumnInfo(name = "$POSTS_COLUMN_NAME_ID") var id: Long,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_PROFILE_ID") var profileId: String,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_TITLE") var title : String,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_DESCRIPTION") var description : String,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_CONTENT_ID") var contentsId: String,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_VIEWS") var viewCount : Long,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_COMMENTS") var commentCount : Long,
-    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_FAVORITES") var favoriteCount : Long,
+    @PrimaryKey @ColumnInfo(name = "$POSTS_COLUMN_NAME_ID") var id: Long, // the id from the view/%d/ url
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_PROFILE_ID") var profileId: String, // the creator's name
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_TITLE") var title : String, // the title of the post
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_DESCRIPTION") var description : String, // the description of the post
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_CONTENT_ID") var contentsId: String, // the source url for the post
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_VIEWS") var viewCount : Long, // the number of views
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_COMMENTS") var commentCount : Long, // the number of comments
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_FAVORITES") var favoriteCount : Long, // the number of favorites
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_RATING") var rating : String, // enum.AgeRating
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_DATE") var date: String, // formatted to datetime YYYY-MM-DD HH:MM
 )

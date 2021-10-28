@@ -17,6 +17,11 @@ class PagePostDetails (private val httpBody : String) {
     val Artist : String = parseArtist(metadataContainer)
     val UploadDate : String = parseUploadDate(metadataContainer)
 
+    // content
+    private var postContainer : Element = doc.getElementById("submissionImg")
+    val ContentUrl : String = parseContentUrl(postContainer)
+
+    // description
     private var descriptionContainer : Element = doc.getElementsByClass("submission-description")[0]
     val Description : String = descriptionContainer.text()
 
@@ -45,6 +50,10 @@ class PagePostDetails (private val httpBody : String) {
         val dateText = strongElements[1].child(0).attr("title")
         val df = DateFormatter(dateText)
         return df.toYYYYMMDDhhmm()
+    }
+    private fun parseContentUrl(element: Element) : String {
+        val imageSource  = element.attr("src")
+        return imageSource
     }
     private fun parseViews(element: Element) : Long {
         val viewsElement = element.getElementsByClass("views")[0]
