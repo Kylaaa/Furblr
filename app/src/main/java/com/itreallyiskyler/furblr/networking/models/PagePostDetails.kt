@@ -53,7 +53,7 @@ class PagePostDetails (private val httpBody : String) {
     }
     private fun parseContentUrl(element: Element) : String {
         val imageSource  = element.attr("src")
-        return imageSource
+        return "https:$imageSource"
     }
     private fun parseViews(element: Element) : Long {
         val viewsElement = element.getElementsByClass("views")[0]

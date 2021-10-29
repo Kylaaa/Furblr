@@ -6,7 +6,7 @@ import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.util.Promise
 
 fun FetchContentForPostIds(dbImpl : AppDatabase,
-                         postIds : Collection<Long>) : Promise {
+                           postIds : Collection<Long>) : Promise {
 
     val fetchPromises: MutableList<Promise> = mutableListOf()
 
