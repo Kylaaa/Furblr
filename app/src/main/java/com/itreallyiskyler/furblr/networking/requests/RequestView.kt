@@ -16,10 +16,10 @@ class RequestView(
     BaseRequest(BuildConfig.BASE_URL, "view/$postId/") {
 
     override fun fetchContent() : Promise {
-        var success = fun(httpBody : Any) : PagePostDetails {
+        var success = fun(httpBody : Any?) : PagePostDetails {
             return PagePostDetails(httpBody as String);
         }
-        var failure = fun(message : Any) {
+        var failure = fun(message : Any?) {
             TODO("Not yet implemented")
             println(message as Exception);
         }

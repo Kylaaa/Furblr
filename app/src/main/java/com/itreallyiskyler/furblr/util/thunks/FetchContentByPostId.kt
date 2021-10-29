@@ -14,7 +14,7 @@ fun FetchContentForPostIds(dbImpl : AppDatabase,
         // pull down details for each of the missing posts
         fetchPromises.add(
             RequestView(postId).fetchContent()
-            .then(fun(details: Any) {
+            .then(fun(details: Any?) {
 
                 // save the information we get into local storage
                 PersistPagePostDetails(
@@ -22,7 +22,7 @@ fun FetchContentForPostIds(dbImpl : AppDatabase,
                     postId,
                     details as PagePostDetails
                 )
-            }, fun(errorDetails: Any) {
+            }, fun(errorDetails: Any?) {
                 // TODO : signal that a page failed to load somehow
                 println("$postId failed to load : $errorDetails")
             }))

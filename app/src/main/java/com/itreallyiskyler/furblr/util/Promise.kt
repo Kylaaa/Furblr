@@ -8,14 +8,17 @@ enum class PromiseState {
     Resolved,
     Rejected,
 }
-typealias GenericCallback = (Any)->Any?
+typealias GenericCallback = (Any?)->Any?
 typealias TypedCallback<T> = (T)->Any?
 
 class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Unit) {
     private var _promiseState : PromiseState = PromiseState.Pending
-    private lateinit var _promiseValue : Any
+    private var _promiseValue : Any? = null
     private var _successObservers : MutableList<GenericCallback> = mutableListOf()
     private var _failureObservers : MutableList<GenericCallback> = mutableListOf()
+
+    internal fun getPromiseState() : PromiseState { return _promiseState }
+    internal fun getPromiseValue() : Any? { return _promiseValue }
 
     init {
         try {
@@ -25,7 +28,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
             reject(ex)
         }
     }
-    private fun _resolver(resolvedValue : Any){
+    private fun _resolver(resolvedValue : Any?){
         if (_promiseState != PromiseState.Started) {
             // cannot resolve multiple times
             println("Promise tried to resolve twice!")
@@ -35,10 +38,10 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
         // if the resolved value is a Promise, chain onto it
         if (resolvedValue is Promise) {
             resolvedValue.then(
-                fun(result : Any) {
+                fun(result : Any?) {
                     _resolver(result)
                 },
-                fun(err : Any){
+                fun(err : Any?){
                     _rejector(err)
                 }
             )
@@ -54,7 +57,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
             callback(_promiseValue)
         }
     }
-    private fun _rejector(rejectedValue : Any) {
+    private fun _rejector(rejectedValue : Any?) {
         if (_promiseState != PromiseState.Started) {
             // cannot reject multiple times
             return
@@ -66,7 +69,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
     private fun _createAdvancer(action : GenericCallback,
                                 resolverFunc : GenericCallback,
                                 rejectorFunc : GenericCallback) : GenericCallback {
-        val advancer = fun(futurePromiseValue : Any) {
+        val advancer = fun(futurePromiseValue : Any?) {
             var result : Any?
             try {
                 result = action(futurePromiseValue)
@@ -81,7 +84,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
         return advancer
     }
 
-    fun then(successHandler : GenericCallback?, failureHandler : GenericCallback?) : Promise {
+    fun then(successHandler : GenericCallback? = null, failureHandler : GenericCallback? = null) : Promise {
         val action = fun(resolveFunc : GenericCallback, rejectFunc : GenericCallback) {
             var successCallback = resolveFunc
             if (successHandler != null) {
@@ -133,11 +136,11 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
             }
 
             val action = fun(resolve : GenericCallback, reject : GenericCallback) {
-                val resolvedValues : MutableList<Any> = mutableListOf()
+                val resolvedValues : MutableList<Any?> = mutableListOf()
                 var resolvedCount = 0
 
                 val createPromiseResolver = fun(i : Int) : GenericCallback {
-                    return fun(results : Any) {
+                    return fun(results : Any?) {
                         resolvedValues[i] = results
                         resolvedCount++
 

@@ -30,7 +30,7 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
         previousPostId
     ).fetchContent()
 
-        .then(fun(pageSubmissions: Any): Promise {
+        .then(fun(pageSubmissions: Any?): Promise {
             val submissions = pageSubmissions as PageSubmissions
 
             // first figure out which creators we need to fetch information
@@ -45,17 +45,17 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
 
             // fetch the creator information
             return FetchUsersByUsernames(dbImpl, missingUserIds)
-                .then(fun(_: Any): Any {
+                .then(fun(_: Any?): Any {
                     return pageSubmissions
-                }, fun(_: Any): Promise {
+                }, fun(_: Any?): Promise {
                     return Promise.resolve(pageSubmissions)
                 })
-        }, fun(_: Any) {
+        }, fun(_: Any?) {
             println("Failed to fetch user info!")
         })
 
         // next, also figure out which posts to fetch up-to-date information
-        .then(fun(pageSubmissions: Any): Set<Long> {
+        .then(fun(pageSubmissions: Any?): Set<Long> {
             // cast the results
             val submissions = pageSubmissions as PageSubmissions
 
@@ -76,25 +76,25 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
                 // return the set of missing IDs so that we can fetch them in the next step
                 return missingIds.toSet()
             }
-        }, fun(submissionsFetchFailureDetails: Any): Set<Long> {
+        }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
             println(submissionsFetchFailureDetails)
             return emptySet<Long>()
         })
 
         // Next fetch the most recent data for those submissions
-        .then(fun(setOfMissingIds: Any): Promise {
+        .then(fun(setOfMissingIds: Any?): Promise {
             // fetch all of the missing data and persist it in local storage
             return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>)
-        }, fun(missingPostsFetchFailureDetails: Any) {
+        }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
             println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
         })
 
         // Next clobber all of the data from those postIds into content for the HomePage
-        .then(fun(contentViews: Any): List<HomePagePost> {
+        .then(fun(contentViews: Any?): List<HomePagePost> {
             return ClobberHomePageContentById(dbImpl, foundHomePageIds.toList())
-        }, fun(fetchContentFailureDetails: Any): List<Long> {
+        }, fun(fetchContentFailureDetails: Any?): List<Long> {
             // TODO : handle the error
             return emptyList<Long>()
         })

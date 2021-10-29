@@ -29,11 +29,11 @@ object ContentManager {
         thread(start = true, name="FetchHomePageSubmissionsThread") {
             var fetchPromise = FetchHomePageContent(db, page, pageSize, forceReload)
             fetchPromise
-                .then(fun(posts: Any) {
+                .then(fun(posts: Any?) {
                     // TODO : Figure out why this is returning a promise and not a list of posts
                     homePagePosts = posts as List<HomePagePost>
                     HomePageContentReady.fire(homePagePosts)
-                }, fun(errMessage: Any) {
+                }, fun(errMessage: Any?) {
                     println(errMessage)
                     HomePageContentReady.fire(homePagePosts)
                 })

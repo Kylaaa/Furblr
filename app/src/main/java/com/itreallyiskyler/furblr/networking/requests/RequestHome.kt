@@ -8,10 +8,10 @@ class RequestHome : IPageParser<PageHome>,
     BaseRequest(BuildConfig.BASE_URL, "") {
 
     override fun fetchContent() : Promise {
-        var success = fun(httpBody : Any) : PageHome {
+        var success = fun(httpBody : Any?) : PageHome {
             return PageHome(httpBody as String);
         }
-        var failure = fun(message : Any) {
+        var failure = fun(message : Any?) {
             TODO("Not yet implemented")
         }
 

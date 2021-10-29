@@ -10,10 +10,10 @@ class RequestUser(
     BaseRequest(BuildConfig.BASE_URL, "user/$userId/") {
 
     override fun fetchContent() : Promise {
-        var success = fun(httpBody : Any) : PageUserDetails {
+        var success = fun(httpBody : Any?) : PageUserDetails {
             return PageUserDetails(httpBody as String);
         }
-        var failure = fun(message : Any) {
+        var failure = fun(message : Any?) {
             TODO("Not yet implemented")
             println(message as Exception);
         }
