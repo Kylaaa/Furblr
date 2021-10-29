@@ -10,7 +10,9 @@
         android:id="@+id/imgPost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:minHeight="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,6 +22,8 @@
         android:id="@+id/imgAvatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -28,6 +32,8 @@
         android:id="@+id/txtTitle"
         android:layout_width="0dp"
         android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="30dp"
         android:textColor="@color/design_default_color_on_primary"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,9 +79,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
+        android:theme="@style/Theme.Furblr"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtViews"
-        app:srcCompat="@drawable/ic_home_black_24dp" />
+        app:srcCompat="@drawable/ic_baseline_eye_24"
+        app:tint="@color/white1" />
 
     <ImageView
         android:id="@+id/imgCommentsIcon"
@@ -83,7 +91,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtComments"
-        app:srcCompat="@drawable/ic_home_black_24dp" />
+        app:srcCompat="@drawable/ic_baseline_message_24"
+        app:tint="@color/white2" />
 
     <ImageView
         android:id="@+id/imgFavesIcon"
@@ -91,5 +100,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtFaves"
-        app:srcCompat="@drawable/ic_home_black_24dp" />
+        app:srcCompat="@drawable/ic_baseline_favorite_border_24"
+        app:tint="@color/white2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

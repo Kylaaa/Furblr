@@ -8,7 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
+import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
 import com.itreallyiskyler.furblr.util.ContentManager
+import com.squareup.picasso.Picasso
 
 class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
     RecyclerView.Adapter<HomePageAdapter.ViewHolder>()
@@ -28,6 +30,8 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         private val postImageView : ImageView = view.findViewById(R.id.imgPost)
         private val avatarImageView : ImageView = view.findViewById(R.id.imgAvatar)
 
+        private val loader = Picasso.get()
+
         fun bind(postDetails : HomePagePost) {
             currentPost = postDetails
 
@@ -35,10 +39,14 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
             viewsTextView.text = postDetails.postData.viewCount.toString()
             favesTextView.text = postDetails.postData.favoriteCount.toString()
             commentsTextView.text = postDetails.postComments.count().toString()
+            
+            val postUrl = postDetails.postData.contentsId
+            loader.load(postUrl).into(postImageView)
 
-
-            //postImageView.setImageBitmap()
-            //avatarImageView.setImageBitmap()
+            val avatarUrl = RequestAvatarUrl(
+                postDetails.postCreator.username,
+                postDetails.postCreator.avatarId).getUrl().toString()
+            loader.load(avatarUrl).into(avatarImageView)
         }
     }
 

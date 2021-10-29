@@ -35,10 +35,10 @@ class RequestSubmissions(
     }
 
     override fun fetchContent() : Promise {
-        var success = fun(httpBody : Any) : PageSubmissions {
+        var success = fun(httpBody : Any?) : PageSubmissions {
             return PageSubmissions(httpBody as String);
         }
-        var failure = fun(message : Any) {
+        var failure = fun(message : Any?) {
             //TODO("Not yet implemented")
             println(message as Exception);
         }

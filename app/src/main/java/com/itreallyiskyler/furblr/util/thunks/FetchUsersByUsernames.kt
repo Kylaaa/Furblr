@@ -1,30 +1,29 @@
 package com.itreallyiskyler.furblr.util.thunks
 
-import com.itreallyiskyler.furblr.networking.models.PagePostDetails
-import com.itreallyiskyler.furblr.networking.requests.RequestView
+import com.itreallyiskyler.furblr.networking.models.PageUserDetails
+import com.itreallyiskyler.furblr.networking.requests.RequestUser
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.util.Promise
 
-fun FetchContentForPostIds(dbImpl : AppDatabase,
-                           postIds : Collection<Long>) : Promise {
+fun FetchUsersByUsernames(dbImpl : AppDatabase,
+                         usernames : Collection<String>) : Promise {
 
     val fetchPromises: MutableList<Promise> = mutableListOf()
 
-    postIds.forEach { postId: Long ->
+    usernames.forEach { username: String ->
         // pull down details for each of the missing posts
         fetchPromises.add(
-            RequestView(postId).fetchContent()
+            RequestUser(username).fetchContent()
             .then(fun(details: Any?) {
 
                 // save the information we get into local storage
-                PersistPagePostDetails(
+                PersistUserDetails(
                     dbImpl,
-                    postId,
-                    details as PagePostDetails
+                    details as PageUserDetails
                 )
             }, fun(errorDetails: Any?) {
                 // TODO : signal that a page failed to load somehow
-                println("$postId failed to load : $errorDetails")
+                println("$usernames failed to load : $errorDetails")
             }))
     }
 
