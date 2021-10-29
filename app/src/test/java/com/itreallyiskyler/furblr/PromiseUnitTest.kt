@@ -1,5 +1,7 @@
 package com.itreallyiskyler.furblr
 
+import android.view.inspector.PropertyReader
+import com.itreallyiskyler.furblr.util.GenericCallback
 import com.itreallyiskyler.furblr.util.Promise
 import com.itreallyiskyler.furblr.util.PromiseState
 import org.junit.Assert.*
@@ -163,6 +165,65 @@ class PromiseUnitTest {
         assertFalse(a.getPromiseValue()!! is Promise)
     }
 
+    @Test
+    fun then_chainsOntoQueuedAsyncPromises() {
+        var resolverFunc1 : GenericCallback? = null
+        var resolverFunc2 : GenericCallback? = null
+        var callCount = 0
+        var currentPromiseValue : Any? = null
+
+        val a = Promise(fun(resolve, _){
+            resolverFunc1 = resolve
+            callCount += 1
+        }).then(fun(promValue) : Promise {
+            callCount += 1
+            currentPromiseValue = promValue
+            return Promise(fun(resolve2, _) {
+                resolverFunc2 = resolve2
+            })
+        }).then(fun(promValue) : String {
+            callCount += 1
+            return "Test : $promValue"
+        })
+
+        assertEquals(callCount, 1)
+        assertNull(resolverFunc2)
+        assertNull(currentPromiseValue)
+        assertEquals(a.getPromiseState(), PromiseState.Started)
+
+        resolverFunc1!!(true)
+
+        assertEquals(callCount, 2)
+        assertEquals(currentPromiseValue, true)
+        assertNotNull(resolverFunc2)
+        assertEquals(a.getPromiseState(), PromiseState.Started)
+
+        resolverFunc2!!(false)
+
+        assertEquals(callCount, 3)
+        assertEquals(a.getPromiseState(), PromiseState.Resolved)
+        assertEquals(a.getPromiseValue(), "Test : false")
+    }
+
+    @Test
+    fun then_queuesResponsesWhenNotYetCompleted() {
+        var timesCalled : Int = 0
+        var resolverFunc : GenericCallback? = null
+        val a = Promise(fun(resolve, _) {
+            resolverFunc = resolve
+        })
+        assertEquals(a.getPromiseState(), PromiseState.Started)
+
+        a.then(fun(_) { timesCalled += 1 })
+        a.then(fun(_) { timesCalled += 1 })
+        a.then(fun(_) { timesCalled += 1 })
+        assertEquals(timesCalled, 0)
+        assertEquals(a.getObserversSuccess().size, 3)
+
+        resolverFunc!!(null)
+        assertEquals(timesCalled, 3)
+    }
+
     //---------------------------------------------------------------------------------------------
 
     @Test
@@ -187,18 +248,22 @@ class PromiseUnitTest {
     fun promise_all_resolvesImmediatelyWithAnEmptyArray() {
         val a = Promise.all(emptyArray<Promise>())
         assertEquals(a.getPromiseState(), PromiseState.Resolved)
-        assertEquals(a.getPromiseValue(), emptyArray<Any>())
+        assertEquals((a.getPromiseValue() as Array<*>).size, 0)
     }
 
     @Test
     fun promise_all_returnsAnArrayWithEachPromisesValues() {
         val a = Promise.all(arrayOf(
-            Promise(fun(resolve, _) { resolve(1) }),
+            Promise(fun(resolve, _) { resolve(3) }),
             Promise(fun(resolve, _) { resolve(2) }),
-            Promise(fun(resolve, _) { resolve(3) })
+            Promise(fun(resolve, _) { resolve(1) })
         ))
         assertEquals(a.getPromiseState(), PromiseState.Resolved)
-        assertEquals(a.getPromiseValue(), arrayOf(1, 2, 3))
+
+        val results : List<Int> = a.getPromiseValue() as List<Int>
+        assertEquals(results[0], 3)
+        assertEquals(results[1], 2)
+        assertEquals(results[2], 1)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.util
 
+import okhttp3.internal.toImmutableList
 import kotlin.concurrent.thread
 
 enum class PromiseState {
@@ -19,6 +20,8 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
 
     internal fun getPromiseState() : PromiseState { return _promiseState }
     internal fun getPromiseValue() : Any? { return _promiseValue }
+    internal fun getObserversSuccess() : List<GenericCallback> { return _successObservers.toImmutableList() }
+    internal fun getObserversFailure() : List<GenericCallback> { return _failureObservers.toImmutableList() }
 
     init {
         try {
@@ -132,25 +135,30 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
 
         fun all(promises : Array<Promise>) : Promise {
             if (promises.isEmpty()) {
-                return Promise.resolve({})
+                return Promise.resolve(emptyArray<Any>())
             }
 
             val action = fun(resolve : GenericCallback, reject : GenericCallback) {
-                val resolvedValues : MutableList<Any?> = mutableListOf()
+                val resolvedValues : MutableList<Any?> = MutableList<Any?>(promises.size) { null }
                 var resolvedCount = 0
 
                 val createPromiseResolver = fun(i : Int) : GenericCallback {
                     return fun(results : Any?) {
-                        resolvedValues[i] = results
-                        resolvedCount++
-
-                        if (resolvedCount == promises.size) {
-                            resolve(resolvedValues.toList())
+                        try {
+                            resolvedValues.set(i, results)
+                            resolvedCount++
+                            if (resolvedCount == promises.size) {
+                                resolve(resolvedValues.toList())
+                            }
+                        }
+                        catch (ex : Exception)
+                        {
+                            println(ex)
                         }
                     }
                 }
 
-                for (i in 1 .. promises.size) {
+                for (i in 0 .. (promises.size - 1)) {
                     promises[i].then(createPromiseResolver(i), reject)
                 }
             }
