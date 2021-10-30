@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -18,9 +19,6 @@ import com.itreallyiskyler.furblr.util.Command
 import com.itreallyiskyler.furblr.util.CommandWithArgs1
 import com.itreallyiskyler.furblr.util.ContentManager
 
-// TODO : Fetch different pages
-// TODO : Scrape image URLs from page source
-// TODO : Download images to local storage
 // TODO : Create infinite scrolling view of paged results
 
 
@@ -30,6 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // TODO : move this to Settings / profile page at some point
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        //delegate.applyDayNight()
 
         val contentDB = Room.databaseBuilder(
             applicationContext,
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_home,
             R.id.navigation_discover,
             R.id.navigation_notifications,
-            R.id.navigation_marketplace
+            R.id.navigation_profile
         )
         val appBarConfiguration = AppBarConfiguration(tabNavigationIds)
         setupActionBarWithNavController(navController, appBarConfiguration)

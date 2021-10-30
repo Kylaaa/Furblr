@@ -23,6 +23,7 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         private var currentPost : HomePagePost? = null
 
         // Define UI Element bindings here
+        private val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
         private val titleTextView : TextView = view.findViewById(R.id.txtTitle)
         private val viewsTextView : TextView = view.findViewById(R.id.txtViews)
         private val favesTextView : TextView = view.findViewById(R.id.txtFaves)
@@ -35,6 +36,7 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         fun bind(postDetails : HomePagePost) {
             currentPost = postDetails
 
+            creatorTextView.text = postDetails.postCreator.username
             titleTextView.text = postDetails.postData.title
             viewsTextView.text = postDetails.postData.viewCount.toString()
             favesTextView.text = postDetails.postData.favoriteCount.toString()
