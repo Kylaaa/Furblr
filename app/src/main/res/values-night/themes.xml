@@ -2,15 +2,23 @@
     <!-- Base application theme. -->
     <style name="Theme.Furblr" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/white2</item>
+        <item name="colorPrimaryVariant">@color/white4</item>
         <item name="colorOnPrimary">@color/black1</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black1</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+        <item name="backgroundTint">@color/purple_700</item>
+        <item name="itemRippleColor">@color/purple_200</item>
+        <item name="itemIconTint">@color/white5</item>
+        <item name="colorOnSurface">@color/white5</item>
+        <item name="colorBackgroundFloating">@color/black3</item>
     </style>
 </resources>

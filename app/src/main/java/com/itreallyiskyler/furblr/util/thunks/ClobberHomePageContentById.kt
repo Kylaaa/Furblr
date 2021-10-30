@@ -42,5 +42,5 @@ fun ClobberHomePageContentById(dbImpl : AppDatabase,
         }
     }
 
-    return homePagePosts.toList()
+    return homePagePosts.sortedByDescending { it.postData.date }.toList()
 }

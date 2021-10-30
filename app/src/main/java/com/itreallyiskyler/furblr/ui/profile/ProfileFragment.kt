@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui.marketplace
+package com.itreallyiskyler.furblr.ui.profile
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -8,24 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import com.itreallyiskyler.furblr.R
 
-class MarketplaceFragment : Fragment() {
+class ProfileFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MarketplaceFragment()
+        fun newInstance() = ProfileFragment()
     }
 
-    private lateinit var viewModel: MarketplaceViewModel
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_marketplace, container, false)
+        return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MarketplaceViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         // TODO: Use the ViewModel
     }
 

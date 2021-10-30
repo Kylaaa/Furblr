@@ -15,7 +15,7 @@
         android:id="@+id/navigation_discover"
         android:name="com.itreallyiskyler.furblr.ui.discover.DiscoverFragment"
         android:label="@string/title_discover"
-        tools:layout="@layout/fragment_marketplace" />
+        tools:layout="@layout/fragment_discover" />
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -24,8 +24,8 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/navigation_marketplace"
-        android:name="com.itreallyiskyler.furblr.ui.marketplace.MarketplaceFragment"
-        android:label="@string/title_marketplace"
-        tools:layout="@layout/fragment_marketplace" />
+        android:id="@+id/navigation_profile"
+        android:name="com.itreallyiskyler.furblr.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

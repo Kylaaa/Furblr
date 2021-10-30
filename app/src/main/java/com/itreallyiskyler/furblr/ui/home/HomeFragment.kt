@@ -45,7 +45,6 @@ class HomeFragment : Fragment() {
         val rvHomeList : RecyclerView = view.findViewById(R.id.rvHomeList)
         rvHomeList.adapter = adapter
         rvHomeList.layoutManager = LinearLayoutManager(context)
-        rvHomeList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
     override fun onDestroyView() {
