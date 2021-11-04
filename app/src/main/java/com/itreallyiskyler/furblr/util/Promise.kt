@@ -138,7 +138,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                 return Promise.resolve(emptyArray<Any>())
             }
 
-            val action = fun(resolve : GenericCallback, reject : GenericCallback) {
+            val action = fun(resolverFunc : GenericCallback, rejectorFunc : GenericCallback) {
                 val resolvedValues : MutableList<Any?> = MutableList<Any?>(promises.size) { null }
                 var resolvedCount = 0
 
@@ -148,18 +148,19 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                             resolvedValues.set(i, results)
                             resolvedCount++
                             if (resolvedCount == promises.size) {
-                                resolve(resolvedValues.toList())
+                                resolverFunc(resolvedValues.toList())
                             }
                         }
                         catch (ex : Exception)
                         {
                             println(ex)
+                            rejectorFunc(ex)
                         }
                     }
                 }
 
                 for (i in 0 .. (promises.size - 1)) {
-                    promises[i].then(createPromiseResolver(i), reject)
+                    promises[i].then(createPromiseResolver(i), rejectorFunc)
                 }
             }
             return Promise(action)
