@@ -3,7 +3,6 @@ package com.itreallyiskyler.furblr.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.itreallyiskyler.furblr.util.CommandWithArgs1
 import com.itreallyiskyler.furblr.util.ContentManager
 import okhttp3.internal.notifyAll
 

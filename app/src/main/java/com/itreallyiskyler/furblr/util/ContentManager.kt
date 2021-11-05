@@ -1,16 +1,9 @@
 package com.itreallyiskyler.furblr.util
 
-import com.itreallyiskyler.furblr.networking.models.IPostComment
-import com.itreallyiskyler.furblr.networking.models.IPostTag
-import com.itreallyiskyler.furblr.networking.models.PagePostDetails
-import com.itreallyiskyler.furblr.networking.models.PageSubmissions
-import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
-import com.itreallyiskyler.furblr.networking.requests.RequestView
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.*
 import com.itreallyiskyler.furblr.ui.home.HomePagePost
 import com.itreallyiskyler.furblr.util.thunks.FetchHomePageContent
-import okhttp3.internal.toImmutableList
 import kotlin.concurrent.thread
 
 object ContentManager {
@@ -21,6 +14,16 @@ object ContentManager {
     // HOME PAGE CONTENT
     var homePagePosts : List<HomePagePost> = listOf()
     val HomePageContentReady = Signal<List<HomePagePost>>()
+    val HomePageContentUpdated = Signal<HomePagePost>()
+
+    // indexing helpers
+    var homePageIndices : HashMap<Long, Int> = hashMapOf()
+    private fun indexHomePagePosts(posts : List<HomePagePost>){
+        for (i in posts.indices) {
+            val post = posts[i]
+            homePageIndices[post.postData.id] = i
+        }
+    }
 
     // LOADING FUNCTIONS
     fun fetchSubmissions(page : Int = 0,
@@ -30,13 +33,24 @@ object ContentManager {
             var fetchPromise = FetchHomePageContent(db, page, pageSize, forceReload)
             fetchPromise
                 .then(fun(posts: Any?) {
-                    // TODO : Figure out why this is returning a promise and not a list of posts
                     homePagePosts = posts as List<HomePagePost>
+                    indexHomePagePosts(homePagePosts)
                     HomePageContentReady.fire(homePagePosts)
                 }, fun(errMessage: Any?) {
                     println(errMessage)
                     HomePageContentReady.fire(homePagePosts)
                 })
         }
+    }
+    fun updateHomePagePost(post : HomePagePost) {
+        val postId = post.postData.id
+        if (!homePageIndices.containsKey(postId))
+        {
+            throw IndexOutOfBoundsException("Could not find $postId in homePageIndices")
+        }
+
+
+
+
     }
 }
