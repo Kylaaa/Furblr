@@ -1,6 +1,8 @@
 package com.itreallyiskyler.furblr.util
 
+import com.itreallyiskyler.furblr.networking.requests.IRequestAction
 import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
+import com.itreallyiskyler.furblr.networking.requests.RequestUnfavoritePost
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.home.HomePagePost
 import com.itreallyiskyler.furblr.util.thunks.FetchHomePageContent
@@ -68,8 +70,17 @@ object ContentManager {
     }
 
     fun favoritePost(post : HomePagePost) : Promise {
-        return RequestFavoritePost(post.postData.id, post.postData.favKey).performAction()
-            .then(fun(response : Any?) {
+        val id = post.postData.id
+        val key = post.postData.favKey
+        val isFavoritedAlready = post.postData.hasFavorited
+
+        val request : IRequestAction = if (isFavoritedAlready)
+            RequestUnfavoritePost(id, key)
+        else
+            RequestFavoritePost(id, key)
+
+        return request.performAction()
+            .then(fun(_ : Any?) {
                 fetchLatestHomePagePost(post)
             }, fun(errDetails : Any?){
                 println(errDetails)
