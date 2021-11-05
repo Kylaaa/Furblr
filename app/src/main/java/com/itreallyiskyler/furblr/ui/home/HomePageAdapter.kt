@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
+import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
 
@@ -64,7 +65,13 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
 
         init {
             imgFavesIcon.setOnClickListener {
-                println("Favoriting ${currentPost!!.postData.title}")
+                val postData = currentPost!!.postData
+                println("Favoriting ${postData.title}")
+                //currentPost!!.postData.hasFavorited = !postData.hasFavorited
+
+                ContentManager.favoritePost(currentPost!!)
+
+                // TODO : Figure out how to mutate this data, and have it be updated
             }
 
             imgCommentsIcon.setOnClickListener {

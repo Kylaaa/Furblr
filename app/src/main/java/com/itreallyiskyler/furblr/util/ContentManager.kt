@@ -1,9 +1,10 @@
 package com.itreallyiskyler.furblr.util
 
+import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.*
 import com.itreallyiskyler.furblr.ui.home.HomePagePost
 import com.itreallyiskyler.furblr.util.thunks.FetchHomePageContent
+import com.itreallyiskyler.furblr.util.thunks.FetchLatestForPost
 import kotlin.concurrent.thread
 
 object ContentManager {
@@ -12,12 +13,12 @@ object ContentManager {
     fun setDB(appDB : AppDatabase) { db = appDB }
 
     // HOME PAGE CONTENT
-    var homePagePosts : List<HomePagePost> = listOf()
+    var homePagePosts : MutableList<HomePagePost> = mutableListOf()
     val HomePageContentReady = Signal<List<HomePagePost>>()
-    val HomePageContentUpdated = Signal<HomePagePost>()
+    val HomePageContentUpdated = Signal2<Int, HomePagePost>()
 
     // indexing helpers
-    var homePageIndices : HashMap<Long, Int> = hashMapOf()
+    private var homePageIndices : HashMap<Long, Int> = hashMapOf()
     private fun indexHomePagePosts(posts : List<HomePagePost>){
         for (i in posts.indices) {
             val post = posts[i]
@@ -29,28 +30,49 @@ object ContentManager {
     fun fetchSubmissions(page : Int = 0,
                          pageSize : Int = 48,
                          forceReload : Boolean = false) {
-        thread(start = true, name="FetchHomePageSubmissionsThread") {
+        thread(start = true, name = "FetchHomePageSubmissionsThread") {
             var fetchPromise = FetchHomePageContent(db, page, pageSize, forceReload)
             fetchPromise
                 .then(fun(posts: Any?) {
-                    homePagePosts = posts as List<HomePagePost>
+                    homePagePosts = (posts as List<HomePagePost>).toMutableList()
                     indexHomePagePosts(homePagePosts)
-                    HomePageContentReady.fire(homePagePosts)
+                    HomePageContentReady.fire(homePagePosts.toList())
                 }, fun(errMessage: Any?) {
                     println(errMessage)
-                    HomePageContentReady.fire(homePagePosts)
+                    HomePageContentReady.fire(homePagePosts.toList())
                 })
         }
     }
-    fun updateHomePagePost(post : HomePagePost) {
+
+    fun fetchLatestHomePagePost(post : HomePagePost) {
         val postId = post.postData.id
         if (!homePageIndices.containsKey(postId))
         {
             throw IndexOutOfBoundsException("Could not find $postId in homePageIndices")
         }
 
+        // refetch the data from the web
+        thread(start = true, name = "UpdateHomePageSubmissionThread") {
+            FetchLatestForPost(db, postId)
+                .then(fun(updatedPost : Any?) {
+                    val updatedHomePagePost = (updatedPost as List<HomePagePost>)[0]
+                    val index: Int = homePageIndices[postId]!!
+                    homePagePosts[index] = updatedHomePagePost
 
+                    // alert the listeners that the data has been updated
+                    HomePageContentUpdated.fire(index, homePagePosts[index])
+                }, fun(errData : Any?) {
+                    println(errData)
+                })
+        }
+    }
 
-
+    fun favoritePost(post : HomePagePost) : Promise {
+        return RequestFavoritePost(post.postData.id, post.postData.favKey).performAction()
+            .then(fun(response : Any?) {
+                fetchLatestHomePagePost(post)
+            }, fun(errDetails : Any?){
+                println(errDetails)
+            })
     }
 }
