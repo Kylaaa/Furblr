@@ -18,9 +18,14 @@ const val POSTS_COLUMN_NAME_COUNT_VIEWS = "countViews"
 const val POSTS_COLUMN_NAME_COUNT_COMMENTS = "countComments"
 const val POSTS_COLUMN_NAME_COUNT_FAVORITES = "countFavorites"
 const val POSTS_COLUMN_NAME_RATING = "rating"
+const val POSTS_COLUMN_NAME_FAVORITE_KEY = "favorite"
+const val POSTS_COLUMN_NAME_HAS_FAVORITED_KEY = "hasFavorited"
 const val POSTS_COLUMN_NAME_DATE = "date"
 
 // TODO : connect this table to the Users table through foreign keys
+
+// TODO : Decide if there's a better way to store favorites.
+//  Should personalized data be associated with posts?
 
 @Entity
 data class Post(
@@ -33,5 +38,7 @@ data class Post(
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_COMMENTS") var commentCount : Long, // the number of comments
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_COUNT_FAVORITES") var favoriteCount : Long, // the number of favorites
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_RATING") var rating : String, // enum.AgeRating
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_FAVORITE_KEY") var favKey : String, // the key to favorite the post
+    @ColumnInfo(name = "$POSTS_COLUMN_NAME_HAS_FAVORITED_KEY") var hasFavorited : Boolean, // has the user
     @ColumnInfo(name = "$POSTS_COLUMN_NAME_DATE") var date: String, // formatted to datetime YYYY-MM-DD HH:MM
 )

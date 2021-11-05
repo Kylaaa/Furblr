@@ -8,13 +8,11 @@ import com.itreallyiskyler.furblr.databinding.ActivityLoginBinding
 import com.itreallyiskyler.furblr.networking.requests.RequestLogin
 import com.itreallyiskyler.furblr.ui.main.MainActivity
 import com.itreallyiskyler.furblr.util.AuthManager
-import com.itreallyiskyler.furblr.util.Command
-import com.itreallyiskyler.furblr.util.CommandWithArgs1
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private var connections : ArrayList<Command<Unit>> = arrayListOf();
+    private var connections : ArrayList<()->Unit> = arrayListOf();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +48,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         // disconnect all the connections
-        for (cnx : Command<Unit> in connections) {
-            cnx.invoke()
+        for (cnx : ()->Unit in connections) {
+            cnx()
         }
 
         super.onDestroy()

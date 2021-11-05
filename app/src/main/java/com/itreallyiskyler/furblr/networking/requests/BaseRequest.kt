@@ -9,7 +9,10 @@ import java.net.URL
 import java.net.URLEncoder
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.EMPTY_REQUEST
 import java.io.IOException
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 val CookieHandler : WebviewCookieHandler =
@@ -17,6 +20,13 @@ val CookieHandler : WebviewCookieHandler =
 val RequestClient : OkHttpClient = OkHttpClient.Builder()
     .cookieJar(CookieHandler)
     .build()
+
+private enum class RequestType {
+    GET,
+    POST,
+    PUT,
+    DELETE
+}
 
 open class BaseRequest() : IUrlFetcher  {
     // Properties
@@ -61,22 +71,23 @@ open class BaseRequest() : IUrlFetcher  {
         }
         return URL(baseUrl + path + argString)
     }
-    private fun fetch(requestBody: String? = null) : Promise {
+    private fun fetch(requestType : RequestType, requestBody: String? = null) : Promise {
         // TODO : figure out PUT and DELETE support
         val action = fun(resolve : GenericCallback, reject : GenericCallback) {
             thread(start=true, name=_url.toString()) {
-                val request: Request
-                if (requestBody == null)
-                    request = Request.Builder()
-                        .url(_url)
-                        .build()
-                else
-                    request = Request.Builder()
-                        .url(_url)
-                        .post(requestBody.toRequestBody())
-                        .build()
+                var request : Request.Builder = Request.Builder()
+                request.url(_url)
 
-                RequestClient.newCall(request).enqueue(object : Callback {
+                val body : RequestBody = if (requestBody != null) requestBody.toRequestBody() else EMPTY_REQUEST
+
+                when (requestType) {
+                    RequestType.GET -> request = request.get()
+                    RequestType.POST -> request = request.post(body)
+                    RequestType.PUT -> request = request.put(body)
+                    RequestType.DELETE -> request = request.delete(body)
+                }
+
+                RequestClient.newCall(request.build()).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
                         reject(e)
                     }
@@ -96,12 +107,27 @@ open class BaseRequest() : IUrlFetcher  {
         }
         return Promise(action)
     }
+    private fun encodeFormData(formData: HashMap<String, Any>?) : String {
+        var requestBody = ""
+        if (formData != null) {
+            for ((key : String, value : Any) in formData) {
+                requestBody += "$key=${value};"
+            }
+            // remove the trailing semi-colon
+            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1))
+        }
+        return requestBody
+    }
 
     // explicit request types
     protected fun GET() : Promise {
-        return fetch(null)
+        return fetch(RequestType.GET, null)
     }
     protected fun POST(requestBody : String? = null) : Promise {
-        return fetch(requestBody)
+        return fetch(RequestType.POST, requestBody)
+    }
+    protected fun POST(formData : HashMap<String, Any>? = null) : Promise {
+        var requestBody = encodeFormData(formData)
+        return fetch(RequestType.POST, requestBody)
     }
 }

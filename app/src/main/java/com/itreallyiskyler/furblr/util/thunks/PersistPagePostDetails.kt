@@ -22,6 +22,8 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
         pagePostDetails.Comments.count().toLong(),
         pagePostDetails.TotalFavorites,
         pagePostDetails.Rating.toString(),
+        pagePostDetails.FavoriteKey,
+        pagePostDetails.HasFavorited,
         pagePostDetails.UploadDate
     )
     dbImpl.postsDao().insertOrUpdate(post)

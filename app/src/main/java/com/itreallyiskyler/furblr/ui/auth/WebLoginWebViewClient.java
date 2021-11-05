@@ -11,17 +11,12 @@ import android.webkit.WebViewClient;
 import com.itreallyiskyler.furblr.networking.requests.RequestHome;
 import com.itreallyiskyler.furblr.networking.requests.RequestLogin;
 import com.itreallyiskyler.furblr.util.AuthManager;
-import com.itreallyiskyler.furblr.util.Command;
 import com.itreallyiskyler.furblr.util.CommandWithArgs2;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
-
-import kotlin.Unit;
 
 
 public class WebLoginWebViewClient extends WebViewClient {

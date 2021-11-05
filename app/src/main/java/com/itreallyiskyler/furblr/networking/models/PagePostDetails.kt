@@ -31,6 +31,11 @@ class PagePostDetails (private val httpBody : String) {
     val TotalFavorites : Long = parseFavorites(allStatsContainer)
     val Rating : AgeRating = parseAgeRating(allStatsContainer)
 
+    // favorite
+    private var favoriteContainer : Element = doc.getElementsByClass("favorite-nav")[0]
+    val FavoriteKey : String = parseFavoriteKey(favoriteContainer)
+    val HasFavorited : Boolean = parseHasFavorited(favoriteContainer)
+
     // other stuff
     private var allTagContainers : Elements = doc.getElementsByClass("tags")
     val Tags : Array<IPostTag> = parseTags(allTagContainers)
@@ -59,10 +64,24 @@ class PagePostDetails (private val httpBody : String) {
         val viewsElement = element.getElementsByClass("views")[0]
         return viewsElement.child(0).text().toLong()
     }
-    private fun parseFavorites(element:Element) : Long
-    {
+    private fun parseFavorites(element:Element) : Long {
         val viewsElement = element.getElementsByClass("favorites")[0]
         return viewsElement.child(0).text().toLong()
+    }
+    private fun parseFavoriteKey(element:Element) : String {
+        val buttons = element.getElementsByClass("button")
+        val favButtonIndex = if (buttons.size == 5) 0 else 1
+        val linkElement = element.child(favButtonIndex)
+        val href : String = linkElement.attr("href")
+        val parts = href.split("=")
+        return parts[1]
+    }
+    private fun parseHasFavorited(element:Element) : Boolean {
+        val linkElement = element.child(0)
+        val favoriteLabel : String = linkElement.text()
+        val sign = favoriteLabel[0]
+        // when the sign is -, it shows that the user has favorited this post
+        return sign == '-'
     }
     private fun parseAgeRating(element: Element) : AgeRating {
         val ratingElement = element.getElementsByClass("rating")[0]

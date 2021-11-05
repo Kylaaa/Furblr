@@ -15,8 +15,6 @@ import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.auth.LoginActivity
 import com.itreallyiskyler.furblr.util.AuthManager
-import com.itreallyiskyler.furblr.util.Command
-import com.itreallyiskyler.furblr.util.CommandWithArgs1
 import com.itreallyiskyler.furblr.util.ContentManager
 
 // TODO : Create infinite scrolling view of paged results
@@ -24,7 +22,7 @@ import com.itreallyiskyler.furblr.util.ContentManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding;
-    private var connections : ArrayList<Command<Unit>> = arrayListOf();
+    private var connections : ArrayList<()->Unit> = arrayListOf();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         // disconnect all the connections
         for (cnx in connections)
         {
-            cnx.invoke()
+            cnx()
         }
 
         super.onDestroy()

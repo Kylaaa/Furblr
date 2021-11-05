@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
+import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
 
@@ -30,9 +31,13 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         private val commentsTextView : TextView = view.findViewById(R.id.txtComments)
         private val postImageView : ImageView = view.findViewById(R.id.imgPost)
         private val avatarImageView : ImageView = view.findViewById(R.id.imgAvatar)
+        private val imgFavesIcon : ImageView = view.findViewById(R.id.imgFavesIcon)
+        private val imgCommentsIcon : ImageView = view.findViewById(R.id.imgCommentsIcon)
+        private val imgViewsIcon : ImageView = view.findViewById(R.id.imgViewsIcon)
 
         private val loader = Picasso.get()
 
+        // bind data with the UI Elements
         fun bind(postDetails : HomePagePost) {
             currentPost = postDetails
 
@@ -41,7 +46,14 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
             viewsTextView.text = postDetails.postData.viewCount.toString()
             favesTextView.text = postDetails.postData.favoriteCount.toString()
             commentsTextView.text = postDetails.postComments.count().toString()
-            
+
+            if (postDetails.postData.hasFavorited) {
+                imgFavesIcon.setImageResource(R.drawable.ic_baseline_favorite_24)
+            } else {
+                imgFavesIcon.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+            }
+
+
             val postUrl = postDetails.postData.contentsId
             loader.load(postUrl).into(postImageView)
 
@@ -49,6 +61,26 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
                 postDetails.postCreator.username,
                 postDetails.postCreator.avatarId).getUrl().toString()
             loader.load(avatarUrl).into(avatarImageView)
+        }
+
+        init {
+            imgFavesIcon.setOnClickListener {
+                val postData = currentPost!!.postData
+                println("Favoriting ${postData.title}")
+                //currentPost!!.postData.hasFavorited = !postData.hasFavorited
+
+                ContentManager.favoritePost(currentPost!!)
+
+                // TODO : Figure out how to mutate this data, and have it be updated
+            }
+
+            imgCommentsIcon.setOnClickListener {
+                println("Checking comments of ${currentPost!!.postData.title}")
+            }
+
+            imgViewsIcon.setOnClickListener {
+                println("Checking details of ${currentPost!!.postData.title}")
+            }
         }
     }
 

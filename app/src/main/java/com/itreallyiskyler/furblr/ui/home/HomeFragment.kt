@@ -30,7 +30,7 @@ class HomeFragment : Fragment() {
         _binding?.homeViewModel = homeViewModel
         adapter = HomePageAdapter()
 
-        homeViewModel.posts.observe(viewLifecycleOwner, {
+        homeViewModel.posts.liveData.observe(viewLifecycleOwner, {
             it?.let {
                 // TODO : FIGURE OUT WHY DATA IS DOUBLING
                 adapter?.updateData(it)
