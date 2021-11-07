@@ -89,9 +89,15 @@ class PagePostDetails (private val httpBody : String) {
         return AgeRating.fromClassList(classes);
     }
     private fun parseTags(tagContainers : Elements) : Array<IPostTag> {
-        var tags : MutableList<IPostTag> = mutableListOf()
-        tagContainers.forEach { element -> tags.add(PostTag(element)) }
-        return tags.toImmutableList().toTypedArray();
+        var tags : MutableMap<String, IPostTag> = mutableMapOf()
+        tagContainers.forEach { element ->
+            run {
+                val tag = PostTag(element)
+                if (!tags.contains(tag.Content))
+                    tags[tag.Content] = tag
+            }
+        }
+        return tags.values.toTypedArray()
     }
     private fun parseComments(commentContainers : Elements) : Array<IPostComment> {
         var comments : MutableList<IPostComment> = mutableListOf()
@@ -104,6 +110,6 @@ class PagePostDetails (private val httpBody : String) {
                 println(e)
             }
         } }
-        return comments.toImmutableList().toTypedArray();
+        return comments.toTypedArray()
     }
 }
