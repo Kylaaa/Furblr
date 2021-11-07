@@ -42,6 +42,9 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
         }
     }
 
+    // prevent duplicate tag insertions
+    dbImpl.tagsDao().deleteTagsForPost(postId)
+
     // Add each tag to the Tags table
     pagePostDetails.Tags.forEach { tag: IPostTag ->
         run {

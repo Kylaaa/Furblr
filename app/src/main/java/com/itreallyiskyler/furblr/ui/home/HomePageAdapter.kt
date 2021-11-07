@@ -1,26 +1,29 @@
 package com.itreallyiskyler.furblr.ui.home
 
-import android.media.Image
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
-import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
+import java.lang.Exception
+
 
 class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
     RecyclerView.Adapter<HomePageAdapter.ViewHolder>()
 {
     private var dataSet : List<HomePagePost> = initialDataSet
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View, viewContext : Context) : RecyclerView.ViewHolder(view)
     {
-        //
+        private var viewContext = viewContext
         private var currentPost : HomePagePost? = null
 
         // Define UI Element bindings here
@@ -34,6 +37,7 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         private val imgFavesIcon : ImageView = view.findViewById(R.id.imgFavesIcon)
         private val imgCommentsIcon : ImageView = view.findViewById(R.id.imgCommentsIcon)
         private val imgViewsIcon : ImageView = view.findViewById(R.id.imgViewsIcon)
+        private val layoutTags : FlexboxLayout = view.findViewById(R.id.layoutTags)
 
         private val loader = Picasso.get()
 
@@ -61,6 +65,24 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
                 postDetails.postCreator.username,
                 postDetails.postCreator.avatarId).getUrl().toString()
             loader.load(avatarUrl).into(avatarImageView)
+
+            layoutTags.removeAllViews()
+            val viewInflater = LayoutInflater.from(viewContext)
+            postDetails.postTags.forEach {
+                try {
+                    val layout =
+                        viewInflater.inflate(R.layout.listitem_content_tag, null) as ConstraintLayout
+                    layout.id = View.generateViewId()
+                    val txtTag = layout.getChildAt(0) as TextView
+                    txtTag.text = it.tagContents
+
+                    layoutTags.addView(layout)
+                }
+                catch(ex : Exception)
+                {
+                    println(ex)
+                }
+            }
         }
 
         init {
@@ -85,9 +107,8 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listitem_home_submission, parent, false)
-        return ViewHolder(view)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.listitem_home_submission, parent, false)
+        return ViewHolder(view, parent.context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

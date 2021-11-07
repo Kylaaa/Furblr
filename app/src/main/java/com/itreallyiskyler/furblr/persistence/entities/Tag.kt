@@ -19,15 +19,15 @@ const val TAGS_COLUMN_NAME_CONTENTS = "tagContents"
     )
 )
 data class Tag(
-    var parentPost : Long,
-    var contents : String) {
+    val _parentPost : Long,
+    val _contents : String) {
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 
     @ColumnInfo(name = "$TAGS_COLUMN_NAME_POST_ID")
-    var parentPostId: Long = parentPost
+    var parentPostId: Long = _parentPost
 
     @ColumnInfo(name = "$TAGS_COLUMN_NAME_CONTENTS")
-    var tagContents: String = contents
+    var tagContents: String = _contents
 }
