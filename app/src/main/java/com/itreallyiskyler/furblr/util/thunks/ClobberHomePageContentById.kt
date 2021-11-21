@@ -10,11 +10,14 @@ fun ClobberHomePageContentById(dbImpl : AppDatabase,
     val postsDao = dbImpl.postsDao()
     val usersDao = dbImpl.usersDao()
 
-    val blacklistedTags : Set<String> = homeDao.getBlacklistedTags().map {
-        tag: BlacklistedTag -> tag.tagContents
-    }.toSet()
+    // remove any assetIds that contain blacklisted content
+    var filteredIds = assetIds
+    val blacklistedTags = dbImpl.blacklistedTagsDao().getAllBlacklistedTags()
+    if (blacklistedTags.size > 0) {
+        filteredIds = dbImpl.blacklistedTagsDao().getUnblacklistedIdsForPosts(assetIds)
+    }
 
-    val posts = postsDao.getExistingPostsWithIds(assetIds)
+    val posts = postsDao.getExistingPostsWithIds(filteredIds)
     val postIds = posts.map { post -> post.id }
     val creatorIds = posts.map { post -> post.profileId }
     val tags = homeDao.getTagsForPosts(postIds)
@@ -30,15 +33,7 @@ fun ClobberHomePageContentById(dbImpl : AppDatabase,
             val postComments = comments.filter { comment -> comment.postId == post.id }
 
             val hpp = HomePagePost(post, postCreator, postTags, postComments)
-
-            // filter out any blacklisted content
-            var isBlacklisted = false
-            postTags.forEach { tag ->
-                isBlacklisted = isBlacklisted || blacklistedTags.contains(tag.tagContents)
-            }
-            if (!isBlacklisted) {
-                homePagePosts.add(hpp)
-            }
+            homePagePosts.add(hpp)
         }
     }
 

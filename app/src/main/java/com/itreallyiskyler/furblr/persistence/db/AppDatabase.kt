@@ -10,6 +10,7 @@ import com.itreallyiskyler.furblr.persistence.entities.*
     entities = arrayOf(
         BlacklistedTag::class,
         Comment::class,
+        FeedId::class,
         Post::class,
         Shout::class,
         Tag::class,
@@ -20,6 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profilePageDao() : ProfilePageDao
 
     // insert and update actions...
+    abstract fun contentFeedDao() : ContentFeedDao
     abstract fun blacklistedTagsDao() : BlacklistedTagsDao
     abstract fun commentsDao() : CommentsDao
     abstract fun postsDao() : PostsDao

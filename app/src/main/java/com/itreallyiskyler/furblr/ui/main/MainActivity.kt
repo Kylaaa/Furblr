@@ -72,6 +72,10 @@ class MainActivity : AppCompatActivity() {
         {
             gotoLogin()
         }
+        else
+        {
+            ContentManager.fetchSubmissions(0, 48, true)
+        }
     }
 
     private fun gotoLogin() {
