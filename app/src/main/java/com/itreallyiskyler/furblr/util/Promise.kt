@@ -34,7 +34,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
     private fun _resolver(resolvedValue : Any?){
         if (_promiseState != PromiseState.Started) {
             // cannot resolve multiple times
-            println("Promise tried to resolve twice!")
+            //println("Promise tried to resolve twice!")
             return
         }
 

@@ -27,6 +27,11 @@ class DateFormatter (longDate : String){
 
             return monthValues.getValue(monthName)
         }
+
+        fun createDate(year: Int, month : Int, day : Int, hour : Int, minute : Int) : String {
+            var fmt = "%04d-%02d-%02dT%02d:%02d"
+            return fmt.format(year, month, day, hour, minute)
+        }
     }
 
     // split up a date string like this : Jul 19, 2020 04:14 PM
@@ -41,8 +46,6 @@ class DateFormatter (longDate : String){
     val min : Int = groups[5].toInt()
 
     fun toYYYYMMDDhhmm() : String {
-        var fmt = "%04d-%02d-%02dT%02d:%02d"
-        return fmt.format(year, month, day, hour, min)
+        return createDate(year, month, day, hour, min)
     }
-
 }

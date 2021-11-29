@@ -1,9 +1,5 @@
-package com.itreallyiskyler.furblr
+package com.itreallyiskyler.furblr.util
 
-import android.view.inspector.PropertyReader
-import com.itreallyiskyler.furblr.util.GenericCallback
-import com.itreallyiskyler.furblr.util.Promise
-import com.itreallyiskyler.furblr.util.PromiseState
 import org.junit.Assert.*
 import org.junit.Test
 
