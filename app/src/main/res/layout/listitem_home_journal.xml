@@ -13,24 +13,25 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+        app:layout_constraintTop_toBottomOf="@+id/txtContent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:fontFamily="sans-serif-black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/txtContent"
-        app:layout_constraintTop_toBottomOf="@+id/txtContent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="A Super Long Title For A Journal Entry" />
 
     <TextView
@@ -38,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:fontFamily="sans-serif-black"
         android:textColor="?attr/colorAccent"
@@ -46,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+        app:layout_constraintTop_toBottomOf="@+id/txtContent"
         tools:text="AnUnusuallyLongCreatorName" />
 
     <TextView
@@ -73,14 +74,14 @@
         android:id="@+id/txtContent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="12dp"
         android:fontFamily="sans-serif-medium"
         android:text="A really long journal entry likely with a bunch of HTML inside it. you'll need to figure out formatting later."
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

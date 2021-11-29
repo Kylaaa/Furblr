@@ -15,7 +15,7 @@ class RequestUser(
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageUserDetails {
-            print("Successfully fetched : ${this.getUrl()}")
+            println("Successfully fetched : ${this.getUrl()}")
             return PageUserDetails(httpBody as String);
         }
         var failure = fun(message : Any?) {

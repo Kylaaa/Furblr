@@ -1,10 +1,12 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.persistence.entities.FeedId
 import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.util.Promise
@@ -17,10 +19,10 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
                     forceRefresh : Boolean) : Promise {
 
     val foundHomePageIds: MutableList<Long> = mutableListOf()
-    val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long {
+    val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long? {
         val posts = dbImpl.contentFeedDao().getPageFromFeed(ContentFeedId.Home.id, pageSize, page * pageSize)
-        val lastItem = posts.last()
-        return lastItem.postId
+        val lastItem : FeedId? = posts.findLast { feedId -> feedId.postKind == PostKind.Image.id }
+        return lastItem?.postId
     }
     val previousPostId: Long? = if (page == 0) null else fetchLastIdInSet(page, pageSize)
 

@@ -60,7 +60,8 @@ object ContentManager {
     fun fetchSubmissions(page : Int = 0,
                          pageSize : Int = 48,
                          forceReload : Boolean = false) : Promise {
-       return FetchHomePageContent(db, page, pageSize, forceReload)
+       //return FetchHomePageContent(db, page, pageSize, forceReload)
+        return FetchPageOfHome(db, page, pageSize, forceReload)
     }
 
     fun fetchLatestHomePagePost(post : IHomePageContent) {

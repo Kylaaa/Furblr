@@ -102,8 +102,6 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
         }
 
         private fun bindTextPost(view:View, textPostDetails : HomePageTextPost) {
-            println("Binding $textPostDetails")
-
             // Define UI Element bindings here
             val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
             val titleTextView : TextView = view.findViewById(R.id.txtTitle)
