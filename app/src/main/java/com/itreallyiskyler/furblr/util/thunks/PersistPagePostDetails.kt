@@ -1,16 +1,21 @@
 package com.itreallyiskyler.furblr.util.thunks
 
+import com.itreallyiskyler.furblr.enum.CommentLocationId
+import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.models.IPostComment
 import com.itreallyiskyler.furblr.networking.models.IPostTag
 import com.itreallyiskyler.furblr.networking.models.PagePostDetails
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.Comment
+import com.itreallyiskyler.furblr.persistence.entities.FeedId
 import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.persistence.entities.Tag
 
 fun PersistPagePostDetails (dbImpl: AppDatabase,
                             postId : Long,
-                            pagePostDetails : PagePostDetails) {
+                            pagePostDetails : PagePostDetails,
+                            contentFeedId : ContentFeedId) {
     // Add the post to the Posts table
     val post = Post(
         postId,
@@ -34,6 +39,7 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
             val commentEntity = Comment(
                 comment.Id,
                 postId,
+                CommentLocationId.Post.id,
                 comment.UploaderName,
                 comment.Content,
                 comment.Date
@@ -52,4 +58,8 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
             dbImpl.tagsDao().insertOrUpdateTag(tagEntity)
         }
     }
+
+    // Add the post to the feed
+    val feedId = FeedId(contentFeedId.id, PostKind.Image.id, postId, pagePostDetails.UploadDate)
+    dbImpl.contentFeedDao().insertOrUpdate(feedId)
 }

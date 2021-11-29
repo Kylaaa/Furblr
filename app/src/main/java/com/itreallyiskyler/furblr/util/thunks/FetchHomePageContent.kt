@@ -1,13 +1,10 @@
 package com.itreallyiskyler.furblr.util.thunks
 
-import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
-import com.itreallyiskyler.furblr.networking.models.PageSubmissions
-import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.User
-import com.itreallyiskyler.furblr.ui.home.HomePagePost
+import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
+import com.itreallyiskyler.furblr.util.GenericCallback
 import com.itreallyiskyler.furblr.util.Promise
-import okhttp3.internal.toImmutableList
+import kotlin.concurrent.thread
 
 
 fun FetchHomePageContent(dbImpl : AppDatabase,
@@ -15,87 +12,41 @@ fun FetchHomePageContent(dbImpl : AppDatabase,
                          pageSize : Int = 48,
                          forceRefresh : Boolean) : Promise {
 
-    val foundHomePageIds: MutableList<Long> = mutableListOf()
-    val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long {
-        val posts = dbImpl.homePageDao().getHomePagePostsByPage(pageSize, page * pageSize)
-        val lastItem = posts.last()
-        return lastItem.id
-    }
-    val previousPostId: Long? = if (page == 0) null else fetchLastIdInSet(page, pageSize)
-
-    // fetch all of the content from the submissions list
-    return RequestSubmissions(
-        SubmissionScrollDirection.DEFAULT,
-        pageSize,
-        previousPostId
-    ).fetchContent()
-
-        .then(fun(pageSubmissions: Any?): Promise {
-            val submissions = pageSubmissions as PageSubmissions
-
-            // first figure out which creators we need to fetch information
-            val creatorIds: Set<String> =
-                submissions.Submissions.map { submission -> submission.creatorName }.toSet()
-
-            // figure out which creators we don't have information for
-            val missingUserIds = creatorIds.toMutableSet()
-            val users: List<User> =
-                dbImpl.usersDao().getExistingUsersForUsernames(creatorIds.toList())
-            users.forEach { user -> missingUserIds.remove(user.username) }
-
-            // fetch the creator information
-            return FetchUsersByUsernames(dbImpl, missingUserIds)
-                .then(fun(_: Any?): Any {
-                    return pageSubmissions
-                }, fun(_: Any?): Promise {
-                    return Promise.resolve(pageSubmissions)
-                })
-        }, fun(_: Any?) {
-            println("Failed to fetch user info!")
-        })
-
-        // next, also figure out which posts to fetch up-to-date information
-        .then(fun(pageSubmissions: Any?): Set<Long> {
-            // cast the results
-            val submissions = pageSubmissions as PageSubmissions
-
-            // collect information about the most recent postIds
-            submissions.Submissions.forEach { submission -> foundHomePageIds.add(submission.postId) }
-
-            if (forceRefresh) {
-                // fetch all of the data regardless of whether
-                // we have the information locally already
-                return foundHomePageIds.toSet()
-            } else {
-                // check if we have pulled down that content yet
-                val missingIds = foundHomePageIds.toMutableSet()
-                val existingPosts = dbImpl.postsDao()
-                    .getExistingPostsWithIds(foundHomePageIds.toImmutableList())
-                existingPosts.forEach { post -> missingIds.remove(post.id) }
-
-                // return the set of missing IDs so that we can fetch them in the next step
-                return missingIds.toSet()
+    if (!forceRefresh) {
+        return Promise(fun(resolve : GenericCallback, reject : GenericCallback){
+            thread(start = true, name = "FetchHomePageContentWithoutForceRefreshThread") {
+                // search for posts that we've already fetched
+                val ids: List<Long> = dbImpl.homePageDao().getHomePagePostIdsByPage(pageSize, page)
+                resolve(ClobberHomePageImagesById(dbImpl, ids))
             }
-        }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
-            // TODO : Signal that the original fetch failed
-            println(submissionsFetchFailureDetails)
-            return emptySet<Long>()
         })
+    }
 
-        // Next fetch the most recent data for those submissions
-        .then(fun(setOfMissingIds: Any?): Promise {
-            // fetch all of the missing data and persist it in local storage
-            return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>)
-        }, fun(missingPostsFetchFailureDetails: Any?) {
-            // TODO : handle the error
-            println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
-        })
 
-        // Next clobber all of the data from those postIds into content for the HomePage
-        .then(fun(contentViews: Any?): List<HomePagePost> {
-            return ClobberHomePageContentById(dbImpl, foundHomePageIds.toList())
-        }, fun(fetchContentFailureDetails: Any?): List<Long> {
-            // TODO : handle the error
-            return emptyList<Long>()
-        })
+    return Promise(fun(resolve, reject) {
+        var submissions: List<HomePageImagePost> = listOf()
+
+        lateinit var fetchNextPage : (Int)->Unit
+        fetchNextPage = fun(pageOffset : Int) {
+            FetchPageOfHome(dbImpl, page + pageOffset, pageSize, forceRefresh).then(
+                fun(homePagePosts : Any?) {
+                    submissions += (homePagePosts as List<HomePageImagePost>)
+                    if ((homePagePosts as List<HomePageImagePost>).size <= 1) {
+                        resolve(submissions)
+                    }
+                    else if (submissions.size < pageSize) {
+                        fetchNextPage(pageOffset + 1)
+                    }
+                    else {
+                        var filteredList = submissions.subList(0, pageSize)
+                        resolve(filteredList)
+                    }
+                },
+                fun(fetchErr) {
+                    reject(fetchErr)
+                })
+        };
+
+        fetchNextPage(0);
+    });
 }

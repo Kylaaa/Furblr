@@ -72,6 +72,10 @@ class MainActivity : AppCompatActivity() {
         {
             gotoLogin()
         }
+        else
+        {
+            ContentManager.fetchStartupData()
+        }
     }
 
     private fun gotoLogin() {

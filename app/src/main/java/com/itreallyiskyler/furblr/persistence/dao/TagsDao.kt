@@ -17,6 +17,10 @@ interface TagsDao {
             "WHERE $TAGS_COLUMN_NAME_POST_ID = :postId")
     fun deleteTagsForPost(postId : Long)
 
+    @Query("SELECT * FROM $TAGS_TABLE_NAME " +
+            "WHERE $TAGS_COLUMN_NAME_POST_ID IN (:postIds)")
+    fun getTagsForPosts(postIds : List<Long>) : List<Tag>
+
     @Query("SELECT * FROM $TAGS_TABLE_NAME")
     fun getAllTags(): List<Tag>
 }

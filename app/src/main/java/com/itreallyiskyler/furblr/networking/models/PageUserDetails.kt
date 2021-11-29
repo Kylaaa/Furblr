@@ -20,7 +20,6 @@ class PageUserDetails (private val httpBody : String) {
 
     val description : String = ""
 
-
     // stats
     val statsViewsCount : Long = 0
     val statsSubmissionsCount : Long = 0

@@ -58,7 +58,7 @@ import org.jsoup.nodes.Element
 
 class PostComment(elementData: Element) : IPostComment {
     // TODO : detect hidden comments
-
+    // TODO : detect parent / child relationship to comments
     private val idString : String = elementData.child(0).id()
     override var Id : Long = idString.split(":")[1].toLong()
     override var Content : String = elementData.getElementsByClass("comment_text")[0].text()
