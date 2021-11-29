@@ -9,7 +9,7 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
 class PagePostDetails (private val httpBody : String) {
-    private var doc : Document = Jsoup.parse(httpBody);
+    private var doc : Document = Jsoup.parse(httpBody)
 
     // metadata
     private var metadataContainer : Element = doc.getElementsByClass("submission-id-container")[0]

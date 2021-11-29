@@ -1,6 +1,7 @@
 package com.itreallyiskyler.furblr.ui.home
 
 import android.content.Context
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,65 +11,62 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
+import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
+import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 
 
-class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
+class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
     RecyclerView.Adapter<HomePageAdapter.ViewHolder>()
 {
-    private var dataSet : List<HomePagePost> = initialDataSet
+    private var dataSet : List<IHomePageContent> = initialDataSet
 
-    class ViewHolder(view: View, viewContext : Context) : RecyclerView.ViewHolder(view)
+    class ViewHolder(val view: View, val viewContext : Context) : RecyclerView.ViewHolder(view)
     {
-        private var viewContext = viewContext
-        private var currentPost : HomePagePost? = null
-
-        // Define UI Element bindings here
-        private val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
-        private val titleTextView : TextView = view.findViewById(R.id.txtTitle)
-        private val viewsTextView : TextView = view.findViewById(R.id.txtViews)
-        private val favesTextView : TextView = view.findViewById(R.id.txtFaves)
-        private val commentsTextView : TextView = view.findViewById(R.id.txtComments)
-        private val postImageView : ImageView = view.findViewById(R.id.imgPost)
-        private val avatarImageView : ImageView = view.findViewById(R.id.imgAvatar)
-        private val imgFavesIcon : ImageView = view.findViewById(R.id.imgFavesIcon)
-        private val imgCommentsIcon : ImageView = view.findViewById(R.id.imgCommentsIcon)
-        private val imgViewsIcon : ImageView = view.findViewById(R.id.imgViewsIcon)
-        private val layoutTags : FlexboxLayout = view.findViewById(R.id.layoutTags)
-
+        private var currentPost : IHomePageContent? = null
         private val loader = Picasso.get()
 
-        // bind data with the UI Elements
-        fun bind(postDetails : HomePagePost) {
-            currentPost = postDetails
+        private fun bindImagePost(view:View, imagePostDetails : HomePageImagePost) {
+            // Define UI Element bindings here
+            val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
+            val titleTextView : TextView = view.findViewById(R.id.txtTitle)
+            val viewsTextView : TextView = view.findViewById(R.id.txtViews)
+            val favesTextView : TextView = view.findViewById(R.id.txtFaves)
+            val commentsTextView : TextView = view.findViewById(R.id.txtComments)
+            val postImageView : ImageView = view.findViewById(R.id.imgPost)
+            val avatarImageView : ImageView = view.findViewById(R.id.imgAvatar)
+            val imgFavesIcon : ImageView = view.findViewById(R.id.imgFavesIcon)
+            val imgCommentsIcon : ImageView = view.findViewById(R.id.imgCommentsIcon)
+            val imgViewsIcon : ImageView = view.findViewById(R.id.imgViewsIcon)
+            val layoutTags : FlexboxLayout = view.findViewById(R.id.layoutTags)
 
-            creatorTextView.text = postDetails.postCreator.username
-            titleTextView.text = postDetails.postData.title
-            viewsTextView.text = postDetails.postData.viewCount.toString()
-            favesTextView.text = postDetails.postData.favoriteCount.toString()
-            commentsTextView.text = postDetails.postComments.count().toString()
+            creatorTextView.text = imagePostDetails.postCreator.username
+            titleTextView.text = imagePostDetails.postData.title
+            viewsTextView.text = imagePostDetails.postData.viewCount.toString()
+            favesTextView.text = imagePostDetails.postData.favoriteCount.toString()
+            commentsTextView.text = imagePostDetails.postComments.count().toString()
 
-            if (postDetails.postData.hasFavorited) {
+            if (imagePostDetails.postData.hasFavorited) {
                 imgFavesIcon.setImageResource(R.drawable.ic_baseline_favorite_24)
             } else {
                 imgFavesIcon.setImageResource(R.drawable.ic_baseline_favorite_border_24)
             }
 
-
-            val postUrl = postDetails.postData.contentsId
+            val postUrl = imagePostDetails.postData.contentsId
             loader.load(postUrl).into(postImageView)
 
             val avatarUrl = RequestAvatarUrl(
-                postDetails.postCreator.username,
-                postDetails.postCreator.avatarId).getUrl().toString()
+                imagePostDetails.postCreator.username,
+                imagePostDetails.postCreator.avatarId).getUrl().toString()
             loader.load(avatarUrl).into(avatarImageView)
 
             layoutTags.removeAllViews()
             val viewInflater = LayoutInflater.from(viewContext)
-            postDetails.postTags.forEach {
+            imagePostDetails.postTags.forEach {
                 try {
                     val layout =
                         viewInflater.inflate(R.layout.listitem_content_tag, null) as ConstraintLayout
@@ -83,36 +81,72 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
                     println(ex)
                 }
             }
-        }
 
-        init {
             imgFavesIcon.setOnClickListener {
-                val postData = currentPost!!.postData
+                val postData = imagePostDetails.postData
                 println("Favoriting ${postData.title}")
                 //currentPost!!.postData.hasFavorited = !postData.hasFavorited
 
-                ContentManager.favoritePost(currentPost!!)
+                ContentManager.favoritePost(imagePostDetails)
 
                 // TODO : Figure out how to mutate this data, and have it be updated
             }
 
             imgCommentsIcon.setOnClickListener {
-                println("Checking comments of ${currentPost!!.postData.title}")
+                println("Checking comments of ${imagePostDetails.postData.title}")
             }
 
             imgViewsIcon.setOnClickListener {
-                println("Checking details of ${currentPost!!.postData.title}")
+                println("Checking details of ${imagePostDetails.postData.title}")
+            }
+        }
+
+        private fun bindTextPost(view:View, textPostDetails : HomePageTextPost) {
+            println("Binding $textPostDetails")
+
+            // Define UI Element bindings here
+            val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
+            val titleTextView : TextView = view.findViewById(R.id.txtTitle)
+            val commentsTextView : TextView = view.findViewById(R.id.txtComments)
+            val contentView : TextView = view.findViewById(R.id.txtContent)
+            val avatarImageView : ImageView = view.findViewById(R.id.imgAvatar)
+
+            creatorTextView.text = textPostDetails.postCreator.username
+            titleTextView.text = textPostDetails.postData.title
+            commentsTextView.text = textPostDetails.postComments.count().toString()
+            contentView.text = Html.fromHtml(textPostDetails.postData.message, Html.FROM_HTML_MODE_LEGACY)
+
+            val avatarUrl = RequestAvatarUrl(
+                textPostDetails.postCreator.username,
+                textPostDetails.postCreator.avatarId).getUrl().toString()
+            loader.load(avatarUrl).into(avatarImageView)
+        }
+
+        // bind data with the UI Elements
+        fun bind(postDetails : IHomePageContent) {
+            currentPost = postDetails
+
+            if (postDetails.postKind == PostKind.Image) { bindImagePost(view, postDetails as HomePageImagePost) }
+            else if (postDetails.postKind == PostKind.Text) { bindTextPost(view, postDetails as HomePageTextPost) }
+            else {
+                throw Exception("Unsupported PostKind : ${postDetails.postKind}")
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.listitem_home_submission, parent, false)
+        var layoutId : Int = -1
+        when (viewType) {
+            1 -> layoutId = R.layout.listitem_home_submission
+            2 -> layoutId = R.layout.listitem_home_journal
+            else -> throw IllegalArgumentException("Cannot create ViewHolder of type : $viewType");
+        }
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return ViewHolder(view, parent.context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val postDetails = dataSet.get(position)
+        val postDetails = dataSet[position]
         holder.bind(postDetails)
     }
 
@@ -120,7 +154,15 @@ class HomePageAdapter(initialDataSet : List<HomePagePost> = listOf()) :
         return dataSet.count()
     }
 
-    fun updateData(newDataSet : List<HomePagePost> = listOf())
+    override fun getItemViewType(position: Int): Int {
+        val itemAtIndex : IHomePageContent = dataSet[position]
+        if (itemAtIndex.postKind == PostKind.Image) { return 1 }
+        else if (itemAtIndex.postKind == PostKind.Text) { return 2 }
+
+        return super.getItemViewType(position)
+    }
+
+    fun updateData(newDataSet : List<IHomePageContent> = listOf())
     {
         dataSet = newDataSet
         notifyDataSetChanged()

@@ -1,12 +1,14 @@
 package com.itreallyiskyler.furblr.util.thunks
 
+import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.networking.models.PagePostDetails
 import com.itreallyiskyler.furblr.networking.requests.RequestView
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.util.Promise
 
 fun FetchContentForPostIds(dbImpl : AppDatabase,
-                           postIds : Collection<Long>) : Promise {
+                           postIds : Collection<Long>,
+                           fetchReason : ContentFeedId) : Promise {
 
     val fetchPromises: MutableList<Promise> = mutableListOf()
 
@@ -20,7 +22,8 @@ fun FetchContentForPostIds(dbImpl : AppDatabase,
                 PersistPagePostDetails(
                     dbImpl,
                     postId,
-                    details as PagePostDetails
+                    details as PagePostDetails,
+                    fetchReason
                 )
             }, fun(errorDetails: Any?) {
                 // TODO : signal that a page failed to load somehow

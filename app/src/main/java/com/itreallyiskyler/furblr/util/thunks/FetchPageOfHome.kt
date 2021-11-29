@@ -5,9 +5,8 @@ import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.persistence.entities.User
-import com.itreallyiskyler.furblr.ui.home.HomePagePost
+import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.util.Promise
 import okhttp3.internal.toImmutableList
 
@@ -88,23 +87,9 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
         // Next fetch the most recent data for those submissions
         .then(fun(setOfMissingIds: Any?): Promise {
             // fetch all of the missing data and persist it in local storage
-            return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>)
+            return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>, ContentFeedId.Home)
         }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
             println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
-        })
-
-        // Persist data in the feed
-        .then(fun(_: Any?) {
-            // persist these ids in the content feed
-            PersistFeedIds(dbImpl, foundHomePageIds, ContentFeedId.Home)
-        })
-
-        // Next clobber all of the data from those postIds into content for the HomePage
-        .then(fun(_ : Any?): List<HomePagePost> {
-            return ClobberHomePageContentById(dbImpl, foundHomePageIds.toList())
-        }, fun(fetchContentFailureDetails: Any?): List<Long> {
-            // TODO : handle the error
-            return emptyList<Long>()
         })
 }

@@ -1,12 +1,13 @@
 package com.itreallyiskyler.furblr.util.thunks
 
+import com.itreallyiskyler.furblr.enum.CommentLocationId
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.BlacklistedTag
-import com.itreallyiskyler.furblr.ui.home.HomePagePost
+import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 
-fun ClobberHomePageContentById(dbImpl : AppDatabase,
-                               assetIds : List<Long>) : List<HomePagePost> {
-    val homeDao = dbImpl.homePageDao()
+fun ClobberHomePageImagesById(dbImpl : AppDatabase,
+                               assetIds : List<Long>) : List<HomePageImagePost> {
+    val commentsDao = dbImpl.commentsDao()
+    val tagsDao = dbImpl.tagsDao()
     val postsDao = dbImpl.postsDao()
     val usersDao = dbImpl.usersDao()
 
@@ -20,22 +21,22 @@ fun ClobberHomePageContentById(dbImpl : AppDatabase,
     val posts = postsDao.getExistingPostsWithIds(filteredIds)
     val postIds = posts.map { post -> post.id }
     val creatorIds = posts.map { post -> post.profileId }
-    val tags = homeDao.getTagsForPosts(postIds)
-    val comments = homeDao.getCommentsForPosts(postIds)
+    val tags = tagsDao.getTagsForPosts(postIds)
+    val postComments = commentsDao.getCommentsForPosts(postIds, CommentLocationId.Post.id)
     val users = usersDao.getExistingUsersForUsernames(creatorIds)
 
     // clobber together the data
-    val homePagePosts: MutableList<HomePagePost> = mutableListOf()
+    val homePageImagePosts: MutableList<HomePageImagePost> = mutableListOf()
     posts.forEach { post ->
         run {
             val postCreator = users.find { user -> user.username == post.profileId }!!
             val postTags = tags.filter { tag -> tag.parentPostId == post.id }
-            val postComments = comments.filter { comment -> comment.postId == post.id }
+            val postComments = postComments.filter { comment -> comment.hostId == post.id }
 
-            val hpp = HomePagePost(post, postCreator, postTags, postComments)
-            homePagePosts.add(hpp)
+            val hpp = HomePageImagePost(post, postCreator, postTags, postComments)
+            homePageImagePosts.add(hpp)
         }
     }
 
-    return homePagePosts.sortedByDescending { it.postData.date }.toList()
+    return homePageImagePosts.sortedByDescending { it.postData.date }.toList()
 }

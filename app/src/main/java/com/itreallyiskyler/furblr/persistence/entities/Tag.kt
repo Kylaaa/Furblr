@@ -29,5 +29,5 @@ data class Tag(
     var parentPostId: Long = _parentPost
 
     @ColumnInfo(name = "$TAGS_COLUMN_NAME_CONTENTS")
-    var tagContents: String = _contents
+    var tagContents: String = _contents.lowercase()
 }

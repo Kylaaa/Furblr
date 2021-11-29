@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
         else
         {
-            ContentManager.fetchSubmissions(0, 48, true)
+            ContentManager.fetchStartupData()
         }
     }
 

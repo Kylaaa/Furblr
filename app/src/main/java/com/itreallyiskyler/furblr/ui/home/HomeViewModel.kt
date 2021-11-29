@@ -12,5 +12,5 @@ class HomeViewModel : ViewModel() {
     }
 
     // TODO : figure out how to page this nonsense
-    val posts = SynchronizedLiveDataList<HomePagePost>(emptyList())
+    val posts = SynchronizedLiveDataList<IHomePageContent>(emptyList())
 }
