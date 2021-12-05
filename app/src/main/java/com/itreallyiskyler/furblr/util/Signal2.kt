@@ -3,6 +3,7 @@ package com.itreallyiskyler.furblr.util
 import kotlin.concurrent.thread
 
 class Signal2<T, U> {
+    public var isAsync : Boolean = true
     private var _nextId : Int = 0
     private var _connections : MutableMap<Int, (T, U) -> Unit> = mutableMapOf()
 
@@ -24,7 +25,12 @@ class Signal2<T, U> {
         // iterate over all of the connections and fire them with the supplied value
         for (pair in _connections) {
             val connection = pair.value
-            thread(start = true) {
+            if (isAsync) {
+                thread(start = true) {
+                    connection(val1, val2)
+                }
+            }
+            else {
                 connection(val1, val2)
             }
         }
@@ -32,6 +38,6 @@ class Signal2<T, U> {
 
     fun disconnectAll() {
         _connections.clear()
-        _nextId = 0
+        // do not reset the counter to ensure that existing disconnect tokens no longer work
     }
 }
