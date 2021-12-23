@@ -73,7 +73,3 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation 'junit:junit:4.13.2'
 }
-
-test {
-    useJUnit()
-}
