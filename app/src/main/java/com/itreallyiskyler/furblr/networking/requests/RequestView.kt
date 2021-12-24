@@ -19,9 +19,9 @@ class RequestView(
         var success = fun(httpBody : Any?) : PagePostDetails {
             return PagePostDetails(httpBody as String);
         }
-        var failure = fun(message : Any?) {
-            TODO("Not yet implemented")
-            println(message as Exception);
+        var failure = fun(_ : Any?) {
+            // TODO("Not yet implemented")
+            // println(message as Exception);
         }
 
         return GET().then(success, failure)

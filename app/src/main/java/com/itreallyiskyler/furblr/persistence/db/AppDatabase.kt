@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.itreallyiskyler.furblr.persistence.dao.*
 import com.itreallyiskyler.furblr.persistence.entities.*
 
+// TODO : export the schema to track the version history of the db
 @Database(version = 1,
     entities = [BlacklistedTag::class,
         Comment::class,
@@ -13,7 +14,8 @@ import com.itreallyiskyler.furblr.persistence.entities.*
         Post::class,
         Shout::class,
         Tag::class,
-        User::class]
+        User::class],
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     // content actions...

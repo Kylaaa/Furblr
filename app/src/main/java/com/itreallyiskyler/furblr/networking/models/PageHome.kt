@@ -10,24 +10,27 @@ class PageHome (private val httpBody : String) {
         return httpBody.contains("Please log in!")
     }
 
-    private fun parseSubmissions(httpBody: String) : Array<ThumbnailSubmission>
+    private fun parseSubmissions(_: String) : Array<ThumbnailSubmission>
     {
+        // TODO : parse httpBody
         return emptyArray<ThumbnailSubmission>();
     }
 
-    private fun parseWriting(httpBody: String) : Array<ThumbnailWriting>
+    private fun parseWriting(_: String) : Array<ThumbnailWriting>
     {
+        // TODO : parse httpBody
         return emptyArray<ThumbnailWriting>();
     }
 
-    private fun parseAudio(httpBody: String) : Array<ThumbnailAudio>
+    private fun parseAudio(_: String) : Array<ThumbnailAudio>
     {
+        // TODO : parse httpBody
         return emptyArray<ThumbnailAudio>();
     }
 
-    private fun parseCrafting(httpBody: String) : Array<ThumbnailCrafting>
+    private fun parseCrafting(_: String) : Array<ThumbnailCrafting>
     {
+        // TODO : parse httpBody
         return emptyArray<ThumbnailCrafting>();
     }
-
 }

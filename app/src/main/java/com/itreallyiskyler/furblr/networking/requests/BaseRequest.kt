@@ -64,15 +64,15 @@ open class BaseRequest() : IUrlFetcher  {
         var argString = ""
         if (!args.isNullOrEmpty()){
             var argList = "?"
+            var utf8Encoding = java.nio.charset.StandardCharsets.UTF_8.toString()
             for ((k, v) in args){
-                argList += URLEncoder.encode(k) + "=" + URLEncoder.encode(v.toString()) + "&"
+                argList += URLEncoder.encode(k, utf8Encoding) + "=" + URLEncoder.encode(v.toString(), utf8Encoding) + "&"
             }
             argString = argList.substringBeforeLast('&')
         }
         return URL(baseUrl + path + argString)
     }
     private fun fetch(requestType : RequestType, requestBody: String? = null) : Promise {
-        // TODO : figure out PUT and DELETE support
         val action = fun(resolve : GenericCallback, reject : GenericCallback) {
             thread(start=true, name=_url.toString()) {
                 var request : Request.Builder = Request.Builder()
@@ -114,7 +114,8 @@ open class BaseRequest() : IUrlFetcher  {
                 requestBody += "$key=${value};"
             }
             // remove the trailing semi-colon
-            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1))
+            var utf8Encoding = java.nio.charset.StandardCharsets.UTF_8.toString()
+            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1), utf8Encoding)
         }
         return requestBody
     }

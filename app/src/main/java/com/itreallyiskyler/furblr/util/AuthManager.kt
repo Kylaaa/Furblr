@@ -38,7 +38,7 @@ object AuthManager {
         cm.setAcceptCookie(true);
     }
 
-    fun syncWebviewCookies(wv : WebView) {
+    fun syncWebviewCookies(_ : WebView) {
         CookieManager.getInstance().flush();
     }
 

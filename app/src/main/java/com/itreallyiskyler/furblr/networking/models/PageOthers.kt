@@ -15,27 +15,27 @@ class PageOthers(private val httpBody : String) {
     val Favorites : List<INotification> = getFavorites(doc.getElementById("messages-favorites"))
     val JournalIds : List<JournalStub> = getJournalStubs(doc.getElementById("messages-journals"))
 
-    private fun getWatches(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
+    private fun getWatches(_: Element?) : List<INotification> {
+        // TODO : parse notifications fromM elementData
         return listOf()
     }
 
-    private fun getSubmissionComments(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
+    private fun getSubmissionComments(_: Element?) : List<INotification> {
+        // TODO : parse notifications  from  elementData
         return listOf()
     }
 
-    private fun getShouts(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
+    private fun getShouts(_: Element?) : List<INotification> {
+        // TODO : parse notifications from elementData
         return listOf()
     }
 
-    private fun getFavorites(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
+    private fun getFavorites(_: Element?) : List<INotification> {
+        // TODO : pase notifications from elementData
         return listOf()
     }
 
-    private fun getJournalStubs(elementData: Element?) : List<JournalStub> {
+    private fun getJournalStubs(elementData : Element?) : List<JournalStub> {
         if (elementData == null) { return listOf() }
 
         val cells = elementData.getElementsByTag("li")

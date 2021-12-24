@@ -11,8 +11,8 @@ class RequestHome : IPageParser<PageHome>,
         var success = fun(httpBody : Any?) : PageHome {
             return PageHome(httpBody as String);
         }
-        var failure = fun(message : Any?) {
-            TODO("Not yet implemented")
+        var failure = fun(_ : Any?) {
+            // TODO("Not yet implemented")
         }
 
         return GET().then(success, failure)
