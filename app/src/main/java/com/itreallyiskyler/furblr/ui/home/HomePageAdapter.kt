@@ -84,12 +84,9 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
 
             imgFavesIcon.setOnClickListener {
                 val postData = imagePostDetails.postData
-                println("Favoriting ${postData.title}")
                 //currentPost!!.postData.hasFavorited = !postData.hasFavorited
 
                 ContentManager.favoritePost(imagePostDetails)
-
-                // TODO : Figure out how to mutate this data, and have it be updated
             }
 
             imgCommentsIcon.setOnClickListener {
@@ -133,7 +130,7 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var layoutId : Int = -1
+        var layoutId : Int
         when (viewType) {
             1 -> layoutId = R.layout.listitem_home_submission
             2 -> layoutId = R.layout.listitem_home_journal
