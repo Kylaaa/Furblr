@@ -20,7 +20,7 @@ class RequestUser(
         }
         var failure = fun(message : Any?) {
             // TODO("Not yet implemented")
-            println(message as Exception);
+            println(message as Exception)
         }
 
         return GET().then(success, failure)

@@ -15,4 +15,10 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <string name="notification_favorited">%1$s favorited your post, %2$s</string>
+    <string name="notification_shout">%1$s left a shout</string>
+    <string name="notification_comment">%1$s commented on your post, %2$s</string>
+    <string name="notification_comment_reply">%1$s replied to your commented on their post, %2$s</string>
+    <string name="notification_watch">%1$s started watching you!</string>
 </resources>

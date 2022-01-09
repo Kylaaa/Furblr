@@ -17,8 +17,6 @@ import com.itreallyiskyler.furblr.util.ContentManager
 import javax.sql.DataSource
 
 class HomeFragment : Fragment() {
-
-    private var homeViewModel: HomeViewModel = HomeViewModel()
     private var _binding: FragmentHomeBinding? = null
     private var adapter : HomePageAdapter? = null
 
@@ -27,12 +25,11 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        _binding?.homeViewModel = homeViewModel
-        adapter = HomePageAdapter()
+        _binding?.homeViewModel = ContentManager.homeVM
+        adapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
 
-        homeViewModel.posts.liveData.observe(viewLifecycleOwner, {
+        ContentManager.homeVM.posts.liveData.observe(viewLifecycleOwner, {
             it?.let {
-                // TODO : FIGURE OUT WHY DATA IS DOUBLING
                 adapter?.updateData(it)
             }
         })

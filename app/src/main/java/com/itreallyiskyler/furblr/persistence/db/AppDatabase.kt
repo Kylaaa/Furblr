@@ -10,6 +10,7 @@ import com.itreallyiskyler.furblr.persistence.entities.*
         Comment::class,
         FeedId::class,
         Journal::class,
+        Notification::class,
         Post::class,
         Shout::class,
         Tag::class,
@@ -25,6 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun blacklistedTagsDao() : BlacklistedTagsDao
     abstract fun commentsDao() : CommentsDao
     abstract fun journalsDao() : JournalsDao
+    abstract fun notificationsDao() : NotificationsDao
     abstract fun postsDao() : PostsDao
     abstract fun shoutsDao() : ShoutsDao
     abstract fun tagsDao() : TagsDao
