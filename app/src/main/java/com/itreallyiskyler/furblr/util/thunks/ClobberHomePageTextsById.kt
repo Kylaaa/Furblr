@@ -20,10 +20,10 @@ fun ClobberHomePageTextsById(dbImpl : AppDatabase,
     val homePageTextPosts: MutableList<HomePageTextPost> = mutableListOf()
     journals.forEach { post ->
         run {
-            val postCreator = users.find { user -> user.username == post.profileId }!!
+            val postCreator = users.find { user -> user.username == post.profileId }
             val postComments = journalComments.filter { comment -> comment.hostId == post.id }
 
-            val hpp = HomePageTextPost(post, postCreator, postComments)
+            val hpp = HomePageTextPost(post, postCreator!!, postComments)
             homePageTextPosts.add(hpp)
         }
     }

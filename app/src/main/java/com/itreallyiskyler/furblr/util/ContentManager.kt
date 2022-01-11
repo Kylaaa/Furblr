@@ -7,46 +7,41 @@ import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.networking.requests.RequestUnfavoritePost
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
+import com.itreallyiskyler.furblr.ui.home.HomeViewModel
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
+import com.itreallyiskyler.furblr.ui.notifications.NotificationsPagePost
+import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
 
 object ContentManager {
-    // DATABASE CONNECTIONS
     private lateinit var db : AppDatabase
     fun setDB(appDB : AppDatabase) { db = appDB }
 
-    // HOME PAGE CONTENT
-    var homePagePosts : MutableList<IHomePageContent> = mutableListOf()
-    val HomePageContentReady = Signal<List<IHomePageContent>>()
-    val HomePageContentUpdated = Signal2<Int, IHomePageContent>()
+    var homeVM : HomeViewModel = HomeViewModel()
+    var notesVM : NotificationsViewModel = NotificationsViewModel()
 
-    // indexing helpers
-    private var homePageIndices : HashMap<Long, Int> = hashMapOf()
-    private fun indexHomePagePosts(imagePosts : List<IHomePageContent>){
-        for (i in imagePosts.indices) {
-            val post = imagePosts[i]
-            homePageIndices[post.contentId] = i
-        }
-    }
 
     fun fetchStartupData() {
         thread(start = true, name = "StartUpFetchThread") {
-            val promises = arrayOf(fetchNotifications(false), fetchSubmissions(0, 48, false))
+            val promises = arrayOf(
+                fetchNotifications(false),
+                fetchSubmissions(0, 48, false))
+
             Promise.all(promises).then(fun(_ : Any?) {
                 val contentIds = db.contentFeedDao().getPageFromFeed(ContentFeedId.Home.id, 48, 0)
-                //val contentIds = db.contentFeedDao().getAllFeedIds()
                 val postIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
                 val journalIds = contentIds.filter { it.postKind == PostKind.Text.id }.map { it.postId }
 
                 val posts = ClobberHomePageImagesById(db, postIds)
                 val journals = ClobberHomePageTextsById(db, journalIds)
+                val homeContent = (posts + journals).sortedByDescending { it.postDate }.toMutableList()
+                homeVM.setPosts(homeContent)
 
-                homePagePosts = (posts + journals).sortedByDescending { it.postDate }.toMutableList()
-                indexHomePagePosts(homePagePosts)
-                HomePageContentReady.fire(homePagePosts.toList())
+                val notes = ClobberNotificationsByPage(db)
+                notesVM.setNotifications(notes)
             }, fun(failureReason : Any?) {
-                HomePageContentReady.fire(homePagePosts.toList())
+                homeVM.setPosts(listOf())
                 println(failureReason)
             })
         }
@@ -60,27 +55,18 @@ object ContentManager {
     fun fetchSubmissions(page : Int = 0,
                          pageSize : Int = 48,
                          forceReload : Boolean = false) : Promise {
-       //return FetchHomePageContent(db, page, pageSize, forceReload)
         return FetchPageOfHome(db, page, pageSize, forceReload)
     }
 
     fun fetchLatestHomePagePost(post : IHomePageContent) {
         val postId = post.contentId
-        if (!homePageIndices.containsKey(postId)) {
-            throw IndexOutOfBoundsException("Could not find $postId in homePageIndices")
-        }
-
         if (post.postKind == PostKind.Image) {
-            // refetch the data from the web
+            // re-fetch the data from the web
             thread(start = true, name = "UpdateHomePageSubmissionThread") {
                 FetchLatestForPost(db, postId, ContentFeedId.Home)
                     .then(fun(updatedPost: Any?) {
                         val updatedHomePagePost = (updatedPost as List<HomePageImagePost>)[0]
-                        val index: Int = homePageIndices[postId]!!
-                        homePagePosts[index] = updatedHomePagePost
-
-                        // alert the listeners that the data has been updated
-                        HomePageContentUpdated.fire(index, homePagePosts[index])
+                        homeVM.updatePost(postId, updatedHomePagePost)
                     }, fun(errData: Any?) {
                         println(errData)
                     })

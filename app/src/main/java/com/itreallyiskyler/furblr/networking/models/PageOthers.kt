@@ -16,27 +16,61 @@ class PageOthers(private val httpBody : String) {
     val JournalIds : List<JournalStub> = getJournalStubs(doc.getElementById("messages-journals"))
 
     private fun getWatches(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
-        return listOf()
+        if (elementData == null) {
+            return listOf()
+        }
+
+        var notes : MutableList<NotificationWatch> = mutableListOf()
+        val items = elementData.select("li")
+        for (li in items) {
+            notes.add(NotificationWatch(li))
+        }
+        return notes.toList()
     }
 
     private fun getSubmissionComments(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
-        return listOf()
+        if (elementData == null) {
+            return listOf()
+        }
+
+        var notes : MutableList<NotificationComment> = mutableListOf()
+        val items = elementData.select("li")
+        for (li in items) {
+            notes.add(NotificationComment(li))
+        }
+        return notes.toList()
     }
 
     private fun getShouts(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
-        return listOf()
+        if (elementData == null) {
+            return listOf()
+        }
+
+        var notes : MutableList<NotificationShout> = mutableListOf()
+        val items = elementData.select("li")
+        for (li in items) {
+            notes.add(NotificationShout(li))
+        }
+        return notes.toList()
     }
 
     private fun getFavorites(elementData: Element?) : List<INotification> {
-        // TODO : PARSE NOTIFICATIONS
-        return listOf()
+        if (elementData == null) {
+            return listOf()
+        }
+
+        var notes : MutableList<NotificationFavorite> = mutableListOf()
+        val items = elementData.select("li")
+        for (li in items) {
+            notes.add(NotificationFavorite(li))
+        }
+        return notes.toList()
     }
 
     private fun getJournalStubs(elementData: Element?) : List<JournalStub> {
-        if (elementData == null) { return listOf() }
+        if (elementData == null) {
+            return listOf()
+        }
 
         val cells = elementData.getElementsByTag("li")
         val divs : List<Element> = cells.map { it.child(0).child(1) }

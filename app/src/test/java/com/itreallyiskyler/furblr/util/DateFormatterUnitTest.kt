@@ -29,6 +29,30 @@ class DateFormatterUnitTest {
     }
 
     @Test
+    fun constructor_parsesLongEnglishTimesProperly() {
+        val testDate = "Dec 5th, 2021 11:45 PM"
+        val df = DateFormatter(testDate)
+
+        assertEquals(df.month, 12)
+        assertEquals(df.day, 5)
+        assertEquals(df.year, 2021)
+        assertEquals(df.hour, 23)
+        assertEquals(df.min, 45)
+    }
+
+    @Test
+    fun constructor_parsesLongTimesWithPrefixesProperly() {
+        val testDate = "on Dec 5th, 2021 11:45 PM"
+        val df = DateFormatter(testDate)
+
+        assertEquals(df.month, 12)
+        assertEquals(df.day, 5)
+        assertEquals(df.year, 2021)
+        assertEquals(df.hour, 23)
+        assertEquals(df.min, 45)
+    }
+
+    @Test
     fun toYYYYMMDDhhmm_standardizesDates() {
         val testDate = "Dec 5, 2021 11:45 AM"
         val df = DateFormatter(testDate)

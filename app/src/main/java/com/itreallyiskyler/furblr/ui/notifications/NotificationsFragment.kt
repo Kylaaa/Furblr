@@ -8,35 +8,41 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentNotificationsBinding
+import com.itreallyiskyler.furblr.util.ContentManager
 
 class NotificationsFragment : Fragment() {
 
-    private lateinit var notificationsViewModel: NotificationsViewModel
     private var _binding: FragmentNotificationsBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private var adapter : NotificationsPageAdapter? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        notificationsViewModel =
-                ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        _binding?.notificationsViewModel = ContentManager.notesVM
+        adapter = NotificationsPageAdapter(ContentManager.notesVM.notes.liveData.value ?: listOf())
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
+        ContentManager.notesVM.notes.liveData.observe(viewLifecycleOwner, {
+            it?.let {
+                adapter?.updateData(it)
+            }
         })
-        return root
+        return inflater.inflate(R.layout.fragment_notifications, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val rvNotesList : RecyclerView = view.findViewById(R.id.rvNotesList)
+        rvNotesList.adapter = adapter
+        rvNotesList.layoutManager = LinearLayoutManager(context)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
