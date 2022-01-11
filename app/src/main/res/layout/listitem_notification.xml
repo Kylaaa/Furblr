@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="2dp"
     android:layout_marginBottom="2dp"
-    android:background="?attr/colorBackgroundFloating">
+    android:background="?attr/colorBackgroundFloating"
+    android:minHeight="58dp">
 
     <TextView
         android:id="@+id/txtNotificationContent"
