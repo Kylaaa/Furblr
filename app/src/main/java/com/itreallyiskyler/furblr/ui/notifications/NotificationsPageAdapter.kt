@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.NotificationId
@@ -21,7 +22,6 @@ import com.itreallyiskyler.furblr.persistence.entities.Notification
 import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.itreallyiskyler.furblr.util.DateFormatter
-import com.squareup.picasso.Picasso
 import org.w3c.dom.Text
 import java.lang.Exception
 import java.lang.IllegalArgumentException
@@ -37,7 +37,6 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
     class ViewHolder(val view: View, val viewContext : Context) : RecyclerView.ViewHolder(view)
     {
         private var currentNotification : NotificationsPagePost? = null
-        private val loader = Picasso.get()
 
         private fun inflateNotification(targetView : View, note : Notification, originalPost : Post? = null) {
             // Define UI Element bindings here
@@ -79,7 +78,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
             if (originalPost != null) {
                 postImageView.visibility = View.VISIBLE
                 val postUrl = originalPost?.contentsId
-                loader.load(postUrl).into(postImageView)
+                Glide.with(viewContext).load(postUrl).into(postImageView)
             }
             else {
                 postImageView.visibility = View.GONE
