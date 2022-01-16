@@ -9,13 +9,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
-import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.util.ContentManager
-import com.squareup.picasso.Picasso
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
@@ -28,7 +27,6 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
     class ViewHolder(val view: View, val viewContext : Context) : RecyclerView.ViewHolder(view)
     {
         private var currentPost : IHomePageContent? = null
-        private val loader = Picasso.get()
 
         private fun bindImagePost(view:View, imagePostDetails : HomePageImagePost) {
             // Define UI Element bindings here
@@ -57,12 +55,12 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             }
 
             val postUrl = imagePostDetails.postData.contentsId
-            loader.load(postUrl).into(postImageView)
+            Glide.with(viewContext).load(postUrl).into(postImageView)
 
             val avatarUrl = RequestAvatarUrl(
                 imagePostDetails.postCreator.username,
                 imagePostDetails.postCreator.avatarId).getUrl().toString()
-            loader.load(avatarUrl).into(avatarImageView)
+            Glide.with(viewContext).load(avatarUrl).into(avatarImageView)
 
             layoutTags.removeAllViews()
             val viewInflater = LayoutInflater.from(viewContext)
@@ -117,7 +115,7 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             val avatarUrl = RequestAvatarUrl(
                 textPostDetails.postCreator.username,
                 textPostDetails.postCreator.avatarId).getUrl().toString()
-            loader.load(avatarUrl).into(avatarImageView)
+            Glide.with(viewContext).load(avatarUrl).into(avatarImageView)
         }
 
         // bind data with the UI Elements
