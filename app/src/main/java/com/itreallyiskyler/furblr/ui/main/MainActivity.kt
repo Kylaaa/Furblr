@@ -71,7 +71,12 @@ class MainActivity : AppCompatActivity() {
         // subscribe to any relevant signals
         ContentManager.notesVM.UnreadCountChanged.connect {
             val navView : BottomNavigationView = binding.navView
-            navView.getOrCreateBadge(R.id.navigation_notifications).number = it
+            if (it > 0) {
+                navView.getOrCreateBadge(R.id.navigation_notifications).number = it
+            }
+            else {
+                navView.removeBadge(R.id.navigation_notifications)
+            }
         }
 
         if (!AuthManager.isAuthenticated())
