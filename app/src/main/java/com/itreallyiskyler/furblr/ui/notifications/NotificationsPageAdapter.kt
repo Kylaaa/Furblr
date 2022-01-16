@@ -1,6 +1,7 @@
 package com.itreallyiskyler.furblr.ui.notifications
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.Html
 import android.transition.Visibility
 import android.view.LayoutInflater
@@ -54,6 +55,10 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
                 else -> throw IndexOutOfBoundsException("Cannot find resource for notification kind")
             }
             notificationKindImageView.setImageResource(icon)
+            if (note.hasBeenSeen == false) {
+                notificationKindImageView.imageTintList =
+                    ColorStateList.valueOf(viewContext.getColor(R.color.design_default_color_secondary))
+            }
 
             var sender = note.senderId
             var message : String = when(note.kind) {

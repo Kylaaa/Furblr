@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.util
 
+import android.app.Notification
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
@@ -40,6 +41,9 @@ object ContentManager {
 
                 val notes = ClobberNotificationsByPage(db)
                 notesVM.setNotifications(notes)
+
+                val unreadCount : Int = db.notificationsDao().getUnreadNotificationCount()
+                notesVM.updateUnreadNotifications(unreadCount)
             }, fun(failureReason : Any?) {
                 homeVM.setPosts(listOf())
                 println(failureReason)
@@ -93,5 +97,10 @@ object ContentManager {
             }, fun(errDetails : Any?){
                 println(errDetails)
             })
+    }
+
+    fun markNotificationsAsRead() {
+        db.notificationsDao().markNotificationAsSeen()
+        notesVM.updateUnreadNotifications(0)
     }
 }
