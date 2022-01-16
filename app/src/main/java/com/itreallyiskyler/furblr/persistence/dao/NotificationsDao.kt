@@ -14,14 +14,19 @@ interface NotificationsDao {
     // 0 = false
     @Query("UPDATE $NOTIFICATIONS_TABLE_NAME " +
             "SET $NOTIFICATIONS_COLUMN_NAME_SEEN = 1 " +
-            "WHERE $NOTIFICATIONS_COLUMN_NAME_ID IN (:ids)")
-    fun markNotificationAsSeen(ids: List<Long>)
+            "WHERE $NOTIFICATIONS_COLUMN_NAME_SEEN = 0")
+    fun markNotificationAsSeen()
 
     @Query("SELECT * FROM $NOTIFICATIONS_TABLE_NAME " +
             "ORDER BY $NOTIFICATIONS_COLUMN_NAME_DATE DESC " +
             "LIMIT :pageSize " +
             "OFFSET :offset")
     fun getNotificationPage(pageSize: Int = 40, offset: Int = 0) : List<Notification>
+
+    @Query("SELECT COUNT($NOTIFICATIONS_COLUMN_NAME_ID) " +
+            "FROM $NOTIFICATIONS_TABLE_NAME " +
+            "WHERE $NOTIFICATIONS_COLUMN_NAME_SEEN = 0")
+    fun getUnreadNotificationCount() : Int
 
     @Query("SELECT * FROM $NOTIFICATIONS_TABLE_NAME")
     fun getAllNotifications(): List<Notification>

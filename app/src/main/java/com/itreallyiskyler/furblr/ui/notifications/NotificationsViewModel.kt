@@ -8,9 +8,11 @@ import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 class NotificationsViewModel : ViewModel() {
 
     // TODO : figure out how to page this nonsense
+    private var unreadCount : Int = 0
     val notes = SynchronizedLiveDataList<NotificationsPagePost>(listOf())
     val NotificationsReady = Signal<List<NotificationsPagePost>>()
     val NotificationsUpdated = Signal2<Int, NotificationsPagePost>()
+    val UnreadCountChanged = Signal<Int>()
 
     private var notificationsPagePosts : MutableList<NotificationsPagePost> = mutableListOf()
 
@@ -21,16 +23,21 @@ class NotificationsViewModel : ViewModel() {
         NotificationsReady.fire(notificationsPagePosts.toList())
     }
 
-    fun updateNotifications(postId : Long, content : NotificationsPagePost) {
-        /*if (!notificationsIndices.containsKey(postId)) {
-            throw IndexOutOfBoundsException("Could not find $postId in notificationsIndices")
+    fun updateUnreadNotifications(newCount : Int) {
+        if (newCount != unreadCount) {
+            unreadCount = newCount
+            UnreadCountChanged.fire(unreadCount)
         }
+    }
 
-        val index: Int = notificationsIndices[postId]!!
-        notificationsPagePosts[index] = content
-
-        notes.reloadDataEntry(index, content)
-        NotificationsUpdated.fire(index, content)*/
+    fun updateNotifications(updateList : List<NotificationsPagePost>) {
+        updateList.forEach {
+            val index : Int? = notificationsPagePosts.indexOf(it)
+            if (index != null) {
+                notes.reloadDataEntry(index, it)
+                NotificationsUpdated.fire(index, it)
+            }
+        }
     }
 
 

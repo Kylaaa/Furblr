@@ -92,14 +92,13 @@ class NotificationsDaoUnitTest : DBTestClass() {
         Assert.assertEquals(notes[2].hasBeenSeen, false)
 
         // mark the notification as seen
-        val ids : List<Long> = listOf(testNotificationA.id, testNotificationB.id)
-        notificationsDao.markNotificationAsSeen(ids)
+        notificationsDao.markNotificationAsSeen()
 
         // validate that it worked
         val notes2 = notificationsDao.getAllNotifications()
         Assert.assertEquals(notes2[0].hasBeenSeen, true)
         Assert.assertEquals(notes2[1].hasBeenSeen, true)
-        Assert.assertEquals(notes2[2].hasBeenSeen, false)
+        Assert.assertEquals(notes2[2].hasBeenSeen, true)
     }
 
 }

@@ -68,6 +68,12 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+        // subscribe to any relevant signals
+        ContentManager.notesVM.UnreadCountChanged.connect {
+            val navView : BottomNavigationView = binding.navView
+            navView.getOrCreateBadge(R.id.navigation_notifications).number = it
+        }
+
         if (!AuthManager.isAuthenticated())
         {
             gotoLogin()

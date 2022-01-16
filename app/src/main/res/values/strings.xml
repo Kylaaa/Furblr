@@ -21,4 +21,17 @@
     <string name="notification_comment">%1$s commented on your post, %2$s</string>
     <string name="notification_comment_reply">%1$s replied to your commented on their post, %2$s</string>
     <string name="notification_watch">%1$s started watching you!</string>
+
+    <string name="date_month_1">January</string>
+    <string name="date_month_2">February</string>
+    <string name="date_month_3">March</string>
+    <string name="date_month_4">April</string>
+    <string name="date_month_5">May</string>
+    <string name="date_month_6">June</string>
+    <string name="date_month_7">July</string>
+    <string name="date_month_8">August</string>
+    <string name="date_month_9">September</string>
+    <string name="date_month_10">October</string>
+    <string name="date_month_11">November</string>
+    <string name="date_month_12">December</string>
 </resources>

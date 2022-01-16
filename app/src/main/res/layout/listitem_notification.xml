@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="2dp"
     android:layout_marginBottom="2dp"
-    android:background="?attr/colorBackgroundFloating"
     android:minHeight="58dp">
 
     <TextView
@@ -18,12 +17,12 @@
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:fontFamily="sans-serif-medium"
-        android:text="A really long pre-formatted string describing the notification"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgNotificationKindIcon"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="A really long pre-formatted string describing the notification" />
 
     <ImageView
         android:id="@+id/imgNotificationPost"

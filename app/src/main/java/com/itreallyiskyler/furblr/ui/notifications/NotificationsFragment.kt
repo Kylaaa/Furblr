@@ -13,11 +13,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentNotificationsBinding
 import com.itreallyiskyler.furblr.util.ContentManager
+import kotlinx.coroutines.delay
+import okhttp3.internal.toImmutableList
+import okhttp3.internal.wait
+import kotlin.concurrent.thread
 
 class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private var adapter : NotificationsPageAdapter? = null
+    private val MARK_AS_READ_DELAY : Long = 5000
+    private var shouldMarkAsRead : Boolean = false
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -43,6 +50,35 @@ class NotificationsFragment : Fragment() {
         rvNotesList.layoutManager = LinearLayoutManager(context)
     }
 
+    override fun onStart() {
+        super.onStart()
+        shouldMarkAsRead = true
+
+        thread {
+            Thread.sleep(MARK_AS_READ_DELAY)
+
+            if (shouldMarkAsRead) {
+                val notificationsPagePosts : MutableList<NotificationsPagePost> = mutableListOf()
+                val currentNotes = ContentManager.notesVM.notes.liveData.value
+                currentNotes?.forEach {
+                    val unreadNotifications = it.notifications.filter { it.hasBeenSeen == false }
+                    unreadNotifications.forEach { it.hasBeenSeen = true }
+                    val containsUnreadNotes = unreadNotifications.size > 0
+                    if (containsUnreadNotes) {
+                        notificationsPagePosts.add(it)
+                    }
+                }
+                ContentManager.notesVM.updateNotifications(notificationsPagePosts.toImmutableList())
+                ContentManager.markNotificationsAsRead()
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        shouldMarkAsRead = false
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
