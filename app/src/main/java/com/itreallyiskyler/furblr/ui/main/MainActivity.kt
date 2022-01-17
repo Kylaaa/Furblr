@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.ui.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.hide()
 
         // TODO : move this to Settings / profile page at some point
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
