@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui.discover
+package com.itreallyiskyler.furblr.ui.search
 
 import androidx.lifecycle.ViewModel
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
@@ -6,7 +6,7 @@ import com.itreallyiskyler.furblr.util.Signal
 import com.itreallyiskyler.furblr.util.Signal2
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
-class DiscoverViewModel : ViewModel() {
+class SearchResultsViewModel : ViewModel() {
 
     val DiscoverPageContentReady = Signal<List<IHomePageContent>>()
     val DiscoverPageContentUpdated = Signal2<Int, IHomePageContent>()

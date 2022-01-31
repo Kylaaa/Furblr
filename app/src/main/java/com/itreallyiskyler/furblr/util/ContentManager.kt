@@ -1,16 +1,16 @@
 package com.itreallyiskyler.furblr.util
 
-import android.app.Notification
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
+import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
 import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.networking.requests.RequestUnfavoritePost
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.ui.discover.DiscoverViewModel
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.ui.home.HomeViewModel
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
-import com.itreallyiskyler.furblr.ui.notifications.NotificationsPagePost
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
@@ -19,6 +19,7 @@ object ContentManager {
     private lateinit var db : AppDatabase
     fun setDB(appDB : AppDatabase) { db = appDB }
 
+    var discoverVM : DiscoverViewModel = DiscoverViewModel()
     var homeVM : HomeViewModel = HomeViewModel()
     var notesVM : NotificationsViewModel = NotificationsViewModel()
 
@@ -102,5 +103,9 @@ object ContentManager {
     fun markNotificationsAsRead() {
         db.notificationsDao().markNotificationAsSeen()
         notesVM.updateUnreadNotifications(0)
+    }
+
+    fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
+        return fetchSearchPage(keyword, options)
     }
 }

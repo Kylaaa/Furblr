@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.ui.discover
+package com.itreallyiskyler.furblr.ui.search
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,43 +10,40 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentDiscoverBinding
 import com.itreallyiskyler.furblr.util.ContentManager
 
-class DiscoverFragment : Fragment() {
+class SearchResultsFragment(val searchQuery : String) : Fragment() {
 
-    private lateinit var dashboardViewModel: DiscoverViewModel
+    private lateinit var searchResultsViewModel: SearchResultsViewModel
     private var _binding: FragmentDiscoverBinding? = null
-    private var searchAdapter : DiscoverSearchHeaderAdapter? = null
-    private var discoverAdapter : HomePageAdapter? = null
-    private var adapter : ConcatAdapter? = null
+    private var headerAdapter : SearchResultsHeaderAdapter? = null
+    private var resultsAdapter : HomePageAdapter? = null
 
     private val binding get() = _binding!!
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        searchAdapter = DiscoverSearchHeaderAdapter()
-        discoverAdapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
-        adapter = ConcatAdapter(searchAdapter, discoverAdapter)
-        dashboardViewModel =
-                ViewModelProvider(this).get(DiscoverViewModel::class.java)
+        headerAdapter = SearchResultsHeaderAdapter(searchQuery)
+        resultsAdapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
+        searchResultsViewModel =
+                ViewModelProvider(this).get(SearchResultsViewModel::class.java)
 
         _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvDiscoverList : RecyclerView = view.findViewById(R.id.rvDiscoverList)
-        rvDiscoverList.adapter = adapter
-        rvDiscoverList.layoutManager = LinearLayoutManager(context)
+        val rvSearchResults : RecyclerView = view.findViewById(R.id.rvSearchResults)
+        rvSearchResults.adapter = ConcatAdapter(headerAdapter, resultsAdapter)
+        rvSearchResults.layoutManager = LinearLayoutManager(context)
     }
 
     override fun onDestroyView() {

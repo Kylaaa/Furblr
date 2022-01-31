@@ -34,4 +34,37 @@
     <string name="date_month_10">October</string>
     <string name="date_month_11">November</string>
     <string name="date_month_12">December</string>
+
+    <string name="ui_discover_search_hint">whatcha ya lookin\' for?</string>
+    <string name="ui_discover_title_order">Order the results by…</string>
+    <string name="ui_discover_label_in">in</string>
+    <string name="ui_discover_label_order">order</string>
+    <string name="ui_discover_title_range">Include posts from…</string>
+    <string name="ui_discover_title_ratings">Include posts rated…</string>
+    <string name="ui_discover_title_kinds">Include these kinds of posts…</string>
+    <string name="ui_discover_title_matching">Include matching keywords…</string>
+    <string name="ui_discover_title_discover">Discover something new</string>
+
+    <string name="sort_relevancy">Relevancy</string>
+    <string name="sort_date">Date</string>
+    <string name="sort_popularity">Popularity</string>
+    <string name="sort_direction_asc">Ascending</string>
+    <string name="sort_direction_desc">Descending</string>
+    <string name="sort_window_1day">A Day</string>
+    <string name="sort_window_3day">3 Days</string>
+    <string name="sort_window_7day">A Week</string>
+    <string name="sort_window_30day">A Month</string>
+    <string name="sort_window_all">All Time</string>
+    <string name="sort_rating_general">General</string>
+    <string name="sort_rating_mature">Mature</string>
+    <string name="sort_rating_adult">Adult</string>
+    <string name="sort_post_kind_art">Art</string>
+    <string name="sort_post_kind_music">Music</string>
+    <string name="sort_post_kind_flash">Flash</string>
+    <string name="sort_post_kind_story">Story</string>
+    <string name="sort_post_kind_photo">Photo</string>
+    <string name="sort_post_kind_poetry">Poetry</string>
+    <string name="sort_matching_all">All of the words</string>
+    <string name="sort_matching_any">Any of the words</string>
+    <string name="sort_matching_extended">Extended</string>
 </resources>

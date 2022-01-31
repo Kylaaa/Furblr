@@ -7,7 +7,7 @@ import org.jsoup.nodes.Element
 
 
 class PageOthers(private val httpBody : String) {
-    private var doc : Document = Jsoup.parse(httpBody);
+    private var doc : Document = Jsoup.parse(httpBody)
 
     val Watches : List<INotification> = getWatches(doc.getElementById("messages-watches"))
     val Comments : List<INotification> = getSubmissionComments(doc.getElementById("messages-comments-submission"))
