@@ -11,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import com.itreallyiskyler.furblr.R
+import com.itreallyiskyler.furblr.enum.SearchMode
+import com.itreallyiskyler.furblr.enum.SearchOrderBy
+import com.itreallyiskyler.furblr.enum.SearchOrderDirection
+import com.itreallyiskyler.furblr.enum.SearchRange
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.util.ContentManager
 
@@ -45,10 +49,10 @@ class DiscoverSearchHeaderAdapter() :
             btnSearch.setOnClickListener {
                 // pull values from the ui
                 val keyword = txtSearch.text.toString()
-                val sortOrderBy = spSortOrderBy.selectedItemId
-                val orderBy = spSortOrderBy2.selectedItemId
-                val range = spSortRange.selectedItemId
-                val keywords = spSortKeywords.selectedItemId
+                val sortOrderBy = spSortOrderBy.selectedItem
+                val orderBy = spSortOrderBy2.selectedItem
+                val range = spSortRange.selectedItem
+                val keywords = spSortKeywords.selectedItem
                 val includeGeneral = chRatingGeneral.isChecked
                 val includeMature = chRatingMature.isChecked
                 val includeAdult = chRatingAdult.isChecked
@@ -60,12 +64,21 @@ class DiscoverSearchHeaderAdapter() :
                 val includeStory = chStory.isChecked
 
                 // dispatch the request
-                /*val options = SearchOptions(
-                    orderBy = orderBy
-                )
-                ContentManager.fetchSearchPage(keyword, options)
-                 */
-                ContentManager.fetchSearchPage(keyword, SearchOptions())
+                ContentManager.fetchSearchPage(keyword, SearchOptions(
+                    //orderDirection = SearchOrderDirection.Descending,
+                    //orderBy = SearchOrderBy.Relevancy,
+                    //range = SearchRange.All,
+                    //mode = SearchMode.All,
+                    includeGeneralContent = includeGeneral,
+                    includeMatureContent = includeMature,
+                    includeAdultContent = includeAdult,
+                    includeArt = includeArt,
+                    includeFlash = includeFlash,
+                    includeMusic = includeMusic,
+                    includePhoto = includePhoto,
+                    includePoetry = includePoetry,
+                    includeStory = includeStory
+                ))
             }
 
             btnShowOptions.setOnClickListener {
@@ -77,7 +90,7 @@ class DiscoverSearchHeaderAdapter() :
                 btnShowOptions.setImageResource(imgResource)
 
                 // flip the bool for next time
-                isOptionsCollapsed != isOptionsCollapsed
+                isOptionsCollapsed = !isOptionsCollapsed
             }
         }
     }

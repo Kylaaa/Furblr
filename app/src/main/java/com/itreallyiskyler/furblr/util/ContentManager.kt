@@ -106,6 +106,6 @@ object ContentManager {
     }
 
     fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
-        return fetchSearchPage(keyword, options)
+        return FetchPageOfSearch(db, keyword, options)
     }
 }

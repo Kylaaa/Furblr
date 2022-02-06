@@ -21,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/ui_discover_title_discover"
         android:textSize="24sp"
@@ -56,6 +57,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtInputLayout">
@@ -72,25 +74,31 @@
                 android:id="@+id/chRatingGeneral"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_rating_general"
-                app:checkedIconEnabled="false" />
+                app:checkedIconEnabled="false"
+                app:checkedIconVisible="true" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chRatingMature"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_rating_mature"
-                app:checkedIconEnabled="false" />
+                app:checkedIconEnabled="false"
+                app:checkedIconVisible="true" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chRatingAdult"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_rating_adult"
-                app:checkedIconEnabled="false" />
+                app:checkedIconEnabled="false"
+                app:checkedIconVisible="true" />
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.chip.ChipGroup
@@ -106,6 +114,7 @@
                 android:id="@+id/chPostArt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_art" />
 
@@ -113,6 +122,7 @@
                 android:id="@+id/chPostFlash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_flash" />
 
@@ -120,6 +130,7 @@
                 android:id="@+id/chPostMusic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_music" />
 
@@ -127,6 +138,7 @@
                 android:id="@+id/chPostPhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_photo" />
 
@@ -134,6 +146,7 @@
                 android:id="@+id/chPostPoetry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_poetry" />
 
@@ -141,6 +154,7 @@
                 android:id="@+id/chPostStory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checkable="true"
                 android:checked="true"
                 android:text="@string/sort_post_kind_story" />
         </com.google.android.material.chip.ChipGroup>

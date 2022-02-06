@@ -13,7 +13,7 @@ class RequestSearch (
     private val keyword : String = "",
     private val searchOptions : SearchOptions = SearchOptions()
 ) : IPageParser<PageSearch>,
-    BaseRequest(BuildConfig.BASE_URL, "search") {
+    BaseRequest(BuildConfig.BASE_URL, "search?q=$keyword") {
 
     private fun getFormValueForBool(boolValue : Boolean) : Any {
         return if (boolValue) "on" else 0
@@ -25,6 +25,7 @@ class RequestSearch (
         }
         var failure = fun(message : Any?) {
             // TODO("Not yet implemented")
+            println(message)
         }
 
         val data : HashMap<String, Any>? = hashMapOf(

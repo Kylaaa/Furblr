@@ -44,6 +44,10 @@
     <string name="ui_discover_title_kinds">Include these kinds of posts…</string>
     <string name="ui_discover_title_matching">Include matching keywords…</string>
     <string name="ui_discover_title_discover">Discover something new</string>
+    <string name="ui_discover_section_submissions">Submissions</string>
+    <string name="ui_discover_section_writing">Writing and Poetry</string>
+    <string name="ui_discover_section_music">Music and Audio</string>
+    <string name="ui_discover_section_crafting">Fursuiting and Crafting</string>
 
     <string name="sort_relevancy">Relevancy</string>
     <string name="sort_date">Date</string>

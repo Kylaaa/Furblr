@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentDiscoverBinding
 import com.itreallyiskyler.furblr.util.ContentManager
@@ -20,7 +19,7 @@ class DiscoverFragment : Fragment() {
     private lateinit var dashboardViewModel: DiscoverViewModel
     private var _binding: FragmentDiscoverBinding? = null
     private var searchAdapter : DiscoverSearchHeaderAdapter? = null
-    private var discoverAdapter : HomePageAdapter? = null
+    private var discoverAdapter : DiscoverSectionAdapter? = null
     private var adapter : ConcatAdapter? = null
 
     private val binding get() = _binding!!
@@ -31,7 +30,7 @@ class DiscoverFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         searchAdapter = DiscoverSearchHeaderAdapter()
-        discoverAdapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
+        discoverAdapter = DiscoverSectionAdapter(this.requireContext())
         adapter = ConcatAdapter(searchAdapter, discoverAdapter)
         dashboardViewModel =
                 ViewModelProvider(this).get(DiscoverViewModel::class.java)
