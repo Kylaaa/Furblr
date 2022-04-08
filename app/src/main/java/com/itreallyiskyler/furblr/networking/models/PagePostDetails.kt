@@ -1,6 +1,7 @@
 package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.enum.AgeRating
+import com.itreallyiskyler.furblr.enum.PostCategory
 import com.itreallyiskyler.furblr.util.DateFormatter
 import okhttp3.internal.toImmutableList
 import org.jsoup.Jsoup
@@ -37,6 +38,14 @@ class PagePostDetails (private val httpBody : String) {
     val HasFavorited : Boolean = parseHasFavorited(favoriteContainer)
 
     // other stuff
+    // TODO : parse extra information, use Category to identify HOW to parse the rest of the page
+    /*val Category : PostCategory = PostCategory.Other
+    private var viewKind = PostCategory.getPostKind(Category)
+    val Species
+    val Gender
+    val Theme
+    val Size : Pair<Int, Int>*/
+
     private var allTagContainers : Elements = doc.getElementsByClass("tags")
     val Tags : Array<IPostTag> = parseTags(allTagContainers)
     private var allCommentContainers : Elements = doc.getElementsByClass("comment_container")

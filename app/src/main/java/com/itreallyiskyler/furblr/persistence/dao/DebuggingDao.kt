@@ -14,8 +14,8 @@ interface DebuggingDao {
     @Query("SELECT * FROM $COMMENTS_TABLE_NAME")
     fun DEBUG_getAllComments(): List<Comment>
 
-    @Query("SELECT * FROM $POSTS_TABLE_NAME")
-    fun DEBUG_getAllPosts(): List<Post>
+    @Query("SELECT * FROM $VIEW_TABLE_NAME")
+    fun DEBUG_getAllPosts(): List<View>
 
     @Query("SELECT * FROM $SHOUTS_TABLE_NAME")
     fun DEBUG_getAllShouts(): List<Shout>

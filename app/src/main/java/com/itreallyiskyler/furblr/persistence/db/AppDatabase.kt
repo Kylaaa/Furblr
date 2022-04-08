@@ -6,15 +6,17 @@ import com.itreallyiskyler.furblr.persistence.dao.*
 import com.itreallyiskyler.furblr.persistence.entities.*
 
 @Database(version = 1,
-    entities = [BlacklistedTag::class,
+    entities = [
+        BlacklistedTag::class,
         Comment::class,
         FeedId::class,
         Journal::class,
         Notification::class,
-        Post::class,
         Shout::class,
         Tag::class,
-        User::class]
+        User::class,
+        View::class
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
     // content actions...
@@ -27,10 +29,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun commentsDao() : CommentsDao
     abstract fun journalsDao() : JournalsDao
     abstract fun notificationsDao() : NotificationsDao
-    abstract fun postsDao() : PostsDao
     abstract fun shoutsDao() : ShoutsDao
     abstract fun tagsDao() : TagsDao
     abstract fun usersDao() : UsersDao
+    abstract fun viewsDao() : ViewsDao
 
     // debug queries
     abstract fun debuggingDao() : DebuggingDao

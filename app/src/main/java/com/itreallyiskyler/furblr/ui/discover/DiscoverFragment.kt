@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.ui.discover
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,8 +30,12 @@ class DiscoverFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        val viewContext : Context = this.requireContext()
+
         searchAdapter = DiscoverSearchHeaderAdapter()
-        discoverAdapter = DiscoverSectionAdapter(this.requireContext())
+        discoverAdapter = DiscoverSectionAdapter(
+            viewContext,
+            ContentManager.discoverVM.discoverDataSets)
         adapter = ConcatAdapter(searchAdapter, discoverAdapter)
         dashboardViewModel =
                 ViewModelProvider(this).get(DiscoverViewModel::class.java)

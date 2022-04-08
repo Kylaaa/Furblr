@@ -40,6 +40,7 @@
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_day_of_notifications.xml" value="0.17291666666666666" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_journal.xml" value="0.33" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_submission.xml" value="0.33" />
+        <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_unknown.xml" value="0.5" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_notification.xml" value="0.33" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_search_header.xml" value="0.2703804347826087" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_search_horizontal_list.xml" value="0.16822916666666668" />

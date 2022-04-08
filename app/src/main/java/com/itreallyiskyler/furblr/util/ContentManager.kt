@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.util
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
+import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
 import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
@@ -31,9 +32,9 @@ object ContentManager {
                 fetchSubmissions(0, 48, false))
 
             Promise.all(promises).then(fun(_ : Any?) {
-                val contentIds = db.contentFeedDao().getPageFromFeed(ContentFeedId.Home.id, 48, 0)
+                val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, 0)
                 val postIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
-                val journalIds = contentIds.filter { it.postKind == PostKind.Text.id }.map { it.postId }
+                val journalIds = contentIds.filter { it.postKind == PostKind.Journal.id }.map { it.postId }
 
                 val posts = ClobberHomePageImagesById(db, postIds)
                 val journals = ClobberHomePageTextsById(db, journalIds)
@@ -45,6 +46,35 @@ object ContentManager {
 
                 val unreadCount : Int = db.notificationsDao().getUnreadNotificationCount()
                 notesVM.updateUnreadNotifications(unreadCount)
+            }, fun(failureReason : Any?) {
+                homeVM.setPosts(listOf())
+                println(failureReason)
+            })
+        }
+        thread(start = true, name = "NonEssentialStartUpFetchThread") {
+            val promises = arrayOf(
+                fetchDiscovery()
+            )
+
+            Promise.all(promises).then(fun(_ : Any?) {
+                val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Discover.id), 48, 0)
+                val viewIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
+                val views = ClobberHomePageImagesById(db, viewIds)
+
+                // TODO : use category information rather than viewKind to parse into sections
+                val discoverContent = views.sortedByDescending { it.postDate }.toMutableList()
+                val submissions = discoverContent.filter { it -> it.postData.viewKind == PostKind.Image.id }
+                discoverVM.setNewSubmissionsData(submissions)
+
+                val writings = discoverContent.filter { it -> it.postData.viewKind == PostKind.Writing.id }
+                discoverVM.setNewMusicData(writings)
+
+                val musics = discoverContent.filter { it -> it.postData.viewKind == PostKind.Music.id }
+                discoverVM.setNewMusicData(musics)
+
+                /*val crafts = discoverContent.filter { it -> it.postData.viewKind == PostKind.Image.id }
+                discoverVM.setNewCraftingData(crafts)*/
+
             }, fun(failureReason : Any?) {
                 homeVM.setPosts(listOf())
                 println(failureReason)
@@ -63,6 +93,16 @@ object ContentManager {
         return FetchPageOfHome(db, page, pageSize, forceReload)
     }
 
+    fun fetchDiscovery() : Promise {
+        return FetchPageOfDiscovery(db, false)
+            .then(fun(pageData : Any?) {
+                // TODO : do a deep rename at some point
+                val pageDiscover = pageData as PageHome
+            }, fun(errData: Any?) {
+
+            })
+    }
+
     fun fetchLatestHomePagePost(post : IHomePageContent) {
         val postId = post.contentId
         if (post.postKind == PostKind.Image) {
@@ -77,7 +117,7 @@ object ContentManager {
                     })
             }
         }
-        else if (post.postKind == PostKind.Text) {
+        else if (post.postKind == PostKind.Journal) {
 
         }
     }

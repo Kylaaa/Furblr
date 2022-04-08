@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.persistence.dao
 
 import com.itreallyiskyler.furblr.enum.CommentLocationId
 import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.*
@@ -17,11 +18,11 @@ class HomePageDaoUnitTest : DBTestClass() {
         val usersDao = db.usersDao()
         usersDao.insertOrUpdateUsers(testUserA, testUserB)
 
-        val testPostA = Post(1, testUserA.username, "Title 1", "Description 1", "testUrl/123", 0, 0, 0, "General", "12341", false, DateFormatter.createDate(2000, 1, 1, 0, 0))
-        val testPostB = Post(2, testUserA.username, "Title 2", "Description 2", "testUrl/456", 0, 0, 0, "Mature", "12341", false, DateFormatter.createDate(2000, 2, 1, 0, 0))
-        val testPostC = Post(3, testUserB.username, "Title 1", "Description 1", "testUrl/789", 0, 0, 0, "Adult", "12341", false, DateFormatter.createDate(2000, 3, 1, 0, 0))
-        val postsDao = db.postsDao()
-        postsDao.insertOrUpdate(testPostA, testPostB, testPostC)
+        val testPostA = View(1, testUserA.username, "Title 1", "Description 1", DateFormatter.createDate(2000, 1, 1, 0, 0), "General", "testUrl/123", 0, 0, 0, "key123", false, PostKind.Image.id, null, null)
+        val testPostB = View(2, testUserA.username, "Title 2", "Description 2", DateFormatter.createDate(2000, 2, 1, 0, 0), "Mature", "testUrl/123", 0, 0, 0, "key456", false, PostKind.Image.id, null, null)
+        val testPostC = View(3, testUserB.username, "Title 3", "Description 3", DateFormatter.createDate(2000, 3, 1, 0, 0), "Adult", "testUrl/123", 0, 0, 0, "key789", false, PostKind.Image.id, null, null)
+        val viewsDao = db.viewsDao()
+        viewsDao.insertOrUpdate(testPostA, testPostB, testPostC)
 
         val feedIdA = FeedId.fromPost(ContentFeedId.Home, testPostA)
         val feedIdB = FeedId.fromPost(ContentFeedId.Search, testPostB)

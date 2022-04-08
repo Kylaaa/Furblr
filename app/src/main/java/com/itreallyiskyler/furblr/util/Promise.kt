@@ -1,7 +1,6 @@
 package com.itreallyiskyler.furblr.util
 
 import okhttp3.internal.toImmutableList
-import kotlin.concurrent.thread
 
 enum class PromiseState {
     Pending,

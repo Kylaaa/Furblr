@@ -7,31 +7,31 @@ import com.itreallyiskyler.furblr.networking.models.IPostComment
 import com.itreallyiskyler.furblr.networking.models.IPostTag
 import com.itreallyiskyler.furblr.networking.models.PagePostDetails
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.Comment
-import com.itreallyiskyler.furblr.persistence.entities.FeedId
-import com.itreallyiskyler.furblr.persistence.entities.Post
-import com.itreallyiskyler.furblr.persistence.entities.Tag
+import com.itreallyiskyler.furblr.persistence.entities.*
 
 fun PersistPagePostDetails (dbImpl: AppDatabase,
                             postId : Long,
                             pagePostDetails : PagePostDetails,
                             contentFeedId : ContentFeedId) {
-    // Add the post to the Posts table
-    val post = Post(
-        postId,
-        pagePostDetails.Artist,
-        pagePostDetails.Title,
-        pagePostDetails.Description,
-        pagePostDetails.ContentUrl,
-        pagePostDetails.TotalViews,
-        pagePostDetails.Comments.count().toLong(),
-        pagePostDetails.TotalFavorites,
-        pagePostDetails.Rating.toString(),
-        pagePostDetails.FavoriteKey,
-        pagePostDetails.HasFavorited,
-        pagePostDetails.UploadDate
+    // Add the view to the Views table
+    val view = View(
+        id = postId,
+        profileId = pagePostDetails.Artist,
+        title = pagePostDetails.Title,
+        description = pagePostDetails.Description,
+        date = pagePostDetails.UploadDate,
+        rating = pagePostDetails.Rating.toString(),
+        submissionImgUrl = pagePostDetails.ContentUrl,
+        viewCount = pagePostDetails.TotalViews,
+        commentCount = pagePostDetails.Comments.count().toLong(),
+        favoriteCount = pagePostDetails.TotalFavorites,
+        favKey = pagePostDetails.FavoriteKey,
+        hasFavorited = pagePostDetails.HasFavorited,
+        viewKind = PostKind.Image.id,
+        fileType = null,
+        filePreview = null
     )
-    dbImpl.postsDao().insertOrUpdate(post)
+    dbImpl.viewsDao().insertOrUpdate(view)
 
     // add each comment to the Comments table
     pagePostDetails.Comments.forEach { comment: IPostComment ->

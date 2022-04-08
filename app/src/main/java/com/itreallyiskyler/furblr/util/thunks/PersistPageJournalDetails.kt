@@ -37,6 +37,6 @@ fun PersistPageJournalDetails(dbImpl: AppDatabase,
     }
 
     // Add the post to the feed
-    val feedId = FeedId(ContentFeedId.Home.id, PostKind.Text.id, journalId, pageJournalDetails.UploadDate)
+    val feedId = FeedId(ContentFeedId.Home.id, PostKind.Journal.id, journalId, pageJournalDetails.UploadDate)
     dbImpl.contentFeedDao().insertOrUpdate(feedId)
 }

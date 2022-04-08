@@ -1,6 +1,5 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import com.itreallyiskyler.furblr.util.DateFormatter
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element

@@ -25,17 +25,11 @@ import com.itreallyiskyler.furblr.util.ContentManager
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
 
-class DiscoverSectionAdapter(private val viewContext : Context) :
+class DiscoverSectionAdapter(
+    private val viewContext : Context,
+    private val sectionData : List<Pair<Int, SynchronizedLiveDataList<IHomePageContent>>>) :
     RecyclerView.Adapter<DiscoverSectionAdapter.ViewHolder>()
 {
-    // TODO : replace this with content populated from the FA home page
-    val sectionData : List<Pair<String, SynchronizedLiveDataList<IHomePageContent>>> = listOf(
-        Pair(viewContext.getString(R.string.ui_discover_section_submissions), ContentManager.homeVM.posts),
-        Pair(viewContext.getString(R.string.ui_discover_section_writing), ContentManager.homeVM.posts),
-        Pair(viewContext.getString(R.string.ui_discover_section_music), ContentManager.homeVM.posts),
-        Pair(viewContext.getString(R.string.ui_discover_section_crafting), ContentManager.homeVM.posts),
-    )
-
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
     {
         lateinit var viewContext: Context
@@ -64,9 +58,9 @@ class DiscoverSectionAdapter(private val viewContext : Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data : Pair<String, SynchronizedLiveDataList<IHomePageContent>> = sectionData[position]
+        val data : Pair<Int, SynchronizedLiveDataList<IHomePageContent>> = sectionData[position]
         holder.viewContext = viewContext
-        holder.bind(data.first, data.second)
+        holder.bind(viewContext.getString(data.first), data.second)
     }
 
     override fun getItemCount(): Int {

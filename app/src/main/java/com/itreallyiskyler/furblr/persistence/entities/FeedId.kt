@@ -25,12 +25,12 @@ data class FeedId(
     var date : String
 ){
     companion object {
-        fun fromPost(feedId : ContentFeedId, parentPost : Post) : FeedId {
+        fun fromPost(feedId : ContentFeedId, parentPost : View) : FeedId {
             return FeedId(feedId.id, PostKind.Image.id, parentPost.id, parentPost.date);
         }
 
         fun fromJournal(parentJournal : Journal) : FeedId {
-            return FeedId(ContentFeedId.Home.id, PostKind.Text.id, parentJournal.id, parentJournal.date);
+            return FeedId(ContentFeedId.Home.id, PostKind.Journal.id, parentJournal.id, parentJournal.date);
         }
     }
 }

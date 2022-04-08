@@ -62,14 +62,14 @@ fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
                 dbImpl.usersDao().getExistingUsersForUsernames(userIdsToFetch.toList())
             missingUserIds.removeAll(users.map { it.username })
 
-            var missingPostIds = postIdsToFetch
-            val posts = dbImpl.postsDao().getExistingPostsWithIds(missingPostIds.toList())
-            missingPostIds.removeAll(posts.map { it.id })
+            var missingViewIds = postIdsToFetch
+            val views = dbImpl.viewsDao().getExistingViewsWithIds(missingViewIds.toList())
+            missingViewIds.removeAll(views.map { it.id })
 
             // fetch the creator information
             val fetchPromises = arrayOf<Promise>(
                 FetchUsersByUsernames(dbImpl, missingUserIds),
-                FetchContentForPostIds(dbImpl, missingPostIds, ContentFeedId.Other))
+                FetchContentForPostIds(dbImpl, missingViewIds, ContentFeedId.Other))
             return Promise.all(fetchPromises)
         }, fun(_: Any?) {
             println("Failed to fetch user info!")
