@@ -18,6 +18,7 @@ import kotlin.concurrent.thread
 
 object ContentManager {
     private lateinit var db : AppDatabase
+    private var didFetchStartupData : Boolean = false
     fun setDB(appDB : AppDatabase) { db = appDB }
 
     var discoverVM : DiscoverViewModel = DiscoverViewModel()
@@ -26,6 +27,12 @@ object ContentManager {
 
 
     fun fetchStartupData() {
+        // debounce multiple requests
+        if (didFetchStartupData) {
+            return
+        }
+        didFetchStartupData = true
+
         thread(start = true, name = "StartUpFetchThread") {
             val promises = arrayOf(
                 fetchNotifications(false),
@@ -48,7 +55,7 @@ object ContentManager {
                 notesVM.updateUnreadNotifications(unreadCount)
             }, fun(failureReason : Any?) {
                 homeVM.setPosts(listOf())
-                println(failureReason)
+                println("Startup fetched failed with : $failureReason")
             })
         }
         thread(start = true, name = "NonEssentialStartUpFetchThread") {
@@ -57,29 +64,25 @@ object ContentManager {
             )
 
             Promise.all(promises).then(fun(_ : Any?) {
-                val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Discover.id), 48, 0)
-                val viewIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
-                val views = ClobberHomePageImagesById(db, viewIds)
+                val images = getDiscoveryViewsOfKind(PostKind.Image)
+                discoverVM.setNewSubmissionsData(images)
 
-                // TODO : use category information rather than viewKind to parse into sections
-                val discoverContent = views.sortedByDescending { it.postDate }.toMutableList()
-                val submissions = discoverContent.filter { it -> it.postData.viewKind == PostKind.Image.id }
-                discoverVM.setNewSubmissionsData(submissions)
+                val writings = getDiscoveryViewsOfKind(PostKind.Writing)
+                discoverVM.setNewWritingData(writings)
 
-                val writings = discoverContent.filter { it -> it.postData.viewKind == PostKind.Writing.id }
-                discoverVM.setNewMusicData(writings)
-
-                val musics = discoverContent.filter { it -> it.postData.viewKind == PostKind.Music.id }
+                val musics = getDiscoveryViewsOfKind(PostKind.Music)
                 discoverVM.setNewMusicData(musics)
 
-                /*val crafts = discoverContent.filter { it -> it.postData.viewKind == PostKind.Image.id }
-                discoverVM.setNewCraftingData(crafts)*/
-
             }, fun(failureReason : Any?) {
-                homeVM.setPosts(listOf())
-                println(failureReason)
+                println("Nonessentials failed to fetch with error : $failureReason")
             })
         }
+    }
+    private fun getDiscoveryViewsOfKind(kind: PostKind) : MutableList<HomePageImagePost> {
+        val contentIds = db.contentFeedDao().getPageFromFeedOfKind(listOf(ContentFeedId.Discover.id), kind.id, 20, 0)
+        val viewIds = contentIds.map { it.postId }
+        val views = ClobberHomePageImagesById(db, viewIds)
+        return views.toMutableList()
     }
 
     // LOADING FUNCTIONS
@@ -95,12 +98,6 @@ object ContentManager {
 
     fun fetchDiscovery() : Promise {
         return FetchPageOfDiscovery(db, false)
-            .then(fun(pageData : Any?) {
-                // TODO : do a deep rename at some point
-                val pageDiscover = pageData as PageHome
-            }, fun(errData: Any?) {
-
-            })
     }
 
     fun fetchLatestHomePagePost(post : IHomePageContent) {

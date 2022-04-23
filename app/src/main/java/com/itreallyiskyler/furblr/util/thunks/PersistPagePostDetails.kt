@@ -16,20 +16,32 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
     // Add the view to the Views table
     val view = View(
         id = postId,
+
+        // Post Content
         profileId = pagePostDetails.Artist,
         title = pagePostDetails.Title,
         description = pagePostDetails.Description,
         date = pagePostDetails.UploadDate,
-        rating = pagePostDetails.Rating.toString(),
-        submissionImgUrl = pagePostDetails.ContentUrl,
+
+        // Content
+        contentUrl = pagePostDetails.ContentUrl,
+        submissionImgUrl = pagePostDetails.ThumbnailUrl,
+        submissionImgSizeWidth = pagePostDetails.Size.first,
+        submissionImgSizeHeight = pagePostDetails.Size.second,
+
+        // Counts and Favorites
         viewCount = pagePostDetails.TotalViews,
         commentCount = pagePostDetails.Comments.count().toLong(),
         favoriteCount = pagePostDetails.TotalFavorites,
         favKey = pagePostDetails.FavoriteKey,
         hasFavorited = pagePostDetails.HasFavorited,
-        viewKind = PostKind.Image.id,
-        fileType = null,
-        filePreview = null
+
+        // Metadata
+        rating = pagePostDetails.Rating.toString(),
+        kind = pagePostDetails.Kind.id,
+        category = pagePostDetails.Category.id,
+        theme = pagePostDetails.Theme.id,
+        gender = pagePostDetails.Gender.id
     )
     dbImpl.viewsDao().insertOrUpdate(view)
 
@@ -60,6 +72,6 @@ fun PersistPagePostDetails (dbImpl: AppDatabase,
     }
 
     // Add the post to the feed
-    val feedId = FeedId(contentFeedId.id, PostKind.Image.id, postId, pagePostDetails.UploadDate)
+    val feedId = FeedId(contentFeedId.id, pagePostDetails.Kind.id, postId, pagePostDetails.UploadDate)
     dbImpl.contentFeedDao().insertOrUpdate(feedId)
 }

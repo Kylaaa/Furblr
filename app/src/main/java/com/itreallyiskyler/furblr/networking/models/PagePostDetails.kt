@@ -1,13 +1,12 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import com.itreallyiskyler.furblr.enum.AgeRating
-import com.itreallyiskyler.furblr.enum.PostCategory
+import com.itreallyiskyler.furblr.enum.*
 import com.itreallyiskyler.furblr.util.DateFormatter
-import okhttp3.internal.toImmutableList
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.security.InvalidKeyException
 
 class PagePostDetails (private val httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody)
@@ -19,8 +18,17 @@ class PagePostDetails (private val httpBody : String) {
     val UploadDate : String = parseUploadDate(metadataContainer)
 
     // content
-    private var postContainer : Element = doc.getElementById("submissionImg")
-    val ContentUrl : String = parseContentUrl(postContainer)
+    val ThumbnailUrl : String? = parseThumbnailUrl(doc)
+
+    private var classificationContainer : Element = doc.getElementsByClass("info text")[0]
+    val Category : PostCategory = parseCategory(classificationContainer)
+    // val Species // DON'T BOTHER PARSING SPECIES, IT SEEMS LIKE A WORSE VERSION OF THE USER TAGS
+    val Gender : PostGender = parseGender(classificationContainer)
+    val Theme : PostTheme = parseTheme(classificationContainer)
+    val Size : Pair<Int, Int> = parseSize(classificationContainer)
+
+    val Kind : PostKind = PostCategory.getPostKind(Category)
+    val ContentUrl : String? = parseContentUrl(Kind, doc)
 
     // description
     private var descriptionContainer : Element = doc.getElementsByClass("submission-description")[0]
@@ -38,14 +46,6 @@ class PagePostDetails (private val httpBody : String) {
     val HasFavorited : Boolean = parseHasFavorited(favoriteContainer)
 
     // other stuff
-    // TODO : parse extra information, use Category to identify HOW to parse the rest of the page
-    /*val Category : PostCategory = PostCategory.Other
-    private var viewKind = PostCategory.getPostKind(Category)
-    val Species
-    val Gender
-    val Theme
-    val Size : Pair<Int, Int>*/
-
     private var allTagContainers : Elements = doc.getElementsByClass("tags")
     val Tags : Array<IPostTag> = parseTags(allTagContainers)
     private var allCommentContainers : Elements = doc.getElementsByClass("comment_container")
@@ -65,9 +65,15 @@ class PagePostDetails (private val httpBody : String) {
         val df = DateFormatter(dateText)
         return df.toYYYYMMDDhhmm()
     }
-    private fun parseContentUrl(element: Element) : String {
-        val imageSource  = element.attr("src")
-        return "https:$imageSource"
+    private fun parseThumbnailUrl(doc: Document) : String? {
+        try {
+            val element = doc.getElementById("submissionImg")
+            val imageSource  = element.attr("src")
+            return "https:$imageSource"
+        } catch (ex : Exception) {
+            println("Failed to parse thumbnail url : " + ex.message)
+        }
+        return null
     }
     private fun parseViews(element: Element) : Long {
         val viewsElement = element.getElementsByClass("views")[0]
@@ -79,10 +85,17 @@ class PagePostDetails (private val httpBody : String) {
     }
     private fun parseFavoriteKey(element:Element) : String {
         val buttons = element.getElementsByClass("button")
-        val favButtonIndex = if (buttons.size == 5) 0 else 1
+        val favButtonIndex = when (buttons.size) {
+            4 -> 0;
+            5 -> 0;
+            else -> 1;
+        }
         val linkElement = element.child(favButtonIndex)
         val href : String = linkElement.attr("href")
         val parts = href.split("=")
+        if (parts.size != 2){
+            println("Error waiting to happen with $Title")
+        }
         return parts[1]
     }
     private fun parseHasFavorited(element:Element) : Boolean {
@@ -116,9 +129,67 @@ class PagePostDetails (private val httpBody : String) {
                 comments.add(c)
             } catch (e : Exception)
             {
-                println(e)
+                println("Failed to parse comments in PagePostDetails : " + e.toString())
             }
         } }
         return comments.toTypedArray()
+    }
+    private fun parseCategory(element : Element) : PostCategory {
+        val categoryElement = element.getElementsByClass("category-name")[0]
+        return PostCategory.fromString(categoryElement.text())
+    }
+    private fun parseGender(element : Element) : PostGender {
+        val genderElement = element.child(2).child(1)
+        return PostGender.fromString(genderElement.text())
+    }
+    private fun parseTheme(element : Element) : PostTheme {
+        val themeElement = element.getElementsByClass("type-name")[0]
+        return PostTheme.fromString(themeElement.text())
+    }
+    private fun parseSize(element : Element) : Pair<Int, Int> {
+        val sizeContainer = element.children()[3]
+        val sizeSpan = sizeContainer.children()[1]
+        val sizes = sizeSpan.text().split(" x ")
+        return Pair<Int, Int>(sizes[0].toInt(), sizes[1].toInt())
+    }
+    private fun parseContentUrl(postKind : PostKind, document : Document) : String? {
+        var contentUrl : String? = null
+        when (postKind) {
+            PostKind.Downloadable -> {
+                // TODO - parse when we have an example
+                println("Unknown format")
+            }
+            PostKind.Flash -> {
+                val flashContainer : Element = doc.getElementById("flash_embed")
+                contentUrl = "https:" + flashContainer.attr("data")
+            }
+            PostKind.Image -> {
+                // the image _is_ the content
+            }
+            PostKind.Journal -> {
+                throw InvalidKeyException("Journals shouldn't be appearing on this page.")
+            }
+            PostKind.Music -> {
+                val audioContainer : Elements = doc.getElementsByClass("audio-player") //-container
+                contentUrl = "https:" + audioContainer.attr("src")
+            }
+            PostKind.Writing -> {
+                // there's no guarantee that there's a download link
+                try {
+                    val textContainer: Elements = doc.getElementsByClass("submission-writing")
+                    val downloadContainer : Element = textContainer[0].child(1).child(1)
+                    contentUrl = "https:" + downloadContainer.attr("href")
+                }
+                catch (ex : Exception)
+                {
+                    println("No download link to parse from writing page." + ex.message)
+                }
+            }
+            PostKind.Unknown -> {
+                println("Unknown post kind")
+            }
+        }
+
+        return contentUrl
     }
 }

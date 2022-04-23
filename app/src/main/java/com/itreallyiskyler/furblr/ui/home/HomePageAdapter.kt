@@ -100,7 +100,7 @@ class HomePageAdapter(
                     }
                     catch(ex : Exception)
                     {
-                        println(ex)
+                        println("Failed to bind tags to post. $ex")
                     }
                 }
 

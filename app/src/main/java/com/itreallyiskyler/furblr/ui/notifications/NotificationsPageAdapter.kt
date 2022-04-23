@@ -106,7 +106,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
                     notesLayout.addView(layout)
                 }
                 catch (ex : Exception) {
-                    println(ex)
+                    println("Failed to bind notification : $ex")
                 }
             }
         }
@@ -124,7 +124,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
             holder.bind(postDetails)
         }
         catch (ex : Exception) {
-            println("Threw an error binding the view")
+            println("Threw an error binding the view : $ex")
         }
     }
 

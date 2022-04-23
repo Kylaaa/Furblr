@@ -11,7 +11,6 @@ fun FetchContentForPostIds(dbImpl : AppDatabase,
                            fetchReason : ContentFeedId) : Promise {
 
     val fetchPromises: MutableList<Promise> = mutableListOf()
-
     postIds.forEach { postId: Long ->
         // pull down details for each of the missing posts
         fetchPromises.add(

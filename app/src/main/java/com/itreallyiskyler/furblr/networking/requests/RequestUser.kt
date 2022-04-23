@@ -15,12 +15,12 @@ class RequestUser(
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageUserDetails {
-            println("Successfully fetched : ${this.getUrl()}")
+            //println("Successfully fetched : ${this.getUrl()}")
             return PageUserDetails(httpBody as String);
         }
         var failure = fun(message : Any?) {
             // TODO("Not yet implemented")
-            println(message as Exception)
+            println("Failed to parse PageUserDetails : " + (message as Exception).toString())
         }
 
         return GET().then(success, failure)

@@ -16,7 +16,6 @@ class DiscoverViewModel : ViewModel() {
         Pair(R.string.ui_discover_section_submissions, SynchronizedLiveDataList<IHomePageContent>(listOf())),
         Pair(R.string.ui_discover_section_writing, SynchronizedLiveDataList<IHomePageContent>(listOf())),
         Pair(R.string.ui_discover_section_music, SynchronizedLiveDataList<IHomePageContent>(listOf())),
-        Pair(R.string.ui_discover_section_crafting, SynchronizedLiveDataList<IHomePageContent>(listOf())),
     )
     val searchResults = SynchronizedLiveDataList<IHomePageContent>(listOf())
 
@@ -44,8 +43,5 @@ class DiscoverViewModel : ViewModel() {
     }
     fun setNewMusicData(content : List<IHomePageContent>){
         setDataSetPosts(2, content)
-    }
-    fun setNewCraftingData(content : List<IHomePageContent>){
-        setDataSetPosts(3, content)
     }
 }

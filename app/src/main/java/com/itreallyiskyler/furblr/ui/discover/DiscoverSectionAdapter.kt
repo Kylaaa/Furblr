@@ -4,24 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.Spinner
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.chip.Chip
-import com.google.android.material.textfield.TextInputEditText
 import com.itreallyiskyler.furblr.R
-import com.itreallyiskyler.furblr.enum.SearchMode
-import com.itreallyiskyler.furblr.enum.SearchOrderBy
-import com.itreallyiskyler.furblr.enum.SearchOrderDirection
-import com.itreallyiskyler.furblr.enum.SearchRange
-import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.ui.home.HomePageAdapter
 import com.itreallyiskyler.furblr.ui.home.HomePageDisplayOptions
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
-import com.itreallyiskyler.furblr.util.ContentManager
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
 

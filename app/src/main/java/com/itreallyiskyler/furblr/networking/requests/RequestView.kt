@@ -17,11 +17,10 @@ class RequestView(
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PagePostDetails {
-            return PagePostDetails(httpBody as String);
+            return PagePostDetails(httpBody as String)
         }
         var failure = fun(message : Any?) {
-            TODO("Not yet implemented")
-            println(message as Exception);
+            println("Failed to fetch view details : " + (message as Exception).toString());
         }
 
         return GET().then(success, failure)

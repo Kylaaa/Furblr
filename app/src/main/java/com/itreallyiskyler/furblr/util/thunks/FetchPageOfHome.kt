@@ -52,8 +52,8 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
                 }, fun(_: Any?): Promise {
                     return Promise.resolve(pageSubmissions)
                 })
-        }, fun(_: Any?) {
-            println("Failed to fetch user info!")
+        }, fun(ex: Any?) {
+            println("Failed to fetch user info! $ex")
         })
 
         // next, also figure out which posts to fetch up-to-date information
@@ -81,7 +81,7 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
 
         }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
-            println(submissionsFetchFailureDetails)
+            println("Failed to fetch submissions : $submissionsFetchFailureDetails")
             return emptySet<Long>()
         })
 

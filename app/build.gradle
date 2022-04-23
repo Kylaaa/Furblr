@@ -18,6 +18,7 @@ android {
 
         buildConfigField "String", "BASE_URL", "\"https://www.furaffinity.net/\""
         buildConfigField "String", "ASSET_URL", "\"https://a.furaffinity.net/\""
+        buildConfigField "String", "DOWNLOAD_URL", "\"https://d.furaffinity.net/\""
     }
 
     buildTypes {
