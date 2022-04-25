@@ -21,7 +21,7 @@ fun FetchPageOfDiscovery(dbImpl : AppDatabase,
             creatorIds.addAll(content.RecentSubmissions.map { submission -> submission.creatorName })
             creatorIds.addAll(content.RecentWritings.map { writing -> writing.creatorName })
             creatorIds.addAll(content.RecentMusic.map { music -> music.creatorName })
-            creatorIds.addAll(content.RecentCrafting.map { craft -> craft.creatorName })
+            //creatorIds.addAll(content.RecentCrafting.map { craft -> craft.creatorName })
 
             // figure out which creators we don't have information for
             val users: List<User> =
@@ -49,7 +49,7 @@ fun FetchPageOfDiscovery(dbImpl : AppDatabase,
             viewIds.addAll(content.RecentSubmissions.map { it.postId })
             viewIds.addAll(content.RecentWritings.map { it.postId })
             viewIds.addAll(content.RecentMusic.map { it.postId })
-            viewIds.addAll(content.RecentCrafting.map { it.postId })
+            //viewIds.addAll(content.RecentCrafting.map { it.postId })
 
             // check if we have pulled down that content yet
             val existingViews = dbImpl.viewsDao()

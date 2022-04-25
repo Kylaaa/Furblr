@@ -8,6 +8,6 @@ data class HomePageImagePost(
     val postCreator : User,
     val postTags : List<Tag>,
     val postComments : List<Comment>,
-    override val postKind: PostKind = PostKind.Image,
+    override val postKind: PostKind = PostKind.fromId(postData.kind),
     override val contentId : Long = postData.id,
     override val postDate: String = postData.date) : IHomePageContent

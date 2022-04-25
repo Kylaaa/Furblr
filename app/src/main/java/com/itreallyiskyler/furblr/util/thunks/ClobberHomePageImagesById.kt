@@ -22,7 +22,7 @@ fun ClobberHomePageImagesById(dbImpl : AppDatabase,
     val postIds = views.map { post -> post.id }
     val creatorIds = views.map { post -> post.profileId }
     val tags = tagsDao.getTagsForPosts(postIds)
-    val postComments = commentsDao.getCommentsForPosts(postIds, CommentLocationId.Post.id)
+    val comments = commentsDao.getCommentsForPosts(postIds, CommentLocationId.Post.id)
     val users = usersDao.getExistingUsersForUsernames(creatorIds)
 
     // clobber together the data
@@ -31,7 +31,7 @@ fun ClobberHomePageImagesById(dbImpl : AppDatabase,
         run {
             val postCreator = users.find { user -> user.username == post.profileId }!!
             val postTags = tags.filter { tag -> tag.parentPostId == post.id }
-            val postComments = postComments.filter { comment -> comment.hostId == post.id }
+            val postComments = comments.filter { comment -> comment.hostId == post.id }
 
             val hpp = HomePageImagePost(post, postCreator, postTags, postComments)
             homePageImagePosts.add(hpp)

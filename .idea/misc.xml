@@ -22,7 +22,7 @@
         <entry key="..\:/git/furblr/app/src/main/res/drawable/ic_rounded_background.xml" value="0.15052083333333333" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/activity_loading.xml" value="0.16979166666666667" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/activity_login.xml" value="0.16979166666666667" />
-        <entry key="..\:/git/furblr/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/git/furblr/app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/fragment_dashboard.xml" value="0.19791666666666666" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/fragment_discover.xml" value="0.19791666666666666" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/fragment_home.xml" value="0.18206521739130435" />
@@ -38,7 +38,9 @@
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_content_tag.xml" value="0.33" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_dayOfNotifications.xml" value="0.1890625" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_day_of_notifications.xml" value="0.17291666666666666" />
+        <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_discover_preview.xml" value="0.14" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_journal.xml" value="0.33" />
+        <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_music.xml" value="0.25" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_submission.xml" value="0.33" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_home_unknown.xml" value="0.5" />
         <entry key="..\:/git/furblr/app/src/main/res/layout/listitem_notification.xml" value="0.33" />

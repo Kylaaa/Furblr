@@ -7,5 +7,11 @@ enum class PostKind(val id : Int) {
     Music(3),
     Flash(4),
     Downloadable(5),
-    Unknown(6)
+    Unknown(6);
+
+    companion object {
+        fun fromId(id : Int) : PostKind {
+            return PostKind.values().first { it.id == id }
+        }
+    }
 }

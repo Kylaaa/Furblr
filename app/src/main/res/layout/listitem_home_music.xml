@@ -9,7 +9,7 @@
     android:background="?attr/colorBackgroundFloating">
 
     <ImageView
-        android:id="@+id/imgPost"
+        android:id="@+id/imgPreview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -45,8 +45,8 @@
         android:fontFamily="sans-serif-black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/imgPost"
-        app:layout_constraintTop_toBottomOf="@+id/imgPost"
+        app:layout_constraintStart_toStartOf="@+id/imgPreview"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlay"
         tools:text="A Super Long Title For A Post" />
 
     <TextView
@@ -122,7 +122,7 @@
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toTopOf="@+id/layoutTags"
-        app:layout_constraintEnd_toEndOf="@+id/imgPost"
+        app:layout_constraintEnd_toEndOf="@+id/imgPreview"
         app:srcCompat="@drawable/ic_baseline_favorite_border_24" />
 
     <com.google.android.flexbox.FlexboxLayout
@@ -137,5 +137,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnPlay"
+        app:layout_constraintTop_toTopOf="@+id/btnPlay" />
+
+    <ImageButton
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgPreview"
+        app:srcCompat="@android:drawable/ic_media_play"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,7 +40,8 @@ object ContentManager {
 
             Promise.all(promises).then(fun(_ : Any?) {
                 val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, 0)
-                val postIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
+                // filter the ids based on what db table to read the data from
+                val postIds = contentIds.filter { it.postKind != PostKind.Journal.id }.map { it.postId }
                 val journalIds = contentIds.filter { it.postKind == PostKind.Journal.id }.map { it.postId }
 
                 val posts = ClobberHomePageImagesById(db, postIds)

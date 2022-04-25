@@ -38,7 +38,7 @@ class DiscoverFragment : Fragment() {
             ContentManager.discoverVM.discoverDataSets)
         adapter = ConcatAdapter(searchAdapter, discoverAdapter)
         dashboardViewModel =
-                ViewModelProvider(this).get(DiscoverViewModel::class.java)
+            ViewModelProvider(this).get(DiscoverViewModel::class.java)
 
         _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
         val root: View = binding.root

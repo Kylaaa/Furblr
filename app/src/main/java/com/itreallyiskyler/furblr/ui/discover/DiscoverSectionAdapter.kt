@@ -8,8 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
-import com.itreallyiskyler.furblr.ui.home.HomePageAdapter
-import com.itreallyiskyler.furblr.ui.home.HomePageDisplayOptions
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
@@ -29,14 +27,11 @@ class DiscoverSectionAdapter(
             val contentView : RecyclerView = view.findViewById(R.id.rvDiscoverView)
 
             txtTitle.text = sectionTitle
-            contentView.adapter = HomePageAdapter(
-                data.liveData.value?:listOf(),
-                HomePageDisplayOptions(showDetails = false, fitHorizontal = false)
-            )
             contentView.layoutManager = LinearLayoutManager(
                 viewContext,
                 LinearLayoutManager.HORIZONTAL,
                 false)
+            contentView.adapter = DiscoverPreviewAdapter(data.liveData.value?:listOf())
         }
     }
 

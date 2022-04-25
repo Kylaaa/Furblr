@@ -8,10 +8,10 @@ class PageHome (httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody)
     private var sections = doc.select("section")
 
-    val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(sections[0]);
-    val RecentWritings : Array<ThumbnailSubmission> = parseSubmissions(sections[1]);
-    val RecentMusic : Array<ThumbnailSubmission> = parseSubmissions(sections[2]);
-    val RecentCrafting : Array<ThumbnailSubmission> = parseSubmissions(sections[3]);
+    val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(sections[1]);
+    val RecentWritings : Array<ThumbnailSubmission> = parseSubmissions(sections[3]);
+    val RecentMusic : Array<ThumbnailSubmission> = parseSubmissions(sections[5]);
+    val RecentCrafting : Array<ThumbnailSubmission> = parseSubmissions(sections[7]);
 
     private fun parseSubmissions(section: Element) : Array<ThumbnailSubmission>
     {

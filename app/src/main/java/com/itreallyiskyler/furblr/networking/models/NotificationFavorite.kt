@@ -15,11 +15,18 @@ import java.util.*
             <strong>"Furblr - small facelift"</strong>
         </a>
         <span title="Oct 30th, 2021 04:49 AM" class="popup_date">2 months ago</span>
-        </li>
+    </li>
+
+    or
+
+    <li>
+        <input type="checkbox" name="favorites[]" value="1169562033" checked="checked">
+        The favorite this notification was for has since been removed by the user.
+    </li>
  */
 
 
-class NotificationFavorite (private val element : Element) : NotificationBase(element) {
+class NotificationFavorite(private val element : Element) : NotificationBase(element) {
     override var kind : NotificationId = NotificationId.Favorite
 
     override var sourceName : String = parseSender(element)

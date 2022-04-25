@@ -6,13 +6,14 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.lang.IndexOutOfBoundsException
 import java.security.InvalidKeyException
 
 class PagePostDetails (private val httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody)
 
     // metadata
-    private var metadataContainer : Element = doc.getElementsByClass("submission-id-container")[0]
+    private var metadataContainer : Element = getMetadataContainer(doc)
     val Title : String = parseTitle(metadataContainer)
     val Artist : String = parseArtist(metadataContainer)
     val UploadDate : String = parseUploadDate(metadataContainer)
@@ -51,6 +52,13 @@ class PagePostDetails (private val httpBody : String) {
     private var allCommentContainers : Elements = doc.getElementsByClass("comment_container")
     val Comments : Array<IPostComment> = parseComments(allCommentContainers)
 
+    private fun getMetadataContainer(document: Document) : Element {
+        val containers = doc.getElementsByClass("submission-id-container")
+        if (containers.size != 1) {
+            throw IndexOutOfBoundsException("Could not find the metadata container in $httpBody")
+        }
+        return containers[0]
+    }
     private fun parseTitle(element : Element) : String {
         val titleElement = element.getElementsByClass("submission-title")[0]
         return titleElement.child(0).child(0).text()
@@ -85,12 +93,7 @@ class PagePostDetails (private val httpBody : String) {
     }
     private fun parseFavoriteKey(element:Element) : String {
         val buttons = element.getElementsByClass("button")
-        val favButtonIndex = when (buttons.size) {
-            4 -> 0;
-            5 -> 0;
-            else -> 1;
-        }
-        val linkElement = element.child(favButtonIndex)
+        var linkElement : Element = buttons.filter { it -> it.attr("href").startsWith("/fav/") }[0]
         val href : String = linkElement.attr("href")
         val parts = href.split("=")
         if (parts.size != 2){
@@ -170,7 +173,7 @@ class PagePostDetails (private val httpBody : String) {
                 throw InvalidKeyException("Journals shouldn't be appearing on this page.")
             }
             PostKind.Music -> {
-                val audioContainer : Elements = doc.getElementsByClass("audio-player") //-container
+                val audioContainer : Element = doc.getElementsByClass("audio-player")[0] //-container
                 contentUrl = "https:" + audioContainer.attr("src")
             }
             PostKind.Writing -> {
@@ -182,7 +185,7 @@ class PagePostDetails (private val httpBody : String) {
                 }
                 catch (ex : Exception)
                 {
-                    println("No download link to parse from writing page." + ex.message)
+                    //println("No download link to parse from writing page." + ex.message)
                 }
             }
             PostKind.Unknown -> {

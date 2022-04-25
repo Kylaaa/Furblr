@@ -108,6 +108,7 @@ enum class PostCategory(val id:Int) {
                 Pair("Scraps", PostCategory.Scraps),
                 Pair("Wallpaper", PostCategory.Wallpaper),
                 Pair("YCH / Sale", PostCategory.YCHSale),
+                Pair("Flash", PostCategory.Flash),
                 Pair("Other", PostCategory.Other),
             )
             if (!mapping.containsKey(className))
