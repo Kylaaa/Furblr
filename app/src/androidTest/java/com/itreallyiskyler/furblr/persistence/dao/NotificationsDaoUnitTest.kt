@@ -1,17 +1,11 @@
 package com.itreallyiskyler.furblr
 
-import com.itreallyiskyler.furblr.enum.AgeRating
-import com.itreallyiskyler.furblr.enum.ContentFeedId
-import com.itreallyiskyler.furblr.enum.NotificationId
-import com.itreallyiskyler.furblr.enum.PostKind
+import com.itreallyiskyler.furblr.enum.*
 import com.itreallyiskyler.furblr.persistence.DBTestClass
-import com.itreallyiskyler.furblr.persistence.dao.ContentFeedDao
 import com.itreallyiskyler.furblr.persistence.dao.NotificationsDao
-import com.itreallyiskyler.furblr.persistence.dao.UsersDao
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
-import com.itreallyiskyler.furblr.persistence.entities.FeedId
 import com.itreallyiskyler.furblr.persistence.entities.Notification
-import com.itreallyiskyler.furblr.persistence.entities.Post
+import com.itreallyiskyler.furblr.persistence.entities.View
 import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.util.DateFormatter
 import org.junit.Assert
@@ -25,7 +19,7 @@ class NotificationsDaoUnitTest : DBTestClass() {
         val notificationsDao : NotificationsDao = db.notificationsDao()
 
         val testUserA = User("TestUserA", "a", 123, "foo", DateFormatter.createDate(2000, 1, 1, 1, 1))
-        val testPostA = Post(12345, testUserA.username, "Test Post A", "this is a test", "23456", 0, 1, 1, AgeRating.Adult.name, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1))
+        val testPostA = View(12345, testUserA.username, "Test Post A", "this is a test", "23456", "https://test.com/submission.jpg", 1600, 1200, 0, 1, 1, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1), AgeRating.Adult.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.Any.id)
 
         // insert notifications
         val testNotificationA = Notification(1, NotificationId.Favorite.id, testPostA.id, testUserA.username, DateFormatter.createDate(2000, 1, 1, 1, 1), false)
@@ -44,7 +38,7 @@ class NotificationsDaoUnitTest : DBTestClass() {
         val notificationsDao : NotificationsDao = db.notificationsDao()
 
         val testUserA = User("TestUserA", "a", 123, "foo", DateFormatter.createDate(2000, 1, 1, 1, 1))
-        val testPostA = Post(12345, testUserA.username, "Test Post A", "this is a test", "23456", 0, 1, 1, AgeRating.Adult.name, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1))
+        val testPostA = View(12345, testUserA.username, "Test Post A", "this is a test", "23456", "https://test.com/submission.jpg", 1600, 1200, 0, 1, 1, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1), AgeRating.Adult.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.OtherNotSpecified.id)
 
         // insert notifications
         val testNotificationA = Notification(0, NotificationId.Favorite.id, testPostA.id, testUserA.username, DateFormatter.createDate(2000, 1, 1, 1, 1), true)
@@ -77,7 +71,7 @@ class NotificationsDaoUnitTest : DBTestClass() {
         val notificationsDao : NotificationsDao = db.notificationsDao()
 
         val testUserA = User("TestUserA", "a", 123, "foo", DateFormatter.createDate(2000, 1, 1, 1, 1))
-        val testPostA = Post(12345, testUserA.username, "Test Post A", "this is a test", "23456", 0, 1, 1, AgeRating.Adult.name, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1))
+        val testPostA = View(12345, testUserA.username, "Test Post A", "this is a test", "23456", "https://test.com/submission.jpg", 1600, 1200, 0, 1, 1, "98765", false, DateFormatter.createDate(2001, 1, 1, 1, 1), AgeRating.Adult.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.Any.id)
 
         // insert notifications
         val testNotificationA = Notification(1, NotificationId.Favorite.id, testPostA.id, testUserA.username, DateFormatter.createDate(2000, 1, 1, 1, 1), false)

@@ -7,6 +7,6 @@ import org.junit.Test
 class PostUnitTest {
     @Test
     fun tableNameMatchesEntity() {
-        Assert.assertEquals(Post::class.java.simpleName.lowercase(), POSTS_TABLE_NAME)
+        Assert.assertEquals(View::class.java.simpleName.lowercase(), VIEW_TABLE_NAME)
     }
 }
