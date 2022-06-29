@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.persistence.entities.*
 
 @Dao
@@ -12,11 +13,19 @@ interface ContentFeedDao {
     fun insertOrUpdate(vararg ids : FeedId)
 
     @Query("SELECT * FROM $FEED_TABLE_NAME " +
-            "WHERE $FEED_COLUMN_NAME_FEED_ID = :contentFeedId " +
+            "WHERE $FEED_COLUMN_NAME_FEED_ID IN (:contentFeedIds) " +
             "ORDER BY datetime($FEED_COLUMN_NAME_DATE) DESC " +
             "LIMIT :pageSize " +
             "OFFSET :offset")
-    fun getPageFromFeed(contentFeedId: Int, pageSize: Int = 48, offset: Int = 0) : List<FeedId>
+    fun getPageFromFeed(contentFeedIds: List<Int>, pageSize: Int = 48, offset: Int = 0) : List<FeedId>
+
+    @Query("SELECT * FROM $FEED_TABLE_NAME " +
+            "WHERE $FEED_COLUMN_NAME_FEED_ID IN (:contentFeedIds) " +
+            "AND $FEED_COLUMN_NAME_POST_KIND = :kind " +
+            "ORDER BY datetime($FEED_COLUMN_NAME_DATE) DESC " +
+            "LIMIT :pageSize " +
+            "OFFSET :offset")
+    fun getPageFromFeedOfKind(contentFeedIds: List<Int>, kind:Int, pageSize: Int = 48, offset: Int = 0) : List<FeedId>
 
     @Query("SELECT * FROM $FEED_TABLE_NAME " +
             "ORDER BY datetime($FEED_COLUMN_NAME_DATE) DESC")

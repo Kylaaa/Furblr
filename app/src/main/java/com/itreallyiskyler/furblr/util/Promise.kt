@@ -1,7 +1,6 @@
 package com.itreallyiskyler.furblr.util
 
 import okhttp3.internal.toImmutableList
-import kotlin.concurrent.thread
 
 enum class PromiseState {
     Pending,
@@ -78,7 +77,14 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                 result = action(futurePromiseValue)
             }
             catch (ex : Exception) {
-                rejectorFunc(ex)
+                println("Promise rejected with exception : $ex")
+                ex.stackTrace.forEach { stackTraceElement -> println(stackTraceElement.toString()) }
+                try {
+                    rejectorFunc(ex)
+                }
+                catch(rejectorEx : Exception) {
+                    println("Failed to reject a promise, as the rejector also threw an exception : $rejectorEx")
+                }
                 return
             }
 
@@ -153,7 +159,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                         }
                         catch (ex : Exception)
                         {
-                            println(ex)
+                            println("Promise rejected with exception : $ex")
                             rejectorFunc(ex)
                         }
                     }

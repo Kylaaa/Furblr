@@ -1,38 +1,48 @@
 package com.itreallyiskyler.furblr.util
 
-import android.app.Notification
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
+import com.itreallyiskyler.furblr.networking.models.PageHome
+import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
 import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
 import com.itreallyiskyler.furblr.networking.requests.RequestUnfavoritePost
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.ui.discover.DiscoverViewModel
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.ui.home.HomeViewModel
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
-import com.itreallyiskyler.furblr.ui.notifications.NotificationsPagePost
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
 
 object ContentManager {
     private lateinit var db : AppDatabase
+    private var didFetchStartupData : Boolean = false
     fun setDB(appDB : AppDatabase) { db = appDB }
 
+    var discoverVM : DiscoverViewModel = DiscoverViewModel()
     var homeVM : HomeViewModel = HomeViewModel()
     var notesVM : NotificationsViewModel = NotificationsViewModel()
 
 
     fun fetchStartupData() {
+        // debounce multiple requests
+        if (didFetchStartupData) {
+            return
+        }
+        didFetchStartupData = true
+
         thread(start = true, name = "StartUpFetchThread") {
             val promises = arrayOf(
                 fetchNotifications(false),
                 fetchSubmissions(0, 48, false))
 
             Promise.all(promises).then(fun(_ : Any?) {
-                val contentIds = db.contentFeedDao().getPageFromFeed(ContentFeedId.Home.id, 48, 0)
-                val postIds = contentIds.filter { it.postKind == PostKind.Image.id }.map { it.postId }
-                val journalIds = contentIds.filter { it.postKind == PostKind.Text.id }.map { it.postId }
+                val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, 0)
+                // filter the ids based on what db table to read the data from
+                val postIds = contentIds.filter { it.postKind != PostKind.Journal.id }.map { it.postId }
+                val journalIds = contentIds.filter { it.postKind == PostKind.Journal.id }.map { it.postId }
 
                 val posts = ClobberHomePageImagesById(db, postIds)
                 val journals = ClobberHomePageTextsById(db, journalIds)
@@ -46,9 +56,34 @@ object ContentManager {
                 notesVM.updateUnreadNotifications(unreadCount)
             }, fun(failureReason : Any?) {
                 homeVM.setPosts(listOf())
-                println(failureReason)
+                println("Startup fetched failed with : $failureReason")
             })
         }
+        thread(start = true, name = "NonEssentialStartUpFetchThread") {
+            val promises = arrayOf(
+                fetchDiscovery()
+            )
+
+            Promise.all(promises).then(fun(_ : Any?) {
+                val images = getDiscoveryViewsOfKind(PostKind.Image)
+                discoverVM.setNewSubmissionsData(images)
+
+                val writings = getDiscoveryViewsOfKind(PostKind.Writing)
+                discoverVM.setNewWritingData(writings)
+
+                val musics = getDiscoveryViewsOfKind(PostKind.Music)
+                discoverVM.setNewMusicData(musics)
+
+            }, fun(failureReason : Any?) {
+                println("Nonessentials failed to fetch with error : $failureReason")
+            })
+        }
+    }
+    private fun getDiscoveryViewsOfKind(kind: PostKind) : MutableList<HomePageImagePost> {
+        val contentIds = db.contentFeedDao().getPageFromFeedOfKind(listOf(ContentFeedId.Discover.id), kind.id, 20, 0)
+        val viewIds = contentIds.map { it.postId }
+        val views = ClobberHomePageImagesById(db, viewIds)
+        return views.toMutableList()
     }
 
     // LOADING FUNCTIONS
@@ -60,6 +95,10 @@ object ContentManager {
                          pageSize : Int = 48,
                          forceReload : Boolean = false) : Promise {
         return FetchPageOfHome(db, page, pageSize, forceReload)
+    }
+
+    fun fetchDiscovery() : Promise {
+        return FetchPageOfDiscovery(db, false)
     }
 
     fun fetchLatestHomePagePost(post : IHomePageContent) {
@@ -76,7 +115,7 @@ object ContentManager {
                     })
             }
         }
-        else if (post.postKind == PostKind.Text) {
+        else if (post.postKind == PostKind.Journal) {
 
         }
     }
@@ -102,5 +141,9 @@ object ContentManager {
     fun markNotificationsAsRead() {
         db.notificationsDao().markNotificationAsSeen()
         notesVM.updateUnreadNotifications(0)
+    }
+
+    fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
+        return FetchPageOfSearch(db, keyword, options)
     }
 }

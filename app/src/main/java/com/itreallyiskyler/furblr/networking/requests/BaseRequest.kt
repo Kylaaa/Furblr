@@ -11,7 +11,6 @@ import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
 import java.io.IOException
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
@@ -89,10 +88,12 @@ open class BaseRequest() : IUrlFetcher  {
 
                 RequestClient.newCall(request.build()).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
+                        //println("Failed to fetch " + _url + " with error : " + e.toString())
                         reject(e)
                     }
 
                     override fun onResponse(call: Call, response: Response) {
+                        //println("Resolved " + _url + " successfully")
                         val httpBody: ResponseBody? = response.body
                         if (httpBody != null) {
                             resolve(httpBody.string())

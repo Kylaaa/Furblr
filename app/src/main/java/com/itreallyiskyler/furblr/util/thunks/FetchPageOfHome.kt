@@ -8,7 +8,6 @@ import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.FeedId
 import com.itreallyiskyler.furblr.persistence.entities.User
-import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.util.Promise
 import okhttp3.internal.toImmutableList
 
@@ -20,7 +19,7 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
 
     val foundHomePageIds: MutableList<Long> = mutableListOf()
     val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long? {
-        val posts = dbImpl.contentFeedDao().getPageFromFeed(ContentFeedId.Home.id, pageSize, page * pageSize)
+        val posts = dbImpl.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), pageSize, page * pageSize)
         val lastItem : FeedId? = posts.findLast { feedId -> feedId.postKind == PostKind.Image.id }
         return lastItem?.postId
     }
@@ -53,8 +52,8 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
                 }, fun(_: Any?): Promise {
                     return Promise.resolve(pageSubmissions)
                 })
-        }, fun(_: Any?) {
-            println("Failed to fetch user info!")
+        }, fun(ex: Any?) {
+            println("Failed to fetch user info! $ex")
         })
 
         // next, also figure out which posts to fetch up-to-date information
@@ -73,8 +72,8 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
 
             // check if we have pulled down that content yet
             val missingIds = foundHomePageIds.toMutableSet()
-            val existingPosts = dbImpl.postsDao()
-                .getExistingPostsWithIds(foundHomePageIds.toImmutableList())
+            val existingPosts = dbImpl.viewsDao()
+                .getExistingViewsWithIds(foundHomePageIds.toImmutableList())
             existingPosts.forEach { post -> missingIds.remove(post.id) }
 
             // return the set of missing IDs so that we can fetch them in the next step
@@ -82,7 +81,7 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
 
         }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
-            println(submissionsFetchFailureDetails)
+            println("Failed to fetch submissions : $submissionsFetchFailureDetails")
             return emptySet<Long>()
         })
 

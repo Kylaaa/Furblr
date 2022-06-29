@@ -12,7 +12,7 @@ class RequestHome : IPageParser<PageHome>,
             return PageHome(httpBody as String);
         }
         var failure = fun(message : Any?) {
-            TODO("Not yet implemented")
+            println("Failed to fetch and parse the home page : $message")
         }
 
         return GET().then(success, failure)

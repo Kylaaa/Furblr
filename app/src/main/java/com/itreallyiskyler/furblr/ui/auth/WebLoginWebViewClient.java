@@ -90,7 +90,7 @@ public class WebLoginWebViewClient extends WebViewClient {
     private Boolean removeExtraLoginPageElements(WebView view)
     {
         // remove elements from the view so the user can't navigate places
-        String js = getRemoveElementJS();
+        /*String js = getRemoveElementJS();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             view.evaluateJavascript(js, new ValueCallback<String>() {
                 @Override
@@ -101,7 +101,7 @@ public class WebLoginWebViewClient extends WebViewClient {
         } else {
             String legacyJs = "javascript:" + js;
             view.loadUrl(legacyJs);
-        }
+        }*/
 
         // no-opt
         return false;

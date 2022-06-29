@@ -5,7 +5,9 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -13,24 +15,35 @@ import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
-import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 
-class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
+class HomePageAdapter(
+    initialDataSet : List<IHomePageContent> = listOf()
+) :
     RecyclerView.Adapter<HomePageAdapter.ViewHolder>()
 {
     private var dataSet : List<IHomePageContent> = initialDataSet
 
-    class ViewHolder(val view: View, val viewContext : Context) : RecyclerView.ViewHolder(view)
+    private val LAYOUT_UNKNOWN : Int = 0
+    private val LAYOUT_IMAGE : Int = 1
+    private val LAYOUT_JOURNAL : Int = 2
+    private val LAYOUT_MUSIC : Int = 3
+    private val LAYOUT_WRITING : Int = 4
+
+    class ViewHolder(
+        val view: View,
+        private val viewContext : Context) : RecyclerView.ViewHolder(view)
     {
         private var currentPost : IHomePageContent? = null
         private val loader = Picasso.get()
 
-        private fun bindImagePost(view:View, imagePostDetails : HomePageImagePost) {
+        private fun bindImagePost(view : View, content : IHomePageContent) {
+            val imagePostDetails = content as HomePageImagePost
+
             // Define UI Element bindings here
             val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
             val titleTextView : TextView = view.findViewById(R.id.txtTitle)
@@ -44,6 +57,9 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             val imgViewsIcon : ImageView = view.findViewById(R.id.imgViewsIcon)
             val layoutTags : FlexboxLayout = view.findViewById(R.id.layoutTags)
 
+            val postUrl = imagePostDetails.postData.submissionImgUrl
+            loader.load(postUrl).into(postImageView)
+
             creatorTextView.text = imagePostDetails.postCreator.username
             titleTextView.text = imagePostDetails.postData.title
             viewsTextView.text = imagePostDetails.postData.viewCount.toString()
@@ -55,9 +71,6 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             } else {
                 imgFavesIcon.setImageResource(R.drawable.ic_baseline_favorite_border_24)
             }
-
-            val postUrl = imagePostDetails.postData.contentsId
-            loader.load(postUrl).into(postImageView)
 
             val avatarUrl = RequestAvatarUrl(
                 imagePostDetails.postCreator.username,
@@ -78,7 +91,7 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
                 }
                 catch(ex : Exception)
                 {
-                    println(ex)
+                    println("Failed to bind tags to post. $ex")
                 }
             }
 
@@ -101,7 +114,9 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             }
         }
 
-        private fun bindTextPost(view:View, textPostDetails : HomePageTextPost) {
+        private fun bindTextPost(view : View, content : IHomePageContent) {
+            val textPostDetails = content as HomePageTextPost
+
             // Define UI Element bindings here
             val creatorTextView : TextView = view.findViewById(R.id.txtCreator)
             val titleTextView : TextView = view.findViewById(R.id.txtTitle)
@@ -120,23 +135,58 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
             loader.load(avatarUrl).into(avatarImageView)
         }
 
+        private fun bindMusicPost(view : View, content : IHomePageContent) {
+            bindImagePost(view, content)
+
+            // also bind the music player stuff
+            val btnPlay : ImageButton = view.findViewById(R.id.btnPlay)
+            btnPlay.setOnClickListener {
+                // TODO : Play some music
+                println("Gotta play some music!")
+            }
+
+            //val seekBar : SeekBar = view.findViewById(R.id.seekBar)
+            //seekBar.setOnSeekBarChangeListener
+        }
+
+        private fun bindWritingPost(view : View, content: IHomePageContent) {
+            // TODO : HANDLE AN OPTIONAL
+            bindImagePost(view, content)
+        }
+
+        private fun bindUnknown(view : View, content : IHomePageContent) {
+            val titleTextView : TextView = view.findViewById(R.id.txtTitle)
+            titleTextView.text = "Unsupported : " + content.contentId.toString()
+        }
+
         // bind data with the UI Elements
         fun bind(postDetails : IHomePageContent) {
             currentPost = postDetails
 
-            if (postDetails.postKind == PostKind.Image) { bindImagePost(view, postDetails as HomePageImagePost) }
-            else if (postDetails.postKind == PostKind.Text) { bindTextPost(view, postDetails as HomePageTextPost) }
+            val kindMap : Map<PostKind, (View, IHomePageContent)->Unit> = mapOf(
+                Pair(PostKind.Image, ::bindImagePost),
+                Pair(PostKind.Journal, ::bindTextPost),
+                Pair(PostKind.Music, ::bindMusicPost),
+                Pair(PostKind.Writing, ::bindWritingPost),
+            )
+
+            if (kindMap.containsKey(postDetails.postKind)) {
+                kindMap.getValue(postDetails.postKind)(view, postDetails)
+            }
             else {
-                throw Exception("Unsupported PostKind : ${postDetails.postKind}")
+                bindUnknown(view, postDetails)
+                //throw Exception("Unsupported PostKind : ${postDetails.postKind}")
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var layoutId : Int = -1
-        when (viewType) {
-            1 -> layoutId = R.layout.listitem_home_submission
-            2 -> layoutId = R.layout.listitem_home_journal
+        var layoutId : Int = when (viewType) {
+            LAYOUT_IMAGE -> R.layout.listitem_home_submission
+            LAYOUT_JOURNAL -> R.layout.listitem_home_journal
+            LAYOUT_MUSIC -> R.layout.listitem_home_music
+            LAYOUT_WRITING -> R.layout.listitem_home_submission
+            LAYOUT_UNKNOWN -> R.layout.listitem_home_unknown
             else -> throw IllegalArgumentException("Cannot create ViewHolder of type : $viewType");
         }
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
@@ -154,14 +204,24 @@ class HomePageAdapter(initialDataSet : List<IHomePageContent> = listOf()) :
 
     override fun getItemViewType(position: Int): Int {
         val itemAtIndex : IHomePageContent = dataSet[position]
-        if (itemAtIndex.postKind == PostKind.Image) { return 1 }
-        else if (itemAtIndex.postKind == PostKind.Text) { return 2 }
+        val kindMap : Map<PostKind, Int> = mapOf(
+            Pair(PostKind.Image, LAYOUT_IMAGE),
+            Pair(PostKind.Journal, LAYOUT_JOURNAL),
+            Pair(PostKind.Writing, LAYOUT_WRITING),
+            Pair(PostKind.Music, LAYOUT_MUSIC),
+        )
+
+        if (kindMap.containsKey(itemAtIndex.postKind)) {
+            return kindMap.getValue(itemAtIndex.postKind)
+        }
+        else {
+            return LAYOUT_UNKNOWN
+        }
 
         return super.getItemViewType(position)
     }
 
-    fun updateData(newDataSet : List<IHomePageContent> = listOf())
-    {
+    fun updateData(newDataSet : List<IHomePageContent> = listOf()) {
         dataSet = newDataSet
         notifyDataSetChanged()
     }

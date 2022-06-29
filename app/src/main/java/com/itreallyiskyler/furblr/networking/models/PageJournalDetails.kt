@@ -49,7 +49,7 @@ class PageJournalDetails (httpBody : String) {
                 comments.add(c)
             } catch (e : Exception)
             {
-                println(e)
+                println("Failed to parse comments : " + e.toString())
             }
         } }
         return comments.toTypedArray()

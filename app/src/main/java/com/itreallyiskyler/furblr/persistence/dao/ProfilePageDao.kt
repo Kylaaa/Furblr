@@ -12,8 +12,8 @@ interface ProfilePageDao {
             "WHERE $USERS_COLUMN_NAME_ID LIKE :username ")
     fun getProfileForUser(username: String) : User
 
-    @Query("SELECT * FROM $POSTS_TABLE_NAME " +
-            "WHERE $POSTS_COLUMN_NAME_PROFILE_ID LIKE :username " +
-            "ORDER BY datetime($POSTS_COLUMN_NAME_DATE) DESC")
-    fun getPostsByUser(username : String) : List<Post>
+    @Query("SELECT * FROM $VIEW_TABLE_NAME " +
+            "WHERE $VIEW_COLUMN_NAME_PROFILE_ID LIKE :username " +
+            "ORDER BY datetime($VIEW_COLUMN_NAME_DATE) DESC")
+    fun getPostsByUser(username : String) : List<View>
 }

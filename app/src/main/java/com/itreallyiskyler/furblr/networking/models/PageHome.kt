@@ -1,33 +1,21 @@
 package com.itreallyiskyler.furblr.networking.models
 
-class PageHome (private val httpBody : String) {
-    val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(httpBody);
-    val RecentWritings : Array<ThumbnailWriting> = parseWriting(httpBody);
-    val RecentMusic : Array<ThumbnailAudio> = parseAudio(httpBody);
-    val RecentCrafting : Array<ThumbnailCrafting> = parseCrafting(httpBody);
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 
-    fun isLoginPage () : Boolean {
-        return httpBody.contains("Please log in!")
-    }
+class PageHome (httpBody : String) {
+    private var doc : Document = Jsoup.parse(httpBody)
+    private var sections = doc.select("section")
 
-    private fun parseSubmissions(httpBody: String) : Array<ThumbnailSubmission>
+    val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(sections[1]);
+    val RecentWritings : Array<ThumbnailSubmission> = parseSubmissions(sections[3]);
+    val RecentMusic : Array<ThumbnailSubmission> = parseSubmissions(sections[5]);
+    val RecentCrafting : Array<ThumbnailSubmission> = parseSubmissions(sections[7]);
+
+    private fun parseSubmissions(section: Element) : Array<ThumbnailSubmission>
     {
-        return emptyArray<ThumbnailSubmission>();
+        var elements = section.select("figure")
+        return elements.map { ThumbnailSubmission(it) }.toTypedArray()
     }
-
-    private fun parseWriting(httpBody: String) : Array<ThumbnailWriting>
-    {
-        return emptyArray<ThumbnailWriting>();
-    }
-
-    private fun parseAudio(httpBody: String) : Array<ThumbnailAudio>
-    {
-        return emptyArray<ThumbnailAudio>();
-    }
-
-    private fun parseCrafting(httpBody: String) : Array<ThumbnailCrafting>
-    {
-        return emptyArray<ThumbnailCrafting>();
-    }
-
 }

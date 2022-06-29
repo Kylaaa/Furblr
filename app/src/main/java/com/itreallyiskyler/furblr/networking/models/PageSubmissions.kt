@@ -1,6 +1,5 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import okhttp3.internal.toImmutableList
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -11,10 +10,8 @@ class PageSubmissions (httpBody : String) {
 
     val Submissions : Array<ThumbnailSubmission> = parseSubmissions(AllSubmissionElements);
 
-    private fun parseSubmissions(submissionElements: Elements) : Array<ThumbnailSubmission>
+    private fun parseSubmissions(elements: Elements) : Array<ThumbnailSubmission>
     {
-        var submissions : MutableList<ThumbnailSubmission> = mutableListOf()
-        submissionElements.forEach { element -> submissions.add(ThumbnailSubmission(element))}
-        return submissions.toImmutableList().toTypedArray();
+        return elements.map { ThumbnailSubmission(it) }.toTypedArray()
     }
 }

@@ -30,8 +30,6 @@ import org.jsoup.nodes.Element
             </label>
         </figcaption>
     </figure>
-
-
  */
 
 class ThumbnailSubmission(elementData: Element) : IThumbnail {

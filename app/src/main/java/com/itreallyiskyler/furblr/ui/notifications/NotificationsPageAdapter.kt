@@ -12,19 +12,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.NotificationId
-import com.itreallyiskyler.furblr.enum.PostKind
-import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
 import com.itreallyiskyler.furblr.persistence.entities.Notification
-import com.itreallyiskyler.furblr.persistence.entities.Post
-import com.itreallyiskyler.furblr.util.ContentManager
 import com.itreallyiskyler.furblr.util.DateFormatter
 import com.squareup.picasso.Picasso
-import org.w3c.dom.Text
 import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.lang.IndexOutOfBoundsException
 
 
@@ -39,7 +32,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
         private var currentNotification : NotificationsPagePost? = null
         private val loader = Picasso.get()
 
-        private fun inflateNotification(targetView : View, note : Notification, originalPost : Post? = null) {
+        private fun inflateNotification(targetView : View, note : Notification, originalPost : com.itreallyiskyler.furblr.persistence.entities.View? = null) {
             // Define UI Element bindings here
             val contentTextView : TextView = targetView.findViewById(R.id.txtNotificationContent)
             val postImageView : ImageView = targetView.findViewById(R.id.imgNotificationPost)
@@ -78,7 +71,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
 
             if (originalPost != null) {
                 postImageView.visibility = View.VISIBLE
-                val postUrl = originalPost?.contentsId
+                val postUrl = originalPost?.submissionImgUrl
                 loader.load(postUrl).into(postImageView)
             }
             else {
@@ -107,13 +100,13 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
                             null
                         ) as ConstraintLayout
 
-                    val originalPost : Post? = notificationDetails.post[it]
+                    val originalPost : com.itreallyiskyler.furblr.persistence.entities.View? = notificationDetails.post[it]
                     inflateNotification(layout, it, originalPost)
 
                     notesLayout.addView(layout)
                 }
                 catch (ex : Exception) {
-                    println(ex)
+                    println("Failed to bind notification : $ex")
                 }
             }
         }
@@ -131,7 +124,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
             holder.bind(postDetails)
         }
         catch (ex : Exception) {
-            println("Threw an error binding the view")
+            println("Threw an error binding the view : $ex")
         }
     }
 

@@ -3,10 +3,9 @@ package com.itreallyiskyler.furblr.util.thunks
 import com.itreallyiskyler.furblr.enum.NotificationId
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.Notification
-import com.itreallyiskyler.furblr.persistence.entities.Post
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.furblr.persistence.entities.View
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsPagePost
-import com.itreallyiskyler.furblr.util.DateFormatter
 import okhttp3.internal.toImmutableList
 import okhttp3.internal.toImmutableMap
 import java.lang.IndexOutOfBoundsException
@@ -17,13 +16,13 @@ fun ClobberNotificationsByPage(dbImpl : AppDatabase,
                                 pageSize : Int = 40) : List<NotificationsPagePost> {
     // organize clusters of notifications by date
     val notificationsDao = dbImpl.notificationsDao()
-    val postsDao = dbImpl.postsDao()
+    val viewsDao = dbImpl.viewsDao()
     val usersDao = dbImpl.usersDao()
 
 
     val notesByDate : MutableMap<String, MutableList<Notification>> = mutableMapOf()
     val userByNote  : MutableMap<Notification, User> = mutableMapOf()
-    val postByNote  : MutableMap<Notification, Post> = mutableMapOf()
+    val viewByNote  : MutableMap<Notification, View> = mutableMapOf()
 
     // first pass, group notifications by date and group similar data
     val notifications = notificationsDao.getNotificationPage(pageSize, page * pageSize)
@@ -42,9 +41,9 @@ fun ClobberNotificationsByPage(dbImpl : AppDatabase,
         else if (note.kind == NotificationId.Favorite.id ||
             note.kind == NotificationId.SubmissionComment.id ||
             note.kind == NotificationId.SubmissionCommentReply.id) {
-            val posts = postsDao.getExistingPostsWithIds(listOf(note.hostId!!))
+            val posts = viewsDao.getExistingViewsWithIds(listOf(note.hostId!!))
             if (posts.size > 0) {
-                postByNote[note] = posts[0]
+                viewByNote[note] = posts[0]
             }
         }
         else {
@@ -64,14 +63,14 @@ fun ClobberNotificationsByPage(dbImpl : AppDatabase,
     notesByDate.forEach { dateString, notesList ->
         run {
             val usersDict : MutableMap<Notification, User> = mutableMapOf()
-            val postsDict : MutableMap<Notification, Post> = mutableMapOf()
+            val viewsDict : MutableMap<Notification, View> = mutableMapOf()
             notesList.forEach {
                 if (userByNote[it] != null) {
                     usersDict[it] = userByNote[it]!!
                 }
 
-                if (postByNote[it] != null) {
-                    postsDict[it] = postByNote[it]!!
+                if (viewByNote[it] != null) {
+                    viewsDict[it] = viewByNote[it]!!
                 }
             }
 
@@ -79,7 +78,7 @@ fun ClobberNotificationsByPage(dbImpl : AppDatabase,
                 NotificationsPagePost(
                     dateString,
                     notesList.toImmutableList(),
-                    postsDict.toImmutableMap(),
+                    viewsDict.toImmutableMap(),
                     usersDict.toImmutableMap()
                 )
             )

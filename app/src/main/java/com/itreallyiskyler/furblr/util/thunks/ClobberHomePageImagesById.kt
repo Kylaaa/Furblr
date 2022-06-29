@@ -8,7 +8,7 @@ fun ClobberHomePageImagesById(dbImpl : AppDatabase,
                                assetIds : List<Long>) : List<HomePageImagePost> {
     val commentsDao = dbImpl.commentsDao()
     val tagsDao = dbImpl.tagsDao()
-    val postsDao = dbImpl.postsDao()
+    val viewsDao = dbImpl.viewsDao()
     val usersDao = dbImpl.usersDao()
 
     // remove any assetIds that contain blacklisted content
@@ -18,20 +18,20 @@ fun ClobberHomePageImagesById(dbImpl : AppDatabase,
         filteredIds = dbImpl.blacklistedTagsDao().getUnblacklistedIdsForPosts(assetIds)
     }
 
-    val posts = postsDao.getExistingPostsWithIds(filteredIds)
-    val postIds = posts.map { post -> post.id }
-    val creatorIds = posts.map { post -> post.profileId }
+    val views = viewsDao.getExistingViewsWithIds(filteredIds)
+    val postIds = views.map { post -> post.id }
+    val creatorIds = views.map { post -> post.profileId }
     val tags = tagsDao.getTagsForPosts(postIds)
-    val postComments = commentsDao.getCommentsForPosts(postIds, CommentLocationId.Post.id)
+    val comments = commentsDao.getCommentsForPosts(postIds, CommentLocationId.Post.id)
     val users = usersDao.getExistingUsersForUsernames(creatorIds)
 
     // clobber together the data
     val homePageImagePosts: MutableList<HomePageImagePost> = mutableListOf()
-    posts.forEach { post ->
+    views.forEach { post ->
         run {
             val postCreator = users.find { user -> user.username == post.profileId }!!
             val postTags = tags.filter { tag -> tag.parentPostId == post.id }
-            val postComments = postComments.filter { comment -> comment.hostId == post.id }
+            val postComments = comments.filter { comment -> comment.hostId == post.id }
 
             val hpp = HomePageImagePost(post, postCreator, postTags, postComments)
             homePageImagePosts.add(hpp)
