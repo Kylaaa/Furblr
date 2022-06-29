@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 object ResourceFetcher {
     private val RESOURCE_PATH : String = "src/test/res/"
 
-    fun ReadTextFromResource(fileName : String, charset : Charset? = Charsets.UTF_32) : String
+    fun ReadTextFromResource(fileName : String, charset : Charset? = null) : String
     {
         val resFile : File = File(RESOURCE_PATH + fileName)
         if (charset != null)
