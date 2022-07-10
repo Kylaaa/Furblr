@@ -20,11 +20,17 @@ fun ClobberHomePageTextsById(dbImpl : AppDatabase,
     val homePageTextPosts: MutableList<HomePageTextPost> = mutableListOf()
     journals.forEach { post ->
         run {
-            val postCreator = users.find { user -> user.username == post.profileId }
-            val postComments = journalComments.filter { comment -> comment.hostId == post.id }
+            try {
+                val postCreator = users.find { user -> user.username == post.profileId }
+                val postComments = journalComments.filter { comment -> comment.hostId == post.id }
 
-            val hpp = HomePageTextPost(post, postCreator!!, postComments)
-            homePageTextPosts.add(hpp)
+                val hpp = HomePageTextPost(post, postCreator!!, postComments)
+                homePageTextPosts.add(hpp)
+            }
+            catch (ex : Exception)
+            {
+                print("Failed to attribute user to journal #${post.id}")
+            }
         }
     }
 

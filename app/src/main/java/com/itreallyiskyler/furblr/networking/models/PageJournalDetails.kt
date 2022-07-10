@@ -28,7 +28,7 @@ class PageJournalDetails (httpBody : String) {
 
 
     private fun parseArtist(element: Element) : String {
-        val spanElements = element.select("span")
+        val spanElements = element.select("h2")
         return spanElements[0].text().substring(1)
     }
     private fun parseTitle(element : Element) : String {
