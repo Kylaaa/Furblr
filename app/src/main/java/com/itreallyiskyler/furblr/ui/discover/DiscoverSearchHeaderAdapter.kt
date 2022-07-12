@@ -17,12 +17,17 @@ import com.itreallyiskyler.furblr.enum.SearchOrderDirection
 import com.itreallyiskyler.furblr.enum.SearchRange
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.util.Signal
+import com.itreallyiskyler.furblr.util.Signal2
+import java.lang.ref.WeakReference
 
 
 class DiscoverSearchHeaderAdapter() :
     RecyclerView.Adapter<DiscoverSearchHeaderAdapter.ViewHolder>()
 {
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    val searchSignal = Signal2<String, SearchOptions>()
+
+    class ViewHolder(val view: View, private val weakAdapterRef:WeakReference<DiscoverSearchHeaderAdapter>) : RecyclerView.ViewHolder(view)
     {
         var isOptionsCollapsed = true
 
@@ -64,7 +69,7 @@ class DiscoverSearchHeaderAdapter() :
                 val includeStory = chStory.isChecked
 
                 // dispatch the request
-                ContentManager.fetchSearchPage(keyword, SearchOptions(
+                val searchOptions = SearchOptions(
                     //orderDirection = SearchOrderDirection.Descending,
                     //orderBy = SearchOrderBy.Relevancy,
                     //range = SearchRange.All,
@@ -78,7 +83,11 @@ class DiscoverSearchHeaderAdapter() :
                     includePhoto = includePhoto,
                     includePoetry = includePoetry,
                     includeStory = includeStory
-                ))
+                )
+
+                if (weakAdapterRef.get() != null) {
+                    weakAdapterRef.get()!!.searchSignal.fire(keyword, searchOptions)
+                }
             }
 
             btnShowOptions.setOnClickListener {
@@ -98,7 +107,7 @@ class DiscoverSearchHeaderAdapter() :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.listitem_search_header, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, WeakReference(this))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

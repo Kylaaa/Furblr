@@ -2,7 +2,6 @@ package com.itreallyiskyler.furblr.util
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
-import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
 import com.itreallyiskyler.furblr.networking.requests.RequestFavoritePost
@@ -13,6 +12,7 @@ import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.ui.home.HomeViewModel
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
+import com.itreallyiskyler.furblr.ui.search.SearchViewModel
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
 
@@ -24,6 +24,7 @@ object ContentManager {
     var discoverVM : DiscoverViewModel = DiscoverViewModel()
     var homeVM : HomeViewModel = HomeViewModel()
     var notesVM : NotificationsViewModel = NotificationsViewModel()
+    var searchVM : SearchViewModel = SearchViewModel()
 
 
     fun fetchStartupData() {
@@ -144,6 +145,13 @@ object ContentManager {
     }
 
     fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
-        return FetchPageOfSearch(db, keyword, options)
+        return FetchPageOfSearch(db, keyword, options).then(fun(listOfPosts : Any?) {
+            searchVM.setSearchQuery(keyword)
+            searchVM.setSearchParameters(options)
+            searchVM.setSearchResults(listOfPosts as List<HomePageImagePost>)
+            //searchVM.SearchResultsReady.fire(listOfPosts as List<HomePageImagePost>)
+        }, fun(failureToFetchDetails : Any?) {
+            println("Failed to fetch page of search with reason : $failureToFetchDetails")
+        })
     }
 }

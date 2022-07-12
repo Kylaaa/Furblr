@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        tools:text="Search Result Here"
+        tools:text="Total Results Here"
         android:textAlignment="viewEnd"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblTitleSearch"
