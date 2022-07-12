@@ -13,6 +13,5 @@ class PageJournalDetailsUnitTest {
         assertEquals(journal.Artist, "LynxWolf")
         assertEquals(journal.Comments.size, 3)
         assertEquals(journal.Title, "Out of town for 4 days.")
-
     }
 }

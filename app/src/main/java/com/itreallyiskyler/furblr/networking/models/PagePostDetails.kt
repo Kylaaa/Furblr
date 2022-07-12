@@ -42,7 +42,9 @@ class PagePostDetails (private val httpBody : String) {
     val Rating : AgeRating = parseAgeRating(allStatsContainer)
 
     // favorite
-    private var favoriteContainer : Element = doc.getElementsByClass("favorite-nav")[0]
+    private var favoriteContainer : Element = doc.getElementsByClass("favorite-nav")[0].getElementsByClass("button").filter {
+            it -> it.attr("href").startsWith("/fav/") || it.attr("href").startsWith("/unfav/")
+    }[0]
     val FavoriteKey : String = parseFavoriteKey(favoriteContainer)
     val HasFavorited : Boolean = parseHasFavorited(favoriteContainer)
 
@@ -92,9 +94,7 @@ class PagePostDetails (private val httpBody : String) {
         return viewsElement.child(0).text().toLong()
     }
     private fun parseFavoriteKey(element:Element) : String {
-        val buttons = element.getElementsByClass("button")
-        var linkElement : Element = buttons.filter { it -> it.attr("href").startsWith("/fav/") }[0]
-        val href : String = linkElement.attr("href")
+        val href : String = element.attr("href")
         val parts = href.split("=")
         if (parts.size != 2){
             println("Error waiting to happen with $Title")
@@ -102,8 +102,7 @@ class PagePostDetails (private val httpBody : String) {
         return parts[1]
     }
     private fun parseHasFavorited(element:Element) : Boolean {
-        val linkElement = element.child(0)
-        val favoriteLabel : String = linkElement.text()
+        val favoriteLabel : String = element.text()
         val sign = favoriteLabel[0]
         // when the sign is -, it shows that the user has favorited this post
         return sign == '-'
@@ -157,38 +156,44 @@ class PagePostDetails (private val httpBody : String) {
     }
     private fun parseContentUrl(postKind : PostKind, document : Document) : String? {
         var contentUrl : String? = null
-        when (postKind) {
-            PostKind.Downloadable -> {
+        when (postKind.id) {
+            PostKind.Downloadable.id -> {
                 // TODO - parse when we have an example
                 println("Unknown format")
             }
-            PostKind.Flash -> {
+            PostKind.Flash.id -> {
                 val flashContainer : Element = doc.getElementById("flash_embed")
                 contentUrl = "https:" + flashContainer.attr("data")
             }
-            PostKind.Image -> {
+            PostKind.Image.id -> {
                 // the image _is_ the content
             }
-            PostKind.Journal -> {
+            PostKind.Journal.id -> {
                 throw InvalidKeyException("Journals shouldn't be appearing on this page.")
             }
-            PostKind.Music -> {
-                val audioContainer : Element = doc.getElementsByClass("audio-player")[0] //-container
-                contentUrl = "https:" + audioContainer.attr("src")
+            PostKind.Music.id -> {
+                try {
+                    val audioContainer: Element =
+                        doc.getElementsByClass("audio-player")[0] //-container
+                    contentUrl = "https:" + audioContainer.attr("src")
+                }
+                catch(ex : Exception){
+                    println("Could not find an audio player link. " + ex.message)
+                }
             }
-            PostKind.Writing -> {
+            PostKind.Writing.id -> {
                 // there's no guarantee that there's a download link
                 try {
                     val textContainer: Elements = doc.getElementsByClass("submission-writing")
-                    val downloadContainer : Element = textContainer[0].child(1).child(1)
+                    val downloadContainer : Element = textContainer[0].select("a")[0]
                     contentUrl = "https:" + downloadContainer.attr("href")
                 }
                 catch (ex : Exception)
                 {
-                    //println("No download link to parse from writing page." + ex.message)
+                    println("No download link to parse from writing page." + ex.message)
                 }
             }
-            PostKind.Unknown -> {
+            PostKind.Unknown.id -> {
                 println("Unknown post kind")
             }
         }

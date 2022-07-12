@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.SeekBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +16,8 @@ import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
 import com.itreallyiskyler.furblr.util.ContentManager
 import com.squareup.picasso.Picasso
-import java.lang.Exception
 import java.lang.IllegalArgumentException
-
+import kotlin.Exception
 
 class HomePageAdapter(
     initialDataSet : List<IHomePageContent> = listOf()
@@ -155,8 +153,13 @@ class HomePageAdapter(
         }
 
         private fun bindUnknown(view : View, content : IHomePageContent) {
-            val titleTextView : TextView = view.findViewById(R.id.txtTitle)
-            titleTextView.text = "Unsupported : " + content.contentId.toString()
+            try {
+                bindImagePost(view, content)
+            }
+            catch (ex : Exception) {
+                val titleTextView : TextView = view.findViewById(R.id.txtTitle)
+                titleTextView.text = "Unsupported : " + content.contentId.toString()
+            }
         }
 
         // bind data with the UI Elements
@@ -168,6 +171,7 @@ class HomePageAdapter(
                 Pair(PostKind.Journal, ::bindTextPost),
                 Pair(PostKind.Music, ::bindMusicPost),
                 Pair(PostKind.Writing, ::bindWritingPost),
+                Pair(PostKind.Unknown, ::bindImagePost),
             )
 
             if (kindMap.containsKey(postDetails.postKind)) {
@@ -186,7 +190,7 @@ class HomePageAdapter(
             LAYOUT_JOURNAL -> R.layout.listitem_home_journal
             LAYOUT_MUSIC -> R.layout.listitem_home_music
             LAYOUT_WRITING -> R.layout.listitem_home_submission
-            LAYOUT_UNKNOWN -> R.layout.listitem_home_unknown
+            LAYOUT_UNKNOWN -> R.layout.listitem_home_submission
             else -> throw IllegalArgumentException("Cannot create ViewHolder of type : $viewType");
         }
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
