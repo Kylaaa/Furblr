@@ -91,6 +91,8 @@ enum class PostCategory(val id:Int) {
                 Pair("Icons", PostCategory.Icon),
                 Pair("Mosaics", PostCategory.Mosaics),
                 Pair("Photography", PostCategory.Photography),
+                Pair("Food", PostCategory.Food),
+                Pair("Sculpting", PostCategory.Sculpting),
                 Pair("Story", PostCategory.Story),
                 Pair("Poetry", PostCategory.Poetry),
                 Pair("Prose", PostCategory.Prose),

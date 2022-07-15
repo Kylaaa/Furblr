@@ -28,7 +28,9 @@ class SearchResultsFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        headerAdapter = SearchResultsHeaderAdapter(ContentManager.searchVM.searchQuery.liveData.value ?: "")
+        headerAdapter = SearchResultsHeaderAdapter(
+            ContentManager.searchVM.searchQuery.liveData.value ?: "",
+            ContentManager.searchVM.searchResults.liveData.value?.size ?: 0)
         resultsAdapter = HomePageAdapter(ContentManager.searchVM.searchResults.liveData.value ?: listOf())
         searchResultsViewModel =
                 ViewModelProvider(this).get(SearchResultsViewModel::class.java)

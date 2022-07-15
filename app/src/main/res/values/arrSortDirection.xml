@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sortDirection">
-        <item value="desc">@string/sort_direction_desc</item>
-        <item value="asc">@string/sort_direction_asc</item>
+        <item>@string/sort_direction_desc</item>
+        <item>@string/sort_direction_asc</item>
+    </string-array>
+    <string-array name="sortDirectionValues">
+        <item>desc</item>
+        <item>asc</item>
     </string-array>
 </resources>
