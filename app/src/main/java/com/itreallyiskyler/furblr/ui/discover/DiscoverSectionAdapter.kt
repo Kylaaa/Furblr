@@ -11,7 +11,7 @@ import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
-
+// Section of horizontal content labeled with a large header
 class DiscoverSectionAdapter(
     private val viewContext : Context,
     private val sectionData : List<Pair<Int, SynchronizedLiveDataList<IHomePageContent>>>) :

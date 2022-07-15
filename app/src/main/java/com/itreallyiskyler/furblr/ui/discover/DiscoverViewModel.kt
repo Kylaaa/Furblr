@@ -3,13 +3,10 @@ package com.itreallyiskyler.furblr.ui.discover
 import androidx.lifecycle.ViewModel
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.ui.home.IHomePageContent
-import com.itreallyiskyler.furblr.util.Signal
 import com.itreallyiskyler.furblr.util.Signal2
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
 class DiscoverViewModel : ViewModel() {
-
-    val DiscoverSearchResultsReady = Signal<List<IHomePageContent>>()
     val DiscoverPageContentUpdated = Signal2<Int, IHomePageContent>()
 
     val discoverDataSets = listOf(
@@ -17,7 +14,6 @@ class DiscoverViewModel : ViewModel() {
         Pair(R.string.ui_discover_section_writing, SynchronizedLiveDataList<IHomePageContent>(listOf())),
         Pair(R.string.ui_discover_section_music, SynchronizedLiveDataList<IHomePageContent>(listOf())),
     )
-    val searchResults = SynchronizedLiveDataList<IHomePageContent>(listOf())
 
     // helper functions
     private var discoverPagePosts : MutableList<IHomePageContent> = mutableListOf()

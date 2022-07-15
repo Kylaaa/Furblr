@@ -2,6 +2,7 @@
     <string name="app_name">Furblr</string>
     <string name="title_home">Home</string>
     <string name="title_discover">Discover</string>
+    <string name="title_search">Search</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_profile">Profile</string>
 
@@ -11,6 +12,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_go_back">Go Back</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -71,4 +73,6 @@
     <string name="sort_matching_all">All of the words</string>
     <string name="sort_matching_any">Any of the words</string>
     <string name="sort_matching_extended">Extended</string>
+
+    <string name="search_total_results">%d results found</string>
 </resources>

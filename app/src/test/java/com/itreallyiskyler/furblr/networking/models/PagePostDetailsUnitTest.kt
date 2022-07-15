@@ -49,4 +49,25 @@ class PagePostDetailsUnitTest {
         assertEquals(details.TotalViews, 8)
         assertEquals(details.UploadDate, DateFormatter.createDate(2022, 6, 5, 17, 0))
     }
+
+    @Test
+    fun constructor_parsesImagePost_Favorited() {
+        val EXAMPLE_BODY_IMAGE : String = ResourceFetcher.ReadTextFromResource("exampleView_ImageFavorited.html")
+        var details : PagePostDetails = PagePostDetails(EXAMPLE_BODY_IMAGE)
+
+        assertEquals(details.Artist, "Plive")
+        assertEquals(details.Comments.size, 2)
+        assertEquals(details.ContentUrl, null)
+        //assertEquals(details.Description, "")
+        assertEquals(details.FavoriteKey, "e8b2f4c18b2d345a75031ed10399fca1eb9b615b")
+        assertEquals(details.HasFavorited, true)
+        assertEquals(details.Kind, PostKind.Image)
+        assertEquals(details.Rating, AgeRating.General)
+        assertEquals(details.Tags.size, 6)
+        assertEquals(details.ThumbnailUrl, "https://d.furaffinity.net/art/plive/1650701544/1650701544.plive_snekk.jpg")
+        assertEquals(details.Title, "Serpejar")
+        assertEquals(details.TotalFavorites, 36)
+        assertEquals(details.TotalViews, 261)
+        assertEquals(details.UploadDate, DateFormatter.createDate(2022, 4, 23, 4, 12))
+    }
 }

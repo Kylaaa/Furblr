@@ -16,7 +16,7 @@ class RequestUser(
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageUserDetails {
             //println("Successfully fetched : ${this.getUrl()}")
-            return PageUserDetails(httpBody as String);
+            return PageUserDetails(userId, httpBody as String);
         }
         var failure = fun(message : Any?) {
             // TODO("Not yet implemented")

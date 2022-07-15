@@ -7,17 +7,23 @@ import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.RequestSearch
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
+import com.itreallyiskyler.furblr.ui.home.HomePageTextPost
 import com.itreallyiskyler.furblr.util.Promise
-import okhttp3.internal.toImmutableList
 
 fun FetchPageOfSearch(dbImpl : AppDatabase,
                     keyword : String,
                     searchOptions: SearchOptions) : Promise {
 
+    var postIds : List<Long> = emptyList()
+
     return RequestSearch(keyword, searchOptions).fetchContent()
         // TODO : FIGURE OUT HOW TO COMBINE THIS FETCHING HOME PAGE CONTENT
         .then(fun(pageSearch: Any?): Promise {
             val searchResults = pageSearch as PageSearch
+
+            // store the ids of the resulting views
+            postIds = searchResults.results.map { result -> result.postId }.toList()
 
             // first figure out which creators we need to fetch information
             val creatorIds: Set<String> =
@@ -61,5 +67,11 @@ fun FetchPageOfSearch(dbImpl : AppDatabase,
         }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
             println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+        })
+
+        .then(fun(_ :Any?) : List<HomePageImagePost> {
+            return ClobberHomePageImagesById(dbImpl, postIds)
+        }, fun(persistenceFailureDetails : Any?) {
+            println("Failed to persist search results : $persistenceFailureDetails")
         })
 }

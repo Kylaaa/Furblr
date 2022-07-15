@@ -11,30 +11,31 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
-import com.itreallyiskyler.furblr.databinding.FragmentDiscoverBinding
+import com.itreallyiskyler.furblr.databinding.FragmentSearchResultsBinding
 import com.itreallyiskyler.furblr.util.ContentManager
 
-class SearchResultsFragment(val searchQuery : String) : Fragment() {
+class SearchResultsFragment : Fragment() {
 
     private lateinit var searchResultsViewModel: SearchResultsViewModel
-    private var _binding: FragmentDiscoverBinding? = null
+    private var _binding: FragmentSearchResultsBinding? = null
     private var headerAdapter : SearchResultsHeaderAdapter? = null
     private var resultsAdapter : HomePageAdapter? = null
 
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        headerAdapter = SearchResultsHeaderAdapter(searchQuery)
-        resultsAdapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
+        headerAdapter = SearchResultsHeaderAdapter(
+            ContentManager.searchVM.searchQuery.liveData.value ?: "",
+            ContentManager.searchVM.searchResults.liveData.value?.size ?: 0)
+        resultsAdapter = HomePageAdapter(ContentManager.searchVM.searchResults.liveData.value ?: listOf())
         searchResultsViewModel =
                 ViewModelProvider(this).get(SearchResultsViewModel::class.java)
 
-        _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchResultsBinding.inflate(inflater, container, false)
         return binding.root
     }
 

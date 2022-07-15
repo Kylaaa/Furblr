@@ -1,28 +1,34 @@
 package com.itreallyiskyler.furblr.ui.discover
 
+import android.app.Activity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import com.itreallyiskyler.furblr.R
-import com.itreallyiskyler.furblr.enum.SearchMode
+import com.itreallyiskyler.furblr.enum.SearchKeywordMatching
 import com.itreallyiskyler.furblr.enum.SearchOrderBy
 import com.itreallyiskyler.furblr.enum.SearchOrderDirection
 import com.itreallyiskyler.furblr.enum.SearchRange
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
-import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.util.Signal2
+import java.lang.ref.WeakReference
 
 
 class DiscoverSearchHeaderAdapter() :
     RecyclerView.Adapter<DiscoverSearchHeaderAdapter.ViewHolder>()
 {
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    val searchSignal = Signal2<String, SearchOptions>()
+
+    class ViewHolder(val view: View, private val weakAdapterRef:WeakReference<DiscoverSearchHeaderAdapter>) : RecyclerView.ViewHolder(view)
     {
         var isOptionsCollapsed = true
 
@@ -46,13 +52,13 @@ class DiscoverSearchHeaderAdapter() :
             val chPoetry : Chip = view.findViewById(R.id.chPostPoetry)
             val chStory : Chip = view.findViewById(R.id.chPostStory)
 
-            btnSearch.setOnClickListener {
+            fun performSearch() {
                 // pull values from the ui
                 val keyword = txtSearch.text.toString()
-                val sortOrderBy = spSortOrderBy.selectedItem
-                val orderBy = spSortOrderBy2.selectedItem
-                val range = spSortRange.selectedItem
-                val keywords = spSortKeywords.selectedItem
+                val sortOrderByIndex = spSortOrderBy.selectedItemPosition
+                val sortOrderDirectionIndex = spSortOrderBy2.selectedItemPosition
+                val rangeIndex = spSortRange.selectedItemPosition
+                val keywordMatchingIndex = spSortKeywords.selectedItemPosition
                 val includeGeneral = chRatingGeneral.isChecked
                 val includeMature = chRatingMature.isChecked
                 val includeAdult = chRatingAdult.isChecked
@@ -63,12 +69,19 @@ class DiscoverSearchHeaderAdapter() :
                 val includePoetry = chPoetry.isChecked
                 val includeStory = chStory.isChecked
 
+                // map the spinner values
+                val res = view.resources
+                val sortOrderDirection = res.getStringArray(R.array.sortDirectionValues)[sortOrderDirectionIndex]
+                val sortOrderBy = res.getStringArray(R.array.sortOrderValues)[sortOrderByIndex]
+                val range = res.getStringArray(R.array.sortRangeValues)[rangeIndex]
+                val keywordMatching = res.getStringArray(R.array.sortMatchingValues)[keywordMatchingIndex]
+
                 // dispatch the request
-                ContentManager.fetchSearchPage(keyword, SearchOptions(
-                    //orderDirection = SearchOrderDirection.Descending,
-                    //orderBy = SearchOrderBy.Relevancy,
-                    //range = SearchRange.All,
-                    //mode = SearchMode.All,
+                val searchOptions = SearchOptions(
+                    orderDirection = SearchOrderDirection.fromString(sortOrderDirection),
+                    orderBy = SearchOrderBy.fromString(sortOrderBy),
+                    range = SearchRange.fromString(range),
+                    keywordMatching = SearchKeywordMatching.fromString(keywordMatching),
                     includeGeneralContent = includeGeneral,
                     includeMatureContent = includeMature,
                     includeAdultContent = includeAdult,
@@ -78,7 +91,26 @@ class DiscoverSearchHeaderAdapter() :
                     includePhoto = includePhoto,
                     includePoetry = includePoetry,
                     includeStory = includeStory
-                ))
+                )
+
+                if (weakAdapterRef.get() != null) {
+                    weakAdapterRef.get()!!.searchSignal.fire(keyword, searchOptions)
+                }
+            }
+
+            txtSearch.setOnEditorActionListener { _ : View, actionId: Int, _ : KeyEvent? ->
+                var handled = false
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch()
+                    hideKeyboard()
+                    handled = true
+                }
+                handled
+            }
+
+            btnSearch.setOnClickListener {
+                performSearch()
+                hideKeyboard()
             }
 
             btnShowOptions.setOnClickListener {
@@ -93,12 +125,17 @@ class DiscoverSearchHeaderAdapter() :
                 isOptionsCollapsed = !isOptionsCollapsed
             }
         }
+
+        fun hideKeyboard() {
+            val inputMethodManager : InputMethodManager = view.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.listitem_search_header, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, WeakReference(this))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

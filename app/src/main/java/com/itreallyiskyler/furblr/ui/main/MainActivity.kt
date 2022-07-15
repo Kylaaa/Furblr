@@ -16,6 +16,7 @@ import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.auth.LoginActivity
 import com.itreallyiskyler.furblr.util.AuthManager
 import com.itreallyiskyler.furblr.util.ContentManager
+import kotlin.concurrent.thread
 
 // TODO : Create infinite scrolling view of paged results
 
@@ -38,8 +39,10 @@ class MainActivity : AppCompatActivity() {
             AppDatabase::class.java,
             "furblr-db"
         ).build()
-        /*contentDB.run {
-            clearAllTables()
+        /*thread {
+            contentDB.run {
+                clearAllTables()
+            }
         }*/
         ContentManager.setDB(contentDB)
 

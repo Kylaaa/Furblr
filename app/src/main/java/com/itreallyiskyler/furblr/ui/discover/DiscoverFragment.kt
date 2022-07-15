@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.itreallyiskyler.furblr.ui.home.HomePageAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +22,8 @@ class DiscoverFragment : Fragment() {
     private var searchAdapter : DiscoverSearchHeaderAdapter? = null
     private var discoverAdapter : DiscoverSectionAdapter? = null
     private var adapter : ConcatAdapter? = null
+    private var connections : MutableList<()->Unit> = mutableListOf()
+
 
     private val binding get() = _binding!!
 
@@ -40,6 +42,19 @@ class DiscoverFragment : Fragment() {
         dashboardViewModel =
             ViewModelProvider(this).get(DiscoverViewModel::class.java)
 
+        val searchConnection = searchAdapter!!.searchSignal.connect { keyword, searchOptions ->
+            run {
+                ContentManager.fetchSearchPage(keyword, searchOptions).then(fun(_ : Any?) {
+                    activity?.runOnUiThread {
+                        navigateToSearchResults()
+                    }
+                }, fun(fetchErrDetails : Any?) {
+                    println("Failed to properly fetch search results with error : ${fetchErrDetails.toString()}")
+                })
+            }
+        }
+        connections.add(searchConnection)
+
         _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
         val root: View = binding.root
         return root
@@ -56,5 +71,10 @@ class DiscoverFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        connections.forEach { it -> it() }
+    }
+
+    private fun navigateToSearchResults() {
+        view?.findNavController()?.navigate(R.id.action_navigation_discover_to_navigation_search)
     }
 }

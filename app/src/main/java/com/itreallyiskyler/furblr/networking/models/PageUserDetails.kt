@@ -3,14 +3,12 @@ package com.itreallyiskyler.furblr.networking.models
 import com.itreallyiskyler.furblr.BuildConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 
-class PageUserDetails (private val httpBody : String) {
+class PageUserDetails (private val requestedUsername : String, private val httpBody : String) {
     private var doc : Document = Jsoup.parse(httpBody);
     // TODO : FIGURE OUT WHY PARSING namesContainer is throwing errors
-    private var headerContainer = doc.getElementById("user-profile")
-    private var namesContainer = doc.getElementsByClass("username")[0]
-    private var usernameContainer = namesContainer.child(0)
-    val username: String = usernameContainer.getElementsByTag("span")[0].text().trim().substring(1)
+    val username : String = getUsername(doc)
     val nickname : String = "" //namesContainer.child(1).text()
     val dateJoined : String = ""
 
@@ -75,4 +73,19 @@ class PageUserDetails (private val httpBody : String) {
     val siteTwitter : String? = null
     val siteWeasyl : String? = null
     val siteYoutube : String? = null
+
+    private fun getUsername(document: Document) : String {
+        try
+        {
+            val namesContainer = doc.getElementsByClass("username")[0]
+            val usernameContainer = namesContainer.child(0)
+            val username = usernameContainer.text().trim().substring(1)
+            return username
+        }
+        catch (ex : Exception) {
+            throw(Exception("Failed to parse username. Expected $requestedUsername, got exception ${ex.message}", ex.cause))
+        }
+
+        return "UNPARSABLE USERNAME"
+    }
 }

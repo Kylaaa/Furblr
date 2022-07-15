@@ -8,6 +8,7 @@ import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.util.ui.AdapterFactory
 import com.squareup.picasso.Picasso
 
+// Horizontal scrolling list showing previews of submissions in each section
 class DiscoverPreviewAdapter(
     initialDataSet : List<IHomePageContent> = listOf()
 ) : AdapterFactory<IHomePageContent>(

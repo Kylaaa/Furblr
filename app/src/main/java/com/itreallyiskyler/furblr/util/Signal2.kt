@@ -16,7 +16,9 @@ class Signal2<T, U> {
         // return an object to disconnect the connection
         val nextIdCopy = _nextId
         return fun() : Unit {
-            _connections.remove(nextIdCopy)
+            if (_connections.containsKey(nextIdCopy)) {
+                _connections.remove(nextIdCopy)
+            }
         }
     }
 
