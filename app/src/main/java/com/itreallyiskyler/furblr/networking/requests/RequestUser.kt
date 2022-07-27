@@ -1,26 +1,30 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageUserDetails
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
-import java.lang.Exception
+import com.itreallyiskyler.furblr.util.StringUtils
 
-private fun cleanUserId(userId: String) : String {
-    return userId.replace("_", "", true).lowercase()
-}
+class RequestUser(val userId : String)
+    : BaseRequest(BuildConfig.BASE_URL, "user/${StringUtils.cleanUserId(userId)}/") {
 
-class RequestUser(
-    val userId : String) : IPageParser<PageUserDetails>,
-    BaseRequest(BuildConfig.BASE_URL, "user/${cleanUserId(userId)}/") {
+    constructor(
+        userId: String,
+        requestHandler: RequestHandler,
+        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+    ) : this(userId) {
+        setRequestHandler(requestHandler)
+        setLoggingChannel(loggingChannel)
+    }
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageUserDetails {
-            //println("Successfully fetched : ${this.getUrl()}")
             return PageUserDetails(userId, httpBody as String);
         }
         var failure = fun(message : Any?) {
-            // TODO("Not yet implemented")
-            println("Failed to parse PageUserDetails : " + (message as Exception).toString())
+            getLogChannel().logError("Failed to parse PageUserDetails : $message")
         }
 
         return GET().then(success, failure)

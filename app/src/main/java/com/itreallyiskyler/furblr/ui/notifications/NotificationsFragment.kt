@@ -4,18 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentNotificationsBinding
-import com.itreallyiskyler.furblr.util.ContentManager
-import kotlinx.coroutines.delay
+import com.itreallyiskyler.furblr.managers.ContentManager
 import okhttp3.internal.toImmutableList
-import okhttp3.internal.wait
 import kotlin.concurrent.thread
 
 class NotificationsFragment : Fragment() {

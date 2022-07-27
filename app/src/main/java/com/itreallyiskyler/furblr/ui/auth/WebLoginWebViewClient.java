@@ -3,14 +3,13 @@ package com.itreallyiskyler.furblr.ui.auth;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieSyncManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.itreallyiskyler.furblr.networking.requests.RequestHome;
 import com.itreallyiskyler.furblr.networking.requests.RequestLogin;
-import com.itreallyiskyler.furblr.util.AuthManager;
+import com.itreallyiskyler.furblr.managers.AuthManager;
 import com.itreallyiskyler.furblr.util.CommandWithArgs2;
 
 import java.net.MalformedURLException;

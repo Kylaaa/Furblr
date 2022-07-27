@@ -14,7 +14,7 @@ import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
-import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.managers.ContentManager
 import com.squareup.picasso.Picasso
 import java.lang.IllegalArgumentException
 import kotlin.Exception

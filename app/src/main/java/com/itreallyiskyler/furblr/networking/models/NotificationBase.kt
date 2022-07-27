@@ -1,6 +1,5 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import com.itreallyiskyler.furblr.enum.NotificationId
 import com.itreallyiskyler.furblr.util.DateFormatter
 import org.jsoup.nodes.Element
 

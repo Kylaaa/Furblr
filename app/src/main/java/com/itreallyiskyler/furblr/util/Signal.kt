@@ -2,6 +2,8 @@ package com.itreallyiskyler.furblr.util
 
 import kotlin.concurrent.thread
 
+// This class should be a variadic template
+
 class Signal<T> {
     public var isAsync : Boolean = false
     private var _nextId : Int = 0

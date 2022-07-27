@@ -2,21 +2,28 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
-import com.itreallyiskyler.furblr.networking.models.PageHome
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import okhttp3.ResponseBody
-import java.io.IOException
 import java.lang.Exception
 
 class RequestSubmissions(
     val scrollDirection : SubmissionScrollDirection = SubmissionScrollDirection.DEFAULT,
     val pageSize : Int = 48,
-    val offsetId : Long? = null) : IPageParser<PageSubmissions>,
-    BaseRequest(BuildConfig.BASE_URL, "msg/submissions/") {
+    val offsetId : Long? = null
+) : BaseRequest(BuildConfig.BASE_URL, "msg/submissions/") {
+
+    constructor(
+        scrollDirection: SubmissionScrollDirection,
+        pageSize: Int,
+        offsetId: Long?,
+        requestHandler: RequestHandler,
+        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+    ) : this(scrollDirection, pageSize, offsetId) {
+        setRequestHandler(requestHandler)
+        setLoggingChannel(loggingChannel)
+    }
 
     init {
         // If extra information has been passed in, update the url to include extra details
@@ -35,12 +42,11 @@ class RequestSubmissions(
     }
 
     override fun fetchContent() : Promise {
-        var success = fun(httpBody : Any?) : PageSubmissions {
+        val success = fun(httpBody : Any?) : PageSubmissions {
             return PageSubmissions(httpBody as String);
         }
-        var failure = fun(message : Any?) {
-            //TODO("Not yet implemented")
-            println(message as Exception);
+        val failure = fun(message : Any?) {
+            getLogChannel().logError(message as Exception);
         }
 
         return GET().then(success, failure)

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentDiscoverBinding
-import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.managers.ContentManager
 
 class DiscoverFragment : Fragment() {
 

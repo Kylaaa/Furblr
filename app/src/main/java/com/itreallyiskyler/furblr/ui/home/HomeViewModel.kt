@@ -1,7 +1,6 @@
 package com.itreallyiskyler.furblr.ui.home
 
 import androidx.lifecycle.ViewModel
-import com.itreallyiskyler.furblr.util.ContentManager
 import com.itreallyiskyler.furblr.util.Signal
 import com.itreallyiskyler.furblr.util.Signal2
 import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList

@@ -14,9 +14,8 @@ import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.auth.LoginActivity
-import com.itreallyiskyler.furblr.util.AuthManager
-import com.itreallyiskyler.furblr.util.ContentManager
-import kotlin.concurrent.thread
+import com.itreallyiskyler.furblr.managers.AuthManager
+import com.itreallyiskyler.furblr.managers.ContentManager
 
 // TODO : Create infinite scrolling view of paged results
 
@@ -33,18 +32,6 @@ class MainActivity : AppCompatActivity() {
         // TODO : move this to Settings / profile page at some point
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         delegate.applyDayNight()
-
-        val contentDB = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "furblr-db"
-        ).build()
-        /*thread {
-            contentDB.run {
-                clearAllTables()
-            }
-        }*/
-        ContentManager.setDB(contentDB)
 
         // connect to some signals
         val logoutCnx = AuthManager.UserLoggedOut.connect { gotoLogin() };
