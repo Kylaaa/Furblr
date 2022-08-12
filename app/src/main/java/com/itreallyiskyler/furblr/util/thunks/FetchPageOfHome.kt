@@ -3,19 +3,25 @@ package com.itreallyiskyler.furblr.util.thunks
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.FeedId
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 import okhttp3.internal.toImmutableList
 
 
-fun FetchPageOfHome(dbImpl : AppDatabase,
-                    page : Int = 0,
-                    pageSize : Int = 48,
-                    forceRefresh : Boolean) : Promise {
+fun FetchPageOfHome(
+    dbImpl : AppDatabase,
+    requestHandler: RequestHandler,
+    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    page : Int = 0,
+    pageSize : Int = 48,
+    forceRefresh : Boolean) : Promise {
 
     val foundHomePageIds: MutableList<Long> = mutableListOf()
     val fetchLastIdInSet = fun(page: Int, pageSize: Int): Long? {
@@ -29,7 +35,9 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
     return RequestSubmissions(
         SubmissionScrollDirection.DEFAULT,
         pageSize,
-        previousPostId
+        previousPostId,
+        requestHandler,
+        loggingChannel
     ).fetchContent()
 
         .then(fun(pageSubmissions: Any?): Promise {
@@ -46,14 +54,14 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
             users.forEach { user -> missingUserIds.remove(user.username) }
 
             // fetch the creator information
-            return FetchUsersByUsernames(dbImpl, missingUserIds)
+            return FetchUsersByUsernames(dbImpl,requestHandler, loggingChannel, missingUserIds)
                 .then(fun(_: Any?): Any {
                     return pageSubmissions
                 }, fun(_: Any?): Promise {
                     return Promise.resolve(pageSubmissions)
                 })
         }, fun(ex: Any?) {
-            println("Failed to fetch user info! $ex")
+            loggingChannel.logError("Failed to fetch user info! $ex")
         })
 
         // next, also figure out which posts to fetch up-to-date information
@@ -81,7 +89,7 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
 
         }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
-            println("Failed to fetch submissions : $submissionsFetchFailureDetails")
+            loggingChannel.logError("Failed to fetch submissions : $submissionsFetchFailureDetails")
             return emptySet<Long>()
         })
 
@@ -91,6 +99,6 @@ fun FetchPageOfHome(dbImpl : AppDatabase,
             return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>, ContentFeedId.Home)
         }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
-            println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+            loggingChannel.logError("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
         })
 }

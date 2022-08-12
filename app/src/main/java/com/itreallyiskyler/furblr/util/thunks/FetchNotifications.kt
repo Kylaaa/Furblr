@@ -1,20 +1,27 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageJournalDetails
 import com.itreallyiskyler.furblr.networking.models.PageOthers
-import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestJournalDetails
 import com.itreallyiskyler.furblr.networking.requests.RequestNotifications
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
-fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
+fun FetchNotifications(
+    dbImpl : AppDatabase,
+    requestHandler: RequestHandler,
+    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    forceRefresh : Boolean
+) : Promise {
     val userIdsToFetch: MutableSet<String> = mutableSetOf()
     val postIdsToFetch: MutableSet<Long> = mutableSetOf()
 
-    return RequestNotifications().fetchContent().then(fun(pageOtherResponse: Any?): Promise {
+    return RequestNotifications(requestHandler, loggingChannel).fetchContent().then(fun(pageOtherResponse: Any?): Promise {
         // save all of the notifications
         PersistPageOthers(dbImpl, pageOtherResponse as PageOthers)
 
@@ -24,7 +31,7 @@ fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
 
         return Promise.resolve(pageOtherResponse)
     }, fun(fetchError: Any?) {
-        println(fetchError)
+        loggingChannel.logError("Failed to fetch and persist notifications with error : $fetchError")
     })
         .then(fun(pageOtherResponse : Any?): Promise {
             // parse the journals
@@ -38,7 +45,7 @@ fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
             }
 
             journalsToFetch.forEach {
-                val promise = RequestJournalDetails(it).fetchContent().then(fun(journalDetails: Any?) {
+                val promise = RequestJournalDetails(it, requestHandler, loggingChannel).fetchContent().then(fun(journalDetails: Any?) {
                     val details = journalDetails as PageJournalDetails
 
                     // keep track of usernames to fetch details about
@@ -47,13 +54,13 @@ fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
                     // save the journal data
                     return PersistPageJournalDetails(dbImpl, it, details)
                 }, fun(fetchErr: Any?) {
-                    println(fetchErr)
+                    loggingChannel.logError("Failed to fetch and persist journal details (#$it) : $fetchErr")
                 })
                 fetchPromises.add(promise)
             }
             return Promise.all(fetchPromises.toTypedArray())
         }, fun(parseError: Any?) {
-            println(parseError)
+            loggingChannel.logError("Something went wrong parsing the journal ids to fetch : $parseError")
         })
         .then(fun(_: Any?): Promise {
             // figure out which creators we don't have information for
@@ -68,10 +75,11 @@ fun FetchNotifications(dbImpl : AppDatabase, forceRefresh : Boolean) : Promise {
 
             // fetch the creator information
             val fetchPromises = arrayOf<Promise>(
-                FetchUsersByUsernames(dbImpl, missingUserIds),
-                FetchContentForPostIds(dbImpl, missingViewIds, ContentFeedId.Other))
+                FetchUsersByUsernames(dbImpl, requestHandler, loggingChannel, missingUserIds),
+                FetchContentForPostIds(dbImpl, missingViewIds, ContentFeedId.Other,)
+            )
             return Promise.all(fetchPromises)
-        }, fun(_: Any?) {
-            println("Failed to fetch user info!")
+        }, fun(userFetchErr: Any?) {
+            loggingChannel.logError("Failed to fetch user info with err : $userFetchErr")
         })
 }

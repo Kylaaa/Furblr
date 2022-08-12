@@ -94,17 +94,17 @@ object ContentManager {
         notesVM.updateUnreadNotifications(unreadCount)
     }
     fun fetchNotifications(forceReload: Boolean = false) : Promise {
-        return FetchNotifications(db, requestHandler, forceReload)
+        return FetchNotifications(db, requestHandler, loggingChannel, forceReload)
     }
 
     fun fetchSubmissions(page : Int = 0,
                          pageSize : Int = 48,
                          forceReload : Boolean = false) : Promise {
-        return FetchPageOfHome(db, page, pageSize, forceReload)
+        return FetchPageOfHome(db, requestHandler, loggingChannel, page, pageSize, forceReload)
     }
 
     fun fetchDiscovery() : Promise {
-        return FetchPageOfDiscovery(db, false).then(fun(_ : Any?) {
+        return FetchPageOfDiscovery(db, requestHandler, loggingChannel, false).then(fun(_ : Any?) {
             val images = getDiscoveryViewsOfKind(PostKind.Image)
             discoverVM.setNewSubmissionsData(images)
 

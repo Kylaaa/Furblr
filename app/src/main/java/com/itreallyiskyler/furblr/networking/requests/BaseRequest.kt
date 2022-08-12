@@ -21,7 +21,7 @@ private enum class RequestType {
 }
 typealias RequestHandler = (URL, Request, GenericCallback, GenericCallback)->Unit
 
-open abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
+abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
     // Properties
     private var _baseUrl: String = BuildConfig.BASE_URL
     private var _path:String = ""
@@ -62,18 +62,18 @@ open abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
         return build(_baseUrl, _path, _args)
     }
     private fun build(baseUrl: String, path: String, args: Map<String, Any>? = null) : URL {
+        val ENCODING = "UTF-8"
         var argString = ""
         if (!args.isNullOrEmpty()){
             var argList = "?"
             for ((k, v) in args){
-                argList += URLEncoder.encode(k) + "=" + URLEncoder.encode(v.toString()) + "&"
+                argList += URLEncoder.encode(k, ENCODING) + "=" + URLEncoder.encode(v.toString(), ENCODING) + "&"
             }
             argString = argList.substringBeforeLast('&')
         }
         return URL(baseUrl + path + argString)
     }
     private fun fetch(requestType : RequestType, requestBody: String? = null) : Promise {
-        // TODO : figure out PUT and DELETE support
         val action = fun(resolve : GenericCallback, reject : GenericCallback) {
             var request : Request.Builder = Request.Builder()
             request.url(_url)
@@ -91,13 +91,14 @@ open abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
         return Promise(action)
     }
     private fun encodeFormData(formData: HashMap<String, Any>?) : String {
+        val ENCODING = "UTF-8"
         var requestBody = ""
         if (formData != null) {
             for ((key : String, value : Any) in formData) {
                 requestBody += "$key=${value};"
             }
-            // remove the trailing semi-colon
-            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1))
+            // remove the trailing semi-colon, and encode the result
+            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1), ENCODING)
         }
         return requestBody
     }

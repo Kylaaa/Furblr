@@ -1,18 +1,24 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageHome
+import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestHome
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
 
-fun FetchPageOfDiscovery(dbImpl : AppDatabase,
-                         forceRefresh : Boolean) : Promise {
+fun FetchPageOfDiscovery(
+    dbImpl : AppDatabase,
+    requestHandler : RequestHandler,
+    loggingChannel : LoggingChannel = NetworkingManager.logChannel,
+    forceRefresh : Boolean) : Promise {
 
     // fetch all of the content from the home page
-    return RequestHome().fetchContent()
+    return RequestHome(requestHandler, loggingChannel).fetchContent()
         .then(fun(pageHome: Any?): Promise {
             val content = pageHome as PageHome
 
@@ -29,14 +35,14 @@ fun FetchPageOfDiscovery(dbImpl : AppDatabase,
             users.forEach { user -> creatorIds.remove(user.username) }
 
             // fetch the creator information
-            return FetchUsersByUsernames(dbImpl, creatorIds)
+            return FetchUsersByUsernames(dbImpl, requestHandler, loggingChannel, creatorIds)
                 .then(fun(_: Any?): Any {
                     return pageHome
                 }, fun(_: Any?): Promise {
                     return Promise.resolve(pageHome)
                 })
         }, fun(_: Any?) {
-            println("Failed to fetch user info!")
+            loggingChannel.logError("Failed to fetch user info!")
         })
 
         // next, also figure out which posts to fetch up-to-date information
@@ -61,7 +67,7 @@ fun FetchPageOfDiscovery(dbImpl : AppDatabase,
 
         }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
-            println(submissionsFetchFailureDetails)
+            loggingChannel.logError(submissionsFetchFailureDetails)
             return emptySet<Long>()
         })
 
@@ -71,6 +77,6 @@ fun FetchPageOfDiscovery(dbImpl : AppDatabase,
             return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>, ContentFeedId.Discover)
         }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
-            println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+            loggingChannel.logError("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
         })
 }

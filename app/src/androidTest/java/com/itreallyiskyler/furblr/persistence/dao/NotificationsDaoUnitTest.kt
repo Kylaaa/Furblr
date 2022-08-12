@@ -1,16 +1,15 @@
 package com.itreallyiskyler.furblr
 
 import com.itreallyiskyler.furblr.enum.*
-import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.dao.NotificationsDao
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.Notification
 import com.itreallyiskyler.furblr.persistence.entities.View
 import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.util.DateFormatter
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
-import kotlin.random.Random
 
 class NotificationsDaoUnitTest : DBTestClass() {
     @Test

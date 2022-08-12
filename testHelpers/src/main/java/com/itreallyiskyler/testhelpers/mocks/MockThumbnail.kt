@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.mocks
+package com.itreallyiskyler.testhelpers.mocks
 
 import com.itreallyiskyler.furblr.enum.AgeRating
 import com.itreallyiskyler.furblr.networking.models.IThumbnail

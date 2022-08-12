@@ -2,14 +2,11 @@ package com.itreallyiskyler.furblr
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
-import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.dao.ContentFeedDao
-import com.itreallyiskyler.furblr.persistence.dao.UsersDao
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.FeedId
-import com.itreallyiskyler.furblr.persistence.entities.View
-import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.util.DateFormatter
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random

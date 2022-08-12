@@ -1,8 +1,8 @@
 package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.enum.AgeRating
-import com.itreallyiskyler.furblr.helpers.ResourceFetcher
-import com.itreallyiskyler.furblr.mocks.MockThumbnail
+import com.itreallyiskyler.testhelpers.mocks.MockThumbnail
+import com.itreallyiskyler.testhelpers.util.ResourceFetcher
 import org.junit.Assert.*
 import org.junit.Test
 import java.lang.AssertionError

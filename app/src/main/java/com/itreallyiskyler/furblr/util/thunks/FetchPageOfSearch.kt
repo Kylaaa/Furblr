@@ -1,19 +1,24 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
+import com.itreallyiskyler.furblr.managers.NetworkingManager
 import com.itreallyiskyler.furblr.networking.models.PageSearch
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
+import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestSearch
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.ui.home.HomePageTextPost
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
 fun FetchPageOfSearch(dbImpl : AppDatabase,
                     keyword : String,
-                    searchOptions: SearchOptions) : Promise {
+                    searchOptions : SearchOptions,
+                    requestHandler : RequestHandler = NetworkingManager.requestHandler,
+                    loggingChannel : LoggingChannel = NetworkingManager.logChannel) : Promise {
 
     var postIds : List<Long> = emptyList()
 
@@ -36,27 +41,24 @@ fun FetchPageOfSearch(dbImpl : AppDatabase,
             users.forEach { user -> missingUserIds.remove(user.username) }
 
             // fetch the creator information
-            return FetchUsersByUsernames(dbImpl, missingUserIds)
+            return FetchUsersByUsernames(dbImpl, requestHandler, loggingChannel, missingUserIds)
                 .then(fun(_: Any?): Any {
                     return searchResults
                 }, fun(_: Any?): Promise {
                     return Promise.resolve(searchResults)
                 })
-        }, fun(_: Any?) {
-            println("Failed to fetch user info!")
+        }, fun(fetchError: Any?) {
+            loggingChannel.logError("Failed to fetch user info with error : $fetchError")
         })
 
         // next, also figure out which posts to fetch up-to-date information
         .then(fun(pageSearch: Any?): Set<Long> {
-            // cast the results
-            val pageSearch = pageSearch as PageSearch
-
             // collect information about the most recent postIds
-            return pageSearch.results.map { submission -> submission.postId }.toSet()
+            return (pageSearch as PageSearch).results.map { submission -> submission.postId }.toSet()
 
         }, fun(submissionsFetchFailureDetails: Any?): Set<Long> {
             // TODO : Signal that the original fetch failed
-            println(submissionsFetchFailureDetails)
+            loggingChannel.logError("Failed to fetch search with error : $submissionsFetchFailureDetails")
             return emptySet<Long>()
         })
 
@@ -66,12 +68,12 @@ fun FetchPageOfSearch(dbImpl : AppDatabase,
             return FetchContentForPostIds(dbImpl, setOfMissingIds as Set<Long>, ContentFeedId.Home)
         }, fun(missingPostsFetchFailureDetails: Any?) {
             // TODO : handle the error
-            println("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
+            loggingChannel.logError("Fetching the missing posts threw an error : $missingPostsFetchFailureDetails")
         })
 
         .then(fun(_ :Any?) : List<HomePageImagePost> {
             return ClobberHomePageImagesById(dbImpl, postIds)
         }, fun(persistenceFailureDetails : Any?) {
-            println("Failed to persist search results : $persistenceFailureDetails")
+            loggingChannel.logError("Failed to persist search results : $persistenceFailureDetails")
         })
 }

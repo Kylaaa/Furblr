@@ -1,9 +1,9 @@
 package com.itreallyiskyler.furblr
 
-import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.dao.UsersDao
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.User
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
 

@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import com.itreallyiskyler.furblr.helpers.ResourceFetcher
+import com.itreallyiskyler.testhelpers.util.ResourceFetcher
 import org.junit.Assert.*
 import org.junit.Test
 

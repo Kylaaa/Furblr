@@ -14,7 +14,7 @@ class LoggingChannel(
         println("$channelPrefix$message")
     }
 
-    inline fun log(level: LogLevel, message: Any?) {
+    fun log(level: LogLevel, message: Any?) {
         if (level == LogLevel.NONE) {
             throw IndexOutOfBoundsException("LogLevel cannot be None")
         }
