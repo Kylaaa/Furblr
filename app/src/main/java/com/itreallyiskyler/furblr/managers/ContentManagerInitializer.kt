@@ -3,7 +3,7 @@ package com.itreallyiskyler.furblr.managers
 import android.content.Context
 import androidx.startup.Initializer
 
-abstract class ContentManagerInitializer : Initializer<ContentManager> {
+class ContentManagerInitializer : Initializer<ContentManager> {
     override fun create(context: Context): ContentManager {
         return ContentManager
     }

@@ -3,7 +3,7 @@ package com.itreallyiskyler.furblr.managers
 import android.content.Context
 import androidx.startup.Initializer
 
-abstract class AuthManagerInitializer : Initializer<AuthManager> {
+class AuthManagerInitializer : Initializer<AuthManager> {
     override fun create(context: Context): AuthManager {
         return AuthManager
     }

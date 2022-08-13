@@ -3,7 +3,7 @@ package com.itreallyiskyler.furblr.managers
 import android.content.Context
 import androidx.startup.Initializer
 
-abstract class DBManagerInitializer : Initializer<DBManager> {
+class DBManagerInitializer : Initializer<DBManager> {
     override fun create(context: Context): DBManager {
         DBManager.initialize(context)
         return DBManager
