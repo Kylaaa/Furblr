@@ -76,7 +76,7 @@ fun FetchNotifications(
             // fetch the creator information
             val fetchPromises = arrayOf<Promise>(
                 FetchUsersByUsernames(dbImpl, requestHandler, loggingChannel, missingUserIds),
-                FetchContentForPostIds(dbImpl, missingViewIds, ContentFeedId.Other,)
+                FetchContentForPostIds(dbImpl, missingViewIds, ContentFeedId.Other)
             )
             return Promise.all(fetchPromises)
         }, fun(userFetchErr: Any?) {

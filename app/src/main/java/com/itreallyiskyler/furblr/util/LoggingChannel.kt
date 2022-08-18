@@ -5,11 +5,10 @@ import java.lang.IndexOutOfBoundsException
 
 class LoggingChannel(
     channelName : String? = null,
-    level : LogLevel = LogLevel.NONE,
+    var logLevel : LogLevel = LogLevel.NONE,
     handler : ((Any?)->Unit)? = null) {
 
     private var channelPrefix : String = if (channelName != null) ("$channelName : ") else ""
-    var logLevel : LogLevel = level
     val messageHandler : (Any?)->Unit = handler ?: { message ->
         println("$channelPrefix$message")
     }
@@ -18,7 +17,7 @@ class LoggingChannel(
         if (level == LogLevel.NONE) {
             throw IndexOutOfBoundsException("LogLevel cannot be None")
         }
-        if (level.value >= logLevel.value) {
+        if (level.value <= logLevel.value) {
             messageHandler(message)
         }
     }

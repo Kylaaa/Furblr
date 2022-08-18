@@ -36,7 +36,7 @@ class NetworkingManager(
                     if (httpBody != null) {
                         val body = httpBody.string()
                         httpBody.close()
-                        logChannel.logTrace(httpBody)
+                        logChannel.logTrace(body)
                         resolve(body)
                     } else {
                         resolve("")

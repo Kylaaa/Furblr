@@ -15,6 +15,7 @@ import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
 import com.itreallyiskyler.furblr.ui.search.SearchViewModel
 import com.itreallyiskyler.furblr.util.LoggingChannel
+import com.itreallyiskyler.furblr.util.Profiler
 import com.itreallyiskyler.furblr.util.Promise
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
@@ -26,7 +27,7 @@ class ContentManager(
     private val loggingChannel : LoggingChannel
 ) : IContentManager {
     private var didFetchStartupData : Boolean = false
-    
+
     override val discoverVM : DiscoverViewModel = DiscoverViewModel()
     override val homeVM : HomeViewModel = HomeViewModel()
     override val notesVM : NotificationsViewModel = NotificationsViewModel()
@@ -39,13 +40,12 @@ class ContentManager(
         }
         didFetchStartupData = true
 
-        thread(start = true, name = "StartUpFetchThread") {
+        thread(start = true, name = "PreloadedDataThread") {
             // quickly load data that we've already fetched
-            val timeMS = measureTimeMillis {
-                loadPageOfHomeFromDB(0)
-            }
-            loggingChannel.logInfo("Populated default data in $timeMS ms")
+            loadExistingData()
+        }
 
+        thread(start = true, name = "StartUpFetchThread") {
             val promises = arrayOf(
                 fetchNotifications(false), // fetches Journals and Notifications
                 fetchSubmissions(0, 48, false) // fetches Submissions Feed
@@ -75,6 +75,17 @@ class ContentManager(
     }
 
     // LOADING FUNCTIONS
+    private fun loadExistingData() {
+        // home page and notifications
+        Profiler.measure(loggingChannel, "Populated default home data") {
+            loadPageOfHomeFromDB(0)
+        }
+
+        // search page
+        Profiler.measure(loggingChannel, "Populated search page") {
+            loadPageOfDiscoveryFromDB()
+        }
+    }
     private fun loadPageOfHomeFromDB(page : Int = 0) {
         val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, page)
         // filter the ids based on what db table to read the data from
@@ -92,6 +103,16 @@ class ContentManager(
         val unreadCount : Int = db.notificationsDao().getUnreadNotificationCount()
         notesVM.updateUnreadNotifications(unreadCount)
     }
+    private fun loadPageOfDiscoveryFromDB() {
+        val images = getDiscoveryViewsOfKind(PostKind.Image)
+        discoverVM.setNewSubmissionsData(images)
+
+        val writings = getDiscoveryViewsOfKind(PostKind.Writing)
+        discoverVM.setNewWritingData(writings)
+
+        val musics = getDiscoveryViewsOfKind(PostKind.Music)
+        discoverVM.setNewMusicData(musics)
+    }
     private fun fetchNotifications(forceReload: Boolean = false) : Promise {
         return FetchNotifications(db, requestHandler, loggingChannel, forceReload)
     }
@@ -105,15 +126,7 @@ class ContentManager(
 
     private fun fetchDiscovery() : Promise {
         return FetchPageOfDiscovery(db, requestHandler, loggingChannel, false).then(fun(_ : Any?) {
-            val images = getDiscoveryViewsOfKind(PostKind.Image)
-            discoverVM.setNewSubmissionsData(images)
-
-            val writings = getDiscoveryViewsOfKind(PostKind.Writing)
-            discoverVM.setNewWritingData(writings)
-
-            val musics = getDiscoveryViewsOfKind(PostKind.Music)
-            discoverVM.setNewMusicData(musics)
-
+            loadPageOfDiscoveryFromDB()
         }, fun(failureReason : Any?) {
             loggingChannel.logError("Failed to fetch and set Discovery content with error : $failureReason")
         })

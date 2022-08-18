@@ -9,7 +9,7 @@ class ContentManagerInitializer : Initializer<ContentManager> {
         ContentManager.init(
             db = DBManager.get().getDB(),
             requestHandler = NetworkingManager.get().requestHandler,
-            loggingChannel = LoggingManager.get().createChannel("Content Manager", LogLevel.ERROR)
+            loggingChannel = LoggingManager.get().createChannel("Content Manager", LogLevel.INFORMATION)
         )
         return ContentManager.get()
     }
