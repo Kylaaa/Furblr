@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageUserDetails
 import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
@@ -13,7 +13,7 @@ class RequestUser(val userId : String)
     constructor(
         userId: String,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
     ) : this(userId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

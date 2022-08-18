@@ -3,19 +3,29 @@ package com.itreallyiskyler.furblr.managers
 import com.itreallyiskyler.furblr.enum.LogLevel
 import com.itreallyiskyler.furblr.util.LoggingChannel
 
-object LoggingManager {
+class LoggingManager : ILoggingManager {
     private val DEFAULT_CHANNEL = LoggingChannel()
-    fun setLogLevel(level : LogLevel) {
+    override fun setLogLevel(level : LogLevel) {
         DEFAULT_CHANNEL.logLevel = level
     }
-    fun log(level: LogLevel, message: Any?) {
+    override fun log(level: LogLevel, message: Any?) {
         DEFAULT_CHANNEL.log(level, message)
     }
 
-    fun createChannel(
-        channelName : String? = null,
-        level : LogLevel = LogLevel.NONE,
-        handler : ((Any?)->Unit)? = null) : LoggingChannel {
+    override fun createChannel(
+        channelName : String?,
+        level : LogLevel,
+        handler : ((Any?)->Unit)?) : LoggingChannel {
         return LoggingChannel(channelName, level, handler)
+    }
+
+    companion object : IManagerAccessor<LoggingManager> {
+        private lateinit var instance : LoggingManager
+        override fun get(): LoggingManager {
+            return instance
+        }
+        fun init() {
+            instance = LoggingManager()
+        }
     }
 }

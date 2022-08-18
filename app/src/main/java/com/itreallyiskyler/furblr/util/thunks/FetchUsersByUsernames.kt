@@ -1,6 +1,7 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageUserDetails
 import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestUser
@@ -11,7 +12,7 @@ import com.itreallyiskyler.furblr.util.Promise
 fun FetchUsersByUsernames(
     dbImpl : AppDatabase,
     requestHandler: RequestHandler,
-    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
     usernames : Collection<String>
 ) : Promise {
 

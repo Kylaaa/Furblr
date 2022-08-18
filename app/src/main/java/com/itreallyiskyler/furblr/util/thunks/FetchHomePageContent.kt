@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.util.thunks
 
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
@@ -13,7 +13,7 @@ import kotlin.concurrent.thread
 fun FetchHomePageContent(
     dbImpl : AppDatabase,
     requestHandler: RequestHandler,
-    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
     page : Int = 0,
     pageSize : Int = 48,
     forceRefresh : Boolean) : Promise {

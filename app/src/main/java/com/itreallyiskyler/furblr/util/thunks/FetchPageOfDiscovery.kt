@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageHome
 import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestHome
@@ -14,7 +15,7 @@ import com.itreallyiskyler.furblr.util.Promise
 fun FetchPageOfDiscovery(
     dbImpl : AppDatabase,
     requestHandler : RequestHandler,
-    loggingChannel : LoggingChannel = NetworkingManager.logChannel,
+    loggingChannel : LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
     forceRefresh : Boolean) : Promise {
 
     // fetch all of the content from the home page

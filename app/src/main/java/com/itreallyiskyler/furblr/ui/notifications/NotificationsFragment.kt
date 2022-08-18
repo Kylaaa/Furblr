@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentNotificationsBinding
 import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import okhttp3.internal.toImmutableList
 import kotlin.concurrent.thread
 
@@ -26,10 +27,11 @@ class NotificationsFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        _binding?.notificationsViewModel = ContentManager.notesVM
-        adapter = NotificationsPageAdapter(ContentManager.notesVM.notes.liveData.value ?: listOf())
+        val notesVM = SingletonManager.get().ContentManager.notesVM
+        _binding?.notificationsViewModel = notesVM
+        adapter = NotificationsPageAdapter(notesVM.notes.liveData.value ?: listOf())
 
-        ContentManager.notesVM.notes.liveData.observe(viewLifecycleOwner, {
+        notesVM.notes.liveData.observe(viewLifecycleOwner, {
             it?.let {
                 adapter?.updateData(it)
             }
@@ -54,7 +56,8 @@ class NotificationsFragment : Fragment() {
 
             if (shouldMarkAsRead) {
                 val notificationsPagePosts : MutableList<NotificationsPagePost> = mutableListOf()
-                val currentNotes = ContentManager.notesVM.notes.liveData.value
+                val notesVM = SingletonManager.get().ContentManager.notesVM
+                val currentNotes = notesVM.notes.liveData.value
                 currentNotes?.forEach {
                     val unreadNotifications = it.notifications.filter { it.hasBeenSeen == false }
                     unreadNotifications.forEach { it.hasBeenSeen = true }
@@ -63,8 +66,8 @@ class NotificationsFragment : Fragment() {
                         notificationsPagePosts.add(it)
                     }
                 }
-                ContentManager.notesVM.updateNotifications(notificationsPagePosts.toImmutableList())
-                ContentManager.markNotificationsAsRead()
+                notesVM.updateNotifications(notificationsPagePosts.toImmutableList())
+                SingletonManager.get().ContentManager.markNotificationsAsRead()
             }
         }
     }

@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSearch
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
@@ -15,10 +16,10 @@ import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
 fun FetchPageOfSearch(dbImpl : AppDatabase,
-                    keyword : String,
-                    searchOptions : SearchOptions,
-                    requestHandler : RequestHandler = NetworkingManager.requestHandler,
-                    loggingChannel : LoggingChannel = NetworkingManager.logChannel) : Promise {
+                      keyword : String,
+                      searchOptions : SearchOptions,
+                      requestHandler : RequestHandler = SingletonManager.get().NetworkingManager.requestHandler,
+                      loggingChannel : LoggingChannel = SingletonManager.get().NetworkingManager.logChannel) : Promise {
 
     var postIds : List<Long> = emptyList()
 

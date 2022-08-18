@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PagePostDetails
 import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
@@ -12,7 +12,7 @@ class RequestView(val postId : Long)
     constructor(
         postId: Long,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
     ) : this(postId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

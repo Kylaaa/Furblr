@@ -16,6 +16,7 @@ import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.auth.LoginActivity
 import com.itreallyiskyler.furblr.managers.AuthManager
 import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 
 // TODO : Create infinite scrolling view of paged results
 
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         delegate.applyDayNight()
 
         // connect to some signals
-        val logoutCnx = AuthManager.UserLoggedOut.connect { gotoLogin() };
+        val logoutCnx = SingletonManager.get().AuthManager.UserLoggedOut.connect { gotoLogin() };
         connections.add(logoutCnx);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         // subscribe to any relevant signals
-        ContentManager.notesVM.UnreadCountChanged.connect {
+        SingletonManager.get().ContentManager.notesVM.UnreadCountChanged.connect {
             val navView : BottomNavigationView = binding.navView
             if (it > 0) {
                 navView.getOrCreateBadge(R.id.navigation_notifications).number = it
@@ -71,13 +72,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (!AuthManager.isAuthenticated())
+        if (!SingletonManager.get().AuthManager.isAuthenticated())
         {
             gotoLogin()
         }
         else
         {
-            ContentManager.fetchStartupData()
+            SingletonManager.get().ContentManager.fetchStartupData()
         }
     }
 
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // double check that we're still logged in
-        if (!AuthManager.isAuthenticated())
+        if (!SingletonManager.get().AuthManager.isAuthenticated())
         {
             gotoLogin()
         }

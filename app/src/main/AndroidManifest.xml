@@ -43,6 +43,9 @@
             <meta-data
                 android:name="com.itreallyiskyler.furblr.managers.NetworkingManagerInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.SingletonManagerInitializer"
+                android:value="androidx.startup" />
         </provider>
     </application>
 

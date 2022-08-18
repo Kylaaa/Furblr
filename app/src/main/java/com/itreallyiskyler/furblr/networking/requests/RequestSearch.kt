@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSearch
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.util.LoggingChannel
@@ -47,7 +47,7 @@ class RequestSearch (
         keyword: String,
         searchOptions: SearchOptions,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
     ) : this(keyword, searchOptions) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

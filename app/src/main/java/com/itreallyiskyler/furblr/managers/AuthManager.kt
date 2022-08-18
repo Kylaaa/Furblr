@@ -3,16 +3,17 @@ package com.itreallyiskyler.furblr.managers
 import android.webkit.CookieManager
 import android.webkit.WebView
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.enum.LogLevel
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Signal
 import java.lang.Exception
 
-object AuthManager {
-    val UserLoggedIn : Signal<Unit> = Signal()
-    val UserLoggedOut : Signal<Unit> = Signal()
-    val loggingChannel = LoggingManager.createChannel("Authentication", LogLevel.ERROR)
+class AuthManager(
+    private val loggingChannel : LoggingChannel
+) : IAuthManager {
+    override val UserLoggedIn : Signal<Unit> = Signal()
+    override val UserLoggedOut : Signal<Unit> = Signal()
 
-    fun isAuthenticated() : Boolean {
+    override fun isAuthenticated() : Boolean {
         try {
             val sessionCookies = CookieManager.getInstance().getCookie(BuildConfig.BASE_URL)
             val cookiesArr = sessionCookies.split(";")
@@ -37,19 +38,32 @@ object AuthManager {
         }
     }
 
-    fun enableCookieSettingsOnWebView(wv : WebView) {
+    override fun enableCookieSettingsOnWebView(wv : WebView) {
         val cm = CookieManager.getInstance();
         cm.setAcceptThirdPartyCookies(wv, true);
         cm.setAcceptCookie(true);
     }
 
-    fun syncWebviewCookies(wv : WebView) {
+    override fun syncWebviewCookies(wv : WebView) {
         CookieManager.getInstance().flush();
     }
 
-    fun logout() {
+    override fun logout() {
         CookieManager.getInstance().removeAllCookies() { value ->
             loggingChannel.logTrace("Logging out and removing cookies : $value");
-        };
+        }
+    }
+
+    companion object : IManagerAccessor<AuthManager> {
+        private lateinit var instance : AuthManager
+        override fun get(): AuthManager {
+            return instance
+        }
+
+        fun init(
+            loggingChannel: LoggingChannel
+        ) {
+            instance = AuthManager(loggingChannel)
+        }
     }
 }

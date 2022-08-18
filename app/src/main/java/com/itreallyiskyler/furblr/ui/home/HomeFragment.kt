@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentHomeBinding
 import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -20,10 +21,10 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        _binding?.homeViewModel = ContentManager.homeVM
-        adapter = HomePageAdapter(ContentManager.homeVM.posts.liveData.value ?: listOf())
+        _binding?.homeViewModel = SingletonManager.get().ContentManager.homeVM
+        adapter = HomePageAdapter(SingletonManager.get().ContentManager.homeVM.posts.liveData.value ?: listOf())
 
-        ContentManager.homeVM.posts.liveData.observe(viewLifecycleOwner, {
+        SingletonManager.get().ContentManager.homeVM.posts.liveData.observe(viewLifecycleOwner, {
             it?.let {
                 adapter?.updateData(it)
             }

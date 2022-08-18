@@ -4,6 +4,7 @@ import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
 import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.networking.requests.RequestHandler
 import com.itreallyiskyler.furblr.networking.requests.RequestSubmissions
@@ -18,7 +19,7 @@ import okhttp3.internal.toImmutableList
 fun FetchPageOfHome(
     dbImpl : AppDatabase,
     requestHandler: RequestHandler,
-    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
     page : Int = 0,
     pageSize : Int = 48,
     forceRefresh : Boolean) : Promise {

@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageJournalDetails
 import com.itreallyiskyler.furblr.networking.models.PageOthers
 import com.itreallyiskyler.furblr.networking.requests.RequestHandler
@@ -15,7 +15,7 @@ import com.itreallyiskyler.furblr.util.Promise
 fun FetchNotifications(
     dbImpl : AppDatabase,
     requestHandler: RequestHandler,
-    loggingChannel: LoggingChannel = NetworkingManager.logChannel,
+    loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
     forceRefresh : Boolean
 ) : Promise {
     val userIdsToFetch: MutableSet<String> = mutableSetOf()

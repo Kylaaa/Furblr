@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
@@ -19,7 +19,7 @@ class RequestSubmissions(
         pageSize: Int,
         offsetId: Long?,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = NetworkingManager.logChannel
+        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
     ) : this(scrollDirection, pageSize, offsetId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

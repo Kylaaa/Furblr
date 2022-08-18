@@ -15,6 +15,7 @@ import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
 import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.squareup.picasso.Picasso
 import java.lang.IllegalArgumentException
 import kotlin.Exception
@@ -98,7 +99,7 @@ class HomePageAdapter(
                 println("Favoriting ${postData.title}")
                 //currentPost!!.postData.hasFavorited = !postData.hasFavorited
 
-                ContentManager.favoritePost(imagePostDetails)
+                SingletonManager.get().ContentManager.favoritePost(imagePostDetails)
 
                 // TODO : Figure out how to mutate this data, and have it be updated
             }

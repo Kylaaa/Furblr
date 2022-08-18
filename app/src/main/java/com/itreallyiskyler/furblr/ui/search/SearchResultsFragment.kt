@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentSearchResultsBinding
 import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 
 class SearchResultsFragment : Fragment() {
 
@@ -28,10 +29,11 @@ class SearchResultsFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        val searchVM = SingletonManager.get().ContentManager.searchVM
         headerAdapter = SearchResultsHeaderAdapter(
-            ContentManager.searchVM.searchQuery.liveData.value ?: "",
-            ContentManager.searchVM.searchResults.liveData.value?.size ?: 0)
-        resultsAdapter = HomePageAdapter(ContentManager.searchVM.searchResults.liveData.value ?: listOf())
+            searchVM.searchQuery.liveData.value ?: "",
+            searchVM.searchResults.liveData.value?.size ?: 0)
+        resultsAdapter = HomePageAdapter(searchVM.searchResults.liveData.value ?: listOf())
         searchResultsViewModel =
                 ViewModelProvider(this).get(SearchResultsViewModel::class.java)
 

@@ -1,8 +1,6 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.managers.NetworkingManager
-import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
 class RequestAvatarUrl(username : String, avatarId : Long)

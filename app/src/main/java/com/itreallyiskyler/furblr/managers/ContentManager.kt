@@ -1,7 +1,6 @@
 package com.itreallyiskyler.furblr.managers
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
-import com.itreallyiskyler.furblr.enum.LogLevel
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
 import com.itreallyiskyler.furblr.networking.requests.IRequestAction
@@ -21,19 +20,19 @@ import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
-object ContentManager {
+class ContentManager(
+    private val db : AppDatabase,
+    private val requestHandler : RequestHandler,
+    private val loggingChannel : LoggingChannel
+) : IContentManager {
     private var didFetchStartupData : Boolean = false
-    private val db : AppDatabase = DBManager.getDB()
-    private val requestHandler : RequestHandler = NetworkingManager.requestHandler
-    private val loggingChannel : LoggingChannel = LoggingManager.createChannel("Content Manager", LogLevel.ERROR)
+    
+    override val discoverVM : DiscoverViewModel = DiscoverViewModel()
+    override val homeVM : HomeViewModel = HomeViewModel()
+    override val notesVM : NotificationsViewModel = NotificationsViewModel()
+    override val searchVM : SearchViewModel = SearchViewModel()
 
-    var discoverVM : DiscoverViewModel = DiscoverViewModel()
-    var homeVM : HomeViewModel = HomeViewModel()
-    var notesVM : NotificationsViewModel = NotificationsViewModel()
-    var searchVM : SearchViewModel = SearchViewModel()
-
-
-    fun fetchStartupData() {
+    override fun fetchStartupData() {
         // debounce multiple requests
         if (didFetchStartupData) {
             return
@@ -76,7 +75,7 @@ object ContentManager {
     }
 
     // LOADING FUNCTIONS
-    fun loadPageOfHomeFromDB(page : Int = 0) {
+    private fun loadPageOfHomeFromDB(page : Int = 0) {
         val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, page)
         // filter the ids based on what db table to read the data from
         val postIds = contentIds.filter { it.postKind != PostKind.Journal.id }.map { it.postId }
@@ -93,17 +92,18 @@ object ContentManager {
         val unreadCount : Int = db.notificationsDao().getUnreadNotificationCount()
         notesVM.updateUnreadNotifications(unreadCount)
     }
-    fun fetchNotifications(forceReload: Boolean = false) : Promise {
+    private fun fetchNotifications(forceReload: Boolean = false) : Promise {
         return FetchNotifications(db, requestHandler, loggingChannel, forceReload)
     }
 
-    fun fetchSubmissions(page : Int = 0,
-                         pageSize : Int = 48,
-                         forceReload : Boolean = false) : Promise {
+    private fun fetchSubmissions(page : Int = 0,
+        pageSize : Int = 48,
+        forceReload : Boolean = false
+    ) : Promise {
         return FetchPageOfHome(db, requestHandler, loggingChannel, page, pageSize, forceReload)
     }
 
-    fun fetchDiscovery() : Promise {
+    private fun fetchDiscovery() : Promise {
         return FetchPageOfDiscovery(db, requestHandler, loggingChannel, false).then(fun(_ : Any?) {
             val images = getDiscoveryViewsOfKind(PostKind.Image)
             discoverVM.setNewSubmissionsData(images)
@@ -119,7 +119,7 @@ object ContentManager {
         })
     }
 
-    fun fetchLatestHomePagePost(post : IHomePageContent) {
+    private fun fetchLatestHomePagePost(post : IHomePageContent) {
         val postId = post.contentId
         if (post.postKind != PostKind.Journal) {
             // re-fetch the data from the web
@@ -133,7 +133,7 @@ object ContentManager {
         }
     }
 
-    fun favoritePost(imagePost : HomePageImagePost) : Promise {
+    override fun favoritePost(imagePost : HomePageImagePost) : Promise {
         val id = imagePost.postData.id
         val key = imagePost.postData.favKey
         val isFavoritedAlready = imagePost.postData.hasFavorited
@@ -151,12 +151,12 @@ object ContentManager {
             })
     }
 
-    fun markNotificationsAsRead() {
+    override fun markNotificationsAsRead() {
         db.notificationsDao().markNotificationAsSeen()
         notesVM.updateUnreadNotifications(0)
     }
 
-    fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
+    override fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
         return FetchPageOfSearch(db, keyword, options).then(fun(listOfPosts : Any?) {
             searchVM.setSearchQuery(keyword)
             searchVM.setSearchParameters(options)
@@ -165,5 +165,25 @@ object ContentManager {
         }, fun(failureToFetchDetails : Any?) {
             loggingChannel.logError("Failed to fetch page of search with reason : $failureToFetchDetails")
         })
+    }
+
+
+    companion object : IManagerAccessor<ContentManager> {
+        private lateinit var instance : ContentManager
+        override fun get(): ContentManager {
+            return instance
+        }
+
+        fun init(
+            db : AppDatabase,
+            requestHandler : RequestHandler,
+            loggingChannel: LoggingChannel
+        ) {
+            instance = ContentManager(
+                db = db,
+                requestHandler = requestHandler,
+                loggingChannel = loggingChannel
+            )
+        }
     }
 }

@@ -1,8 +1,7 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
-import com.itreallyiskyler.furblr.enum.LogLevel
-import com.itreallyiskyler.furblr.managers.NetworkingManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.util.GenericCallback
 import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
@@ -27,16 +26,16 @@ abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
     private var _path:String = ""
     private var _args: Map<String, Any>? = null
     private var _url : URL = rebuildUrl()
-    private var _requestImpl : RequestHandler = NetworkingManager.requestHandler
-    private var _loggingChannel : LoggingChannel = NetworkingManager.logChannel
+    private var _requestImpl : RequestHandler = SingletonManager.get().NetworkingManager.requestHandler
+    private var _loggingChannel : LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
 
     // Additional Constructors
     constructor(
         baseUrl: String,
         path:String = "",
         args: Map<String, Any>? = null,
-        requestHandler : RequestHandler = NetworkingManager.requestHandler,
-        loggingChannel: LoggingChannel = NetworkingManager.logChannel) : this() {
+        requestHandler : RequestHandler = SingletonManager.get().NetworkingManager.requestHandler,
+        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel) : this() {
         _baseUrl = baseUrl
         _path = path
         _args = args
@@ -62,12 +61,12 @@ abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
         return build(_baseUrl, _path, _args)
     }
     private fun build(baseUrl: String, path: String, args: Map<String, Any>? = null) : URL {
-        val ENCODING = "UTF-8"
+        val encoding = "UTF-8"
         var argString = ""
         if (!args.isNullOrEmpty()){
             var argList = "?"
             for ((k, v) in args){
-                argList += URLEncoder.encode(k, ENCODING) + "=" + URLEncoder.encode(v.toString(), ENCODING) + "&"
+                argList += URLEncoder.encode(k, encoding) + "=" + URLEncoder.encode(v.toString(), encoding) + "&"
             }
             argString = argList.substringBeforeLast('&')
         }
@@ -78,7 +77,7 @@ abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
             var request : Request.Builder = Request.Builder()
             request.url(_url)
 
-            val body : RequestBody = if (requestBody != null) requestBody.toRequestBody() else EMPTY_REQUEST
+            val body : RequestBody = requestBody?.toRequestBody() ?: EMPTY_REQUEST
 
             when (requestType) {
                 RequestType.GET -> request = request.get()
@@ -91,14 +90,14 @@ abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
         return Promise(action)
     }
     private fun encodeFormData(formData: HashMap<String, Any>?) : String {
-        val ENCODING = "UTF-8"
+        val encoding = "UTF-8"
         var requestBody = ""
         if (formData != null) {
             for ((key : String, value : Any) in formData) {
                 requestBody += "$key=${value};"
             }
             // remove the trailing semi-colon, and encode the result
-            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1), ENCODING)
+            requestBody = URLEncoder.encode(requestBody.substring(0, requestBody.length - 1), encoding)
         }
         return requestBody
     }
@@ -111,7 +110,7 @@ abstract class BaseRequest() : IUrlFetcher, IRequestAction  {
         return fetch(RequestType.POST, requestBody)
     }
     protected fun POST(formData : HashMap<String, Any>? = null) : Promise {
-        var requestBody = encodeFormData(formData)
+        val requestBody = encodeFormData(formData)
         return fetch(RequestType.POST, requestBody)
     }
 }

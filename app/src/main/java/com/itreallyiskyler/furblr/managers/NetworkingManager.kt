@@ -10,16 +10,17 @@ import java.io.IOException
 import java.net.URL
 import kotlin.concurrent.thread
 
-object NetworkingManager {
-    val CookieHandler : WebviewCookieHandler =
+class NetworkingManager(
+    override val logChannel: LoggingChannel
+) : INetworkingManager {
+    private val CookieHandler : WebviewCookieHandler =
         WebviewCookieHandler()
-    val RequestClient : OkHttpClient = OkHttpClient.Builder()
+    private val RequestClient : OkHttpClient = OkHttpClient.Builder()
         .cookieJar(CookieHandler)
         .build()
-    val requestHandler : RequestHandler = { url, request, resolve, reject ->
+    override val requestHandler : RequestHandler = { url, request, resolve, reject ->
         handleRequest(url, request, resolve, reject)
     }
-    val logChannel : LoggingChannel = LoggingManager.createChannel("Networking", LogLevel.INFORMATION)
 
     private fun handleRequest(url : URL, request : Request, resolve : GenericCallback, reject : GenericCallback) {
         thread(start = true, name = url.toString()) {
@@ -43,5 +44,18 @@ object NetworkingManager {
                 }
             })
         }
+    }
+
+    companion object : IManagerAccessor<NetworkingManager> {
+        private lateinit var instance : NetworkingManager
+        override fun get(): NetworkingManager {
+            return instance
+        }
+        fun init(
+            logChannel: LoggingChannel
+        ){
+            instance = NetworkingManager(logChannel = logChannel)
+        }
+
     }
 }

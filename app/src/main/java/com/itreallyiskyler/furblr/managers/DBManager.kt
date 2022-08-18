@@ -5,25 +5,35 @@ import androidx.room.Room
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import kotlin.concurrent.thread
 
-object DBManager {
-    private lateinit var contentDB : AppDatabase
+class DBManager(context:Context) : IDBManager {
+    private val contentDB : AppDatabase = Room.databaseBuilder(
+        context,
+        AppDatabase::class.java,
+        "furblr-db"
+    ).fallbackToDestructiveMigration()
+        .build()
 
-    fun initialize(context:Context) {
-        contentDB = Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "furblr-db"
-        ).build()
+    override fun getDB() : AppDatabase {
+        return contentDB
+    }
 
-        // debug
-        /*thread {
+    override fun resetDB() {
+        thread {
             contentDB.run {
                 clearAllTables()
             }
-        }*/
+        }
     }
 
-    fun getDB() : AppDatabase {
-        return contentDB
+    companion object : IManagerAccessor<DBManager> {
+        private lateinit var instance : DBManager
+        override fun get(): DBManager {
+            return instance
+        }
+        fun init(context:Context) {
+            instance = DBManager(
+                context = context
+            )
+        }
     }
 }
