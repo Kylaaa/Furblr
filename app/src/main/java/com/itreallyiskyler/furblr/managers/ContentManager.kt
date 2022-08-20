@@ -15,11 +15,9 @@ import com.itreallyiskyler.furblr.ui.home.IHomePageContent
 import com.itreallyiskyler.furblr.ui.notifications.NotificationsViewModel
 import com.itreallyiskyler.furblr.ui.search.SearchViewModel
 import com.itreallyiskyler.furblr.util.LoggingChannel
-import com.itreallyiskyler.furblr.util.Profiler
 import com.itreallyiskyler.furblr.util.Promise
 import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
-import kotlin.system.measureTimeMillis
 
 class ContentManager(
     private val db : AppDatabase,
@@ -77,12 +75,12 @@ class ContentManager(
     // LOADING FUNCTIONS
     private fun loadExistingData() {
         // home page and notifications
-        Profiler.measure(loggingChannel, "Populated default home data") {
+        loggingChannel.profile("Populated default home data") {
             loadPageOfHomeFromDB(0)
         }
 
         // search page
-        Profiler.measure(loggingChannel, "Populated search page") {
+        loggingChannel.profile("Populated search page") {
             loadPageOfDiscoveryFromDB()
         }
     }

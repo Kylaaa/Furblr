@@ -12,6 +12,10 @@ class LoggingManager : ILoggingManager {
         DEFAULT_CHANNEL.log(level, message)
     }
 
+    override fun profile(message: String, callback: () -> Unit) {
+        DEFAULT_CHANNEL.profile(message, callback)
+    }
+
     override fun createChannel(
         channelName : String?,
         level : LogLevel,

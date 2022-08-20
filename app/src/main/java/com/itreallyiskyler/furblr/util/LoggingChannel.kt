@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.util
 
 import com.itreallyiskyler.furblr.enum.LogLevel
 import java.lang.IndexOutOfBoundsException
+import kotlin.system.measureTimeMillis
 
 class LoggingChannel(
     channelName : String? = null,
@@ -32,5 +33,10 @@ class LoggingChannel(
     }
     fun logError(message : Any?) {
         log(LogLevel.ERROR, message)
+    }
+
+    fun profile(message: String, callback: () -> Unit) {
+        val timeMS = measureTimeMillis(callback)
+        log(LogLevel.INFORMATION, "$message in $timeMS ms")
     }
 }
