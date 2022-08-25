@@ -10,7 +10,7 @@ class RequestNotifications() : BaseRequest(BuildConfig.BASE_URL, "msg/others/") 
 
     constructor(
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this() {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -18,7 +18,7 @@ class RequestNotifications() : BaseRequest(BuildConfig.BASE_URL, "msg/others/") 
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageOthers {
-            return PageOthers(httpBody as String)
+            return PageOthers.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
             getLogChannel().logError("Failed to fetch Notifications : $message")

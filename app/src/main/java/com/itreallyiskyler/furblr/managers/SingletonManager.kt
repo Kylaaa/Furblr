@@ -7,7 +7,6 @@ class SingletonManager(
     val LoggingManager : ILoggingManager,
     val NetworkingManager : INetworkingManager)
 {
-
     companion object : IManagerAccessor<SingletonManager> {
         private lateinit var instance : SingletonManager
         override fun get() : SingletonManager {

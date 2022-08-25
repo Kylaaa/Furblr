@@ -1,11 +1,11 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.CommentLocationId
-import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 
-fun ClobberHomePageImagesById(dbImpl : AppDatabase,
-                               assetIds : List<Long>) : List<HomePageImagePost> {
+fun ClobberHomePageImagesById(assetIds : List<Long>) : List<HomePageImagePost> {
+    val dbImpl = SingletonManager.get().DBManager.getDB()
     val commentsDao = dbImpl.commentsDao()
     val tagsDao = dbImpl.tagsDao()
     val viewsDao = dbImpl.viewsDao()

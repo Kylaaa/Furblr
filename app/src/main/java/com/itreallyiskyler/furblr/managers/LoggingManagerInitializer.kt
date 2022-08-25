@@ -7,7 +7,7 @@ import com.itreallyiskyler.furblr.enum.LogLevel
 class LoggingManagerInitializer : Initializer<LoggingManager> {
     override fun create(context: Context): LoggingManager {
         LoggingManager.init()
-        LoggingManager.get().setLogLevel(LogLevel.INFORMATION)
+        LoggingManager.get().getChannel().logLevel = LogLevel.INFORMATION
         return LoggingManager.get()
     }
 

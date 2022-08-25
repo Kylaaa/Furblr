@@ -47,7 +47,7 @@ class RequestSearch (
         keyword: String,
         searchOptions: SearchOptions,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this(keyword, searchOptions) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -60,7 +60,7 @@ class RequestSearch (
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageSearch {
-            return PageSearch(httpBody as String)
+            return PageSearch.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
             getLogChannel().logError("Failed to fetch search results with error : $message")

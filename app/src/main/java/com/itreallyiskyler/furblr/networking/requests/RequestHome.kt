@@ -10,7 +10,7 @@ class RequestHome() : BaseRequest(BuildConfig.BASE_URL, "") {
 
     constructor(
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this() {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -18,7 +18,7 @@ class RequestHome() : BaseRequest(BuildConfig.BASE_URL, "") {
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageHome {
-            return PageHome(httpBody as String);
+            return PageHome.parseFromHttp(httpBody as String);
         }
         var failure = fun(message : Any?) {
             getLogChannel().logError("Failed to fetch and parse the home page : $message")

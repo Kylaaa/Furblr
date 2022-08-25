@@ -1,49 +1,41 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.managers.SingletonManager
-import com.itreallyiskyler.furblr.networking.requests.RequestHandler
-import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.home.HomePageImagePost
 import com.itreallyiskyler.furblr.util.GenericCallback
-import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 import kotlin.concurrent.thread
 
 
-fun FetchHomePageContent(
-    dbImpl : AppDatabase,
-    requestHandler: RequestHandler,
-    loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel,
-    page : Int = 0,
-    pageSize : Int = 48,
-    forceRefresh : Boolean) : Promise {
+fun FetchHomePageContent(page : Int = 0, pageSize : Int = 48, forceRefresh : Boolean) : Promise {
 
     if (!forceRefresh) {
-        return Promise(fun(resolve : GenericCallback, reject : GenericCallback){
+        return Promise(fun(resolve : GenericCallback, _ : GenericCallback){
             thread(start = true, name = "FetchHomePageContentWithoutForceRefreshThread") {
                 // search for posts that we've already fetched
-                val ids: List<Long> = dbImpl.homePageDao().getHomePagePostIdsByPage(pageSize, page)
-                resolve(ClobberHomePageImagesById(dbImpl, ids))
+                val homePageDao = SingletonManager.get().DBManager.getDB().homePageDao()
+                val ids: List<Long> = homePageDao.getHomePagePostIdsByPage(pageSize, page)
+                resolve(ClobberHomePageImagesById(ids))
             }
         })
     }
 
     return Promise(fun(resolve, reject) {
-        var submissions: List<HomePageImagePost> = listOf()
+        val submissions: MutableList<HomePageImagePost> = mutableListOf()
 
         lateinit var fetchNextPage : (Int)->Unit
         fetchNextPage = fun(pageOffset : Int) {
-            FetchPageOfHome(dbImpl, requestHandler, loggingChannel, page + pageOffset, pageSize, forceRefresh).then(
+            FetchPageOfHome(page + pageOffset, pageSize, forceRefresh).then(
                 fun(homePagePosts : Any?) {
                     submissions += (homePagePosts as List<HomePageImagePost>)
                     if ((homePagePosts as List<HomePageImagePost>).size <= 1) {
-                        resolve(submissions)
+                        resolve(submissions.toList())
                     }
                     else if (submissions.size < pageSize) {
                         fetchNextPage(pageOffset + 1)
                     }
                     else {
-                        val filteredList = submissions.subList(0, pageSize)
+                        val filteredList = submissions.subList(0, pageSize).toList()
                         resolve(filteredList)
                     }
                 },
@@ -51,8 +43,8 @@ fun FetchHomePageContent(
                     reject(fetchErr)
                 }
             )
-        };
+        }
 
-        fetchNextPage(0);
-    });
+        fetchNextPage(0)
+    })
 }

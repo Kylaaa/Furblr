@@ -7,8 +7,6 @@ import com.itreallyiskyler.furblr.enum.LogLevel
 class ContentManagerInitializer : Initializer<ContentManager> {
     override fun create(context: Context): ContentManager {
         ContentManager.init(
-            db = DBManager.get().getDB(),
-            requestHandler = NetworkingManager.get().requestHandler,
             loggingChannel = LoggingManager.get().createChannel("Content Manager", LogLevel.INFORMATION)
         )
         return ContentManager.get()

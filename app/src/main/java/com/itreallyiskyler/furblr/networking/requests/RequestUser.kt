@@ -13,7 +13,7 @@ class RequestUser(val userId : String)
     constructor(
         userId: String,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this(userId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -21,7 +21,7 @@ class RequestUser(val userId : String)
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageUserDetails {
-            return PageUserDetails(userId, httpBody as String);
+            return PageUserDetails.parseFromHttp(httpBody as String);
         }
         var failure = fun(message : Any?) {
             getLogChannel().logError("Failed to parse PageUserDetails : $message")

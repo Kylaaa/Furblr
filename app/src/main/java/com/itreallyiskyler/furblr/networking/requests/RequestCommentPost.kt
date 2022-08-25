@@ -12,7 +12,7 @@ class RequestCommentPost(postId : Long, message : String)
         postId : Long,
         message : String,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) :  this(postId, message){
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

@@ -2,11 +2,22 @@ package com.itreallyiskyler.furblr.networking.models
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-class PageSearch (private val httpBody : String) {
-    private var doc : Document = Jsoup.parse(httpBody)
-    private val items : Elements = doc.select("figure")
+class PageSearch (
+    val results : List<ThumbnailSubmission>
+) {
 
-    val results : List<ThumbnailSubmission> = items.map { element -> ThumbnailSubmission(element) }
+    companion object : IParserHttp<PageSearch> {
+        override fun parseFromHttp(body: String): PageSearch {
+            val doc : Document = Jsoup.parse(body)
+            val items : Elements = doc.select("figure")
+
+            val results : List<ThumbnailSubmission> = items.map {
+                    element -> ThumbnailSubmission.parseFromElement(element)
+            }
+            return PageSearch(results)
+        }
+    }
 }

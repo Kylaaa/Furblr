@@ -2,7 +2,6 @@ package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
 import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
-import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSubmissions
 import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
@@ -19,7 +18,7 @@ class RequestSubmissions(
         pageSize: Int,
         offsetId: Long?,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this(scrollDirection, pageSize, offsetId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -43,7 +42,7 @@ class RequestSubmissions(
 
     override fun fetchContent() : Promise {
         val success = fun(httpBody : Any?) : PageSubmissions {
-            return PageSubmissions(httpBody as String);
+            return PageSubmissions.parseFromHttp(httpBody as String);
         }
         val failure = fun(message : Any?) {
             getLogChannel().logError(message as Exception);

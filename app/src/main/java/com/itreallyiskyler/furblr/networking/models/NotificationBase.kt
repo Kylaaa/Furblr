@@ -4,10 +4,8 @@ import com.itreallyiskyler.furblr.util.DateFormatter
 import org.jsoup.nodes.Element
 
 // This is the base class for parsing notifications
-abstract class NotificationBase (private val element : Element) : INotification {
-    override var id: Long = parseId(element)
-
-    private fun parseId(element : Element) : Long {
+abstract class NotificationBase {
+    protected fun parseId(element : Element) : Long {
         val checkboxElement : Element = element.select("input")!![0]
         return checkboxElement.attr("value")!!.toLong()
     }

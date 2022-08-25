@@ -12,7 +12,7 @@ class RequestView(val postId : Long)
     constructor(
         postId: Long,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this(postId) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)
@@ -20,7 +20,7 @@ class RequestView(val postId : Long)
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PagePostDetails {
-            return PagePostDetails(httpBody as String)
+            return PagePostDetails.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
             getLogChannel().logError("Failed to fetch view details : $message")

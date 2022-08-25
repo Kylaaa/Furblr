@@ -19,15 +19,27 @@ import org.jsoup.nodes.Element
     </li>
  */
 
-class NotificationWatch (private val element : Element) : NotificationBase(element) {
-    override var kind : NotificationId = NotificationId.Watch
+data class NotificationWatch (
+    override val id: Long,
+    override val kind: NotificationId,
+    override val sourceName: String,
+    override val sourcePost: Long?,
+    override val date: String
+) : INotification {
 
-    override var sourceName : String = parseSender(element)
-    override var sourcePost : Long? = null
-    override var date: String = parseDate(element, 1)
+    companion object : NotificationBase(), IParserElement<NotificationWatch> {
+        override fun parseFromElement(container: Element): NotificationWatch {
+            val id = parseId(container)
+            val kind: NotificationId = NotificationId.Watch
+            val sourceName: String = parseSender(container)
+            val sourcePost: Long? = null
+            val date: String = parseDate(container, 1)
+            return NotificationWatch(id, kind, sourceName, sourcePost, date)
+        }
 
-    private fun parseSender(element : Element) : String {
-        val nameTag = element.select("span")!![0]
-        return nameTag.text()
+        private fun parseSender(element: Element): String {
+            val nameTag = element.select("span")!![0]
+            return nameTag.text()
+        }
     }
 }

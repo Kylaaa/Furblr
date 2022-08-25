@@ -20,8 +20,6 @@ import com.itreallyiskyler.furblr.util.thunks.*
 import kotlin.concurrent.thread
 
 class ContentManager(
-    private val db : AppDatabase,
-    private val requestHandler : RequestHandler,
     private val loggingChannel : LoggingChannel
 ) : IContentManager {
     private var didFetchStartupData : Boolean = false
@@ -45,8 +43,8 @@ class ContentManager(
 
         thread(start = true, name = "StartUpFetchThread") {
             val promises = arrayOf(
-                fetchNotifications(false), // fetches Journals and Notifications
-                fetchSubmissions(0, 48, false) // fetches Submissions Feed
+                FetchNotifications(false), // fetches Journals and Notifications
+                FetchPageOfHome(0, 48, false) // fetches Submissions Feed
             )
 
             Promise.all(promises).then(fun(_ : Any?) {
@@ -66,9 +64,10 @@ class ContentManager(
         }
     }
     private fun getDiscoveryViewsOfKind(kind: PostKind) : MutableList<HomePageImagePost> {
-        val contentIds = db.contentFeedDao().getPageFromFeedOfKind(listOf(ContentFeedId.Discover.id), kind.id, 20, 0)
+        val contentFeedDao = SingletonManager.get().DBManager.getDB().contentFeedDao()
+        val contentIds = contentFeedDao.getPageFromFeedOfKind(listOf(ContentFeedId.Discover.id), kind.id, 20, 0)
         val viewIds = contentIds.map { it.postId }
-        val views = ClobberHomePageImagesById(db, viewIds)
+        val views = ClobberHomePageImagesById(viewIds)
         return views.toMutableList()
     }
 
@@ -85,17 +84,18 @@ class ContentManager(
         }
     }
     private fun loadPageOfHomeFromDB(page : Int = 0) {
+        val db = SingletonManager.get().DBManager.getDB()
         val contentIds = db.contentFeedDao().getPageFromFeed(listOf(ContentFeedId.Home.id), 48, page)
         // filter the ids based on what db table to read the data from
         val postIds = contentIds.filter { it.postKind != PostKind.Journal.id }.map { it.postId }
         val journalIds = contentIds.filter { it.postKind == PostKind.Journal.id }.map { it.postId }
 
-        val posts = ClobberHomePageImagesById(db, postIds)
-        val journals = ClobberHomePageTextsById(db, journalIds)
+        val posts = ClobberHomePageImagesById(postIds)
+        val journals = ClobberHomePageTextsById(journalIds)
         val homeContent = (posts + journals).sortedByDescending { it.postDate }.toMutableList()
         homeVM.setPosts(homeContent)
 
-        val notes = ClobberNotificationsByPage(db)
+        val notes = ClobberNotificationsByPage()
         notesVM.setNotifications(notes)
 
         val unreadCount : Int = db.notificationsDao().getUnreadNotificationCount()
@@ -111,19 +111,9 @@ class ContentManager(
         val musics = getDiscoveryViewsOfKind(PostKind.Music)
         discoverVM.setNewMusicData(musics)
     }
-    private fun fetchNotifications(forceReload: Boolean = false) : Promise {
-        return FetchNotifications(db, requestHandler, loggingChannel, forceReload)
-    }
-
-    private fun fetchSubmissions(page : Int = 0,
-        pageSize : Int = 48,
-        forceReload : Boolean = false
-    ) : Promise {
-        return FetchPageOfHome(db, requestHandler, loggingChannel, page, pageSize, forceReload)
-    }
 
     private fun fetchDiscovery() : Promise {
-        return FetchPageOfDiscovery(db, requestHandler, loggingChannel, false).then(fun(_ : Any?) {
+        return FetchPageOfDiscovery(false).then(fun(_ : Any?) {
             loadPageOfDiscoveryFromDB()
         }, fun(failureReason : Any?) {
             loggingChannel.logError("Failed to fetch and set Discovery content with error : $failureReason")
@@ -134,7 +124,7 @@ class ContentManager(
         val postId = post.contentId
         if (post.postKind != PostKind.Journal) {
             // re-fetch the data from the web
-            FetchLatestForPost(db, postId, ContentFeedId.Home)
+            FetchLatestForPost(postId, ContentFeedId.Home)
                 .then(fun(updatedPost: Any?) {
                     val updatedHomePagePost = (updatedPost as List<HomePageImagePost>)[0]
                     homeVM.updatePost(postId, updatedHomePagePost)
@@ -163,12 +153,12 @@ class ContentManager(
     }
 
     override fun markNotificationsAsRead() {
-        db.notificationsDao().markNotificationAsSeen()
+        SingletonManager.get().DBManager.getDB().notificationsDao().markNotificationAsSeen()
         notesVM.updateUnreadNotifications(0)
     }
 
     override fun fetchSearchPage(keyword : String, options : SearchOptions) : Promise {
-        return FetchPageOfSearch(db, keyword, options).then(fun(listOfPosts : Any?) {
+        return FetchPageOfSearch(keyword, options).then(fun(listOfPosts : Any?) {
             searchVM.setSearchQuery(keyword)
             searchVM.setSearchParameters(options)
             searchVM.setSearchResults(listOfPosts as List<HomePageImagePost>)
@@ -186,13 +176,9 @@ class ContentManager(
         }
 
         fun init(
-            db : AppDatabase,
-            requestHandler : RequestHandler,
             loggingChannel: LoggingChannel
         ) {
             instance = ContentManager(
-                db = db,
-                requestHandler = requestHandler,
                 loggingChannel = loggingChannel
             )
         }

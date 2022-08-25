@@ -19,27 +19,42 @@ import org.jsoup.nodes.Element
     </li>
  */
 
-class NotificationComment (private val element : Element) : NotificationBase(element) {
-    override var kind : NotificationId = parseKind(element)
+data class NotificationComment(
+    override val id: Long,
+    override val kind: NotificationId,
+    override val sourceName: String,
+    override val sourcePost: Long?,
+    override val date: String
+) : INotification {
 
-    override var sourceName : String = parseSender(element)
-    override var sourcePost : Long? = parseSource(element)
-    override var date : String = parseDate(element)
 
-    private fun parseKind(element: Element) : NotificationId {
-        return if (element.select("em").size > 0)
-            NotificationId.SubmissionCommentReply
-        else
-            NotificationId.SubmissionComment
-    }
-    private fun parseSender(element : Element) : String {
-        val nameTag : Element = element.select("strong")!![0]
-        return nameTag.text()
-    }
-    private fun parseSource(element : Element) : Long {
-        val postTag : Element = element.select("a")!![1]
-        val link : String = postTag.attr("href")!!.toString()
-        val parts = link.split("/")
-        return parts[2].toLong()
+    companion object : NotificationBase(), IParserElement<NotificationComment> {
+        override fun parseFromElement(container: Element): NotificationComment {
+            val id = parseId(container)
+            val kind : NotificationId = parseKind(container)
+
+            val sourceName : String = parseSender(container)
+            val sourcePost : Long? = parseSource(container)
+            val date : String = parseDate(container)
+
+            return NotificationComment(id, kind, sourceName, sourcePost, date)
+        }
+
+        private fun parseKind(element: Element) : NotificationId {
+            return if (element.select("em").size > 0)
+                NotificationId.SubmissionCommentReply
+            else
+                NotificationId.SubmissionComment
+        }
+        private fun parseSender(element : Element) : String {
+            val nameTag : Element = element.select("strong")!![0]
+            return nameTag.text()
+        }
+        private fun parseSource(element : Element) : Long? {
+            val postTag : Element = element.select("a")!![1]
+            val link : String = postTag.attr("href")!!.toString()
+            val parts = link.split("/")
+            return parts[2].toLong()
+        }
     }
 }

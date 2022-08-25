@@ -12,7 +12,7 @@ class RequestFavoritePost(postId : Long, favoriteKey: String)
         postId: Long,
         favoriteKey: String,
         requestHandler: RequestHandler,
-        loggingChannel: LoggingChannel = SingletonManager.get().NetworkingManager.logChannel
+        loggingChannel: LoggingChannel
     ) : this(postId, favoriteKey) {
         setRequestHandler(requestHandler)
         setLoggingChannel(loggingChannel)

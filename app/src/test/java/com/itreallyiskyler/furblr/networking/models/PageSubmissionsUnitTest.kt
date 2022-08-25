@@ -25,7 +25,7 @@ class PageSubmissionsUnitTest {
     @Test
     fun constructor_parsesPage() {
         val EXAMPLE_BODY : String = ResourceFetcher.ReadTextFromResource("exampleSubmissions.html")
-        val submissions = PageSubmissions(EXAMPLE_BODY)
+        val submissions = PageSubmissions.parseFromHttp(EXAMPLE_BODY)
 
         val expectedThumbnails : Array<MockThumbnail> = arrayOf(
             MockThumbnail(48030294, AgeRating.General, "https://t.furaffinity.net/48030294@200-1657469660.jpg", 154.219f, 200.0f, "Commission", "yec_yourz"),
@@ -41,9 +41,9 @@ class PageSubmissionsUnitTest {
         )
 
         for (i in expectedThumbnails.indices) {
-            matchesThumbnailData(submissions.Submissions[i], expectedThumbnails[i])
+            matchesThumbnailData(submissions.submissions[i], expectedThumbnails[i])
         }
 
-        assertEquals(submissions.Submissions.size, 48)
+        assertEquals(submissions.submissions.size, 48)
     }
 }

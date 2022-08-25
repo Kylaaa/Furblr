@@ -7,10 +7,16 @@ import org.jsoup.nodes.Element
     <span class="tags"><a href="/search/@keywords Male">Male</a></span>
  */
 
-class PostTag(elementData: Element) : IPostTag {
-    override var Content : String = elementData.children()[0].text()
+data class PostTag(
+    override val content: String
+) : IPostTag {
 
-    companion object {
+    companion object : IParserElement<PostTag> {
+        override fun parseFromElement(container: Element): PostTag {
+            val content: String = container.children()[0].text()
+            return PostTag(content)
+        }
+
         fun Compare(a : PostTag?, b : PostTag?) : Int {
             if (a == null && b == null)
                 return 0
@@ -21,7 +27,7 @@ class PostTag(elementData: Element) : IPostTag {
             if (b == null)
                 return 1
 
-            return a.Content.compareTo(b.Content)
+            return a.content.compareTo(b.content)
         }
     }
 }

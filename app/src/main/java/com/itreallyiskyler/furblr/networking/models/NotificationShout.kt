@@ -1,7 +1,6 @@
 package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.enum.NotificationId
-import com.itreallyiskyler.furblr.util.DateFormatter
 import org.jsoup.nodes.Element
 
 /*
@@ -14,15 +13,27 @@ import org.jsoup.nodes.Element
     </li>
  */
 
-class NotificationShout (private val element : Element) : NotificationBase(element) {
-    override var kind : NotificationId = NotificationId.Shout
+data class NotificationShout (
+    override val id: Long,
+    override val kind: NotificationId,
+    override val sourceName: String,
+    override val sourcePost: Long?,
+    override val date: String
+) : INotification {
 
-    override var sourceName : String = parseSender(element)
-    override var sourcePost : Long? = null
-    override var date : String = parseDate(element)
+    companion object : NotificationBase(), IParserElement<NotificationShout> {
+        override fun parseFromElement(container: Element): NotificationShout {
+            val id = parseId(container)
+            val kind: NotificationId = NotificationId.Shout
+            val sourceName: String = parseSender(container)
+            val sourcePost: Long? = null
+            val date: String = parseDate(container)
+            return NotificationShout(id, kind, sourceName, sourcePost, date)
+        }
 
-    private fun parseSender(element: Element) : String {
-        val nameTag : Element = element.select("strong")!![0]
-        return nameTag.text()
+        private fun parseSender(element: Element): String {
+            val nameTag: Element = element.select("strong")!![0]
+            return nameTag.text()
+        }
     }
 }

@@ -1,7 +1,8 @@
 package com.itreallyiskyler.furblr.managers
 
-import com.itreallyiskyler.furblr.enum.LogLevel
-import com.itreallyiskyler.furblr.networking.requests.RequestHandler
+import com.itreallyiskyler.furblr.enum.SubmissionScrollDirection
+import com.itreallyiskyler.furblr.networking.models.SearchOptions
+import com.itreallyiskyler.furblr.networking.requests.*
 import com.itreallyiskyler.furblr.ui.auth.WebviewCookieHandler
 import com.itreallyiskyler.furblr.util.GenericCallback
 import com.itreallyiskyler.furblr.util.LoggingChannel
@@ -44,6 +45,57 @@ class NetworkingManager(
                 }
             })
         }
+    }
+
+    override fun requestAvatarUrl(username : String, avatarId : Long) : IUrlFetcher {
+        return RequestAvatarUrl(username, avatarId)
+    }
+
+    override fun requestCommentPost(postId : Long, message : String) : IRequestAction {
+        return RequestCommentPost(postId, message, requestHandler, logChannel)
+    }
+
+    override fun requestFavoritePost(postId : Long, favoriteKey: String) : IRequestAction {
+        return RequestFavoritePost(postId, favoriteKey, requestHandler, logChannel)
+    }
+
+    override fun requestHome() : IRequestAction {
+        return RequestHome(requestHandler, logChannel)
+    }
+
+    override fun requestJournalDetails(journalId : Long) : IRequestAction {
+        return RequestJournalDetails(journalId, requestHandler, logChannel)
+    }
+
+    override fun requestLogin() : IUrlFetcher {
+        return RequestLogin()
+    }
+
+    override fun requestNotifications() : IRequestAction {
+        return RequestNotifications(requestHandler, logChannel)
+    }
+
+    override fun requestSearch(keyword : String, searchOptions : SearchOptions) : IRequestAction {
+        return RequestSearch(keyword, searchOptions, requestHandler, logChannel)
+    }
+
+    override fun requestSubmissions(
+        scrollDirection: SubmissionScrollDirection,
+        pageSize: Int,
+        offsetId: Long?) : IRequestAction {
+        return RequestSubmissions(scrollDirection, pageSize, offsetId, requestHandler, logChannel)
+    }
+
+    override fun requestUnfavoritePost(postId : Long, favoriteKey: String) : IRequestAction {
+        return RequestUnfavoritePost(postId, favoriteKey, requestHandler, logChannel)
+    }
+
+    override fun requestUser(userId : String) : IRequestAction {
+        return RequestUser(userId, requestHandler, logChannel)
+    }
+
+    override fun requestView(postId : Long) : IRequestAction {
+        return RequestView(postId, requestHandler, logChannel)
     }
 
     companion object : IManagerAccessor<NetworkingManager> {

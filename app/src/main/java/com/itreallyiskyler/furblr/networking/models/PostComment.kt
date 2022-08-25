@@ -56,23 +56,39 @@ import org.jsoup.nodes.Element
     </div>
  */
 
-class PostComment(elementData: Element) : IPostComment {
-    // TODO : detect hidden comments
-    // TODO : detect parent / child relationship to comments
-    private val idString : String = elementData.child(0).id()
-    override var Id : Long = idString.split(":")[1].toLong()
-    override var Content : String = elementData.getElementsByClass("comment_text")[0].text()
+data class PostComment(
+    override val id : Long,
+    override val content : String,
+    override val uploaderAvatar : String,
+    override val uploaderName : String,
+    override val uploaderTitle : String,
+    override val date : String
+) : IPostComment {
 
-    private val avatarImage = elementData.getElementsByClass("comment_useravatar")[0]
-    override var UploaderAvatar : String = avatarImage.attr("src")
+    companion object : IParserElement<PostComment> {
+        override fun parseFromElement(container: Element): PostComment {
+            // TODO : detect hidden comments
+            // TODO : detect parent / child relationship to comments
+            val idString: String = container.child(0).id()
+            val id: Long = idString.split(":")[1].toLong()
+            val content: String = container.getElementsByClass("comment_text")[0].text()
 
-    private var cells = elementData.getElementsByClass("cell")
-    private val userElement = cells[1]
-    private val usernameElement = userElement.getElementsByClass("comment_username")[0]
-    override var UploaderName : String = usernameElement.child(0).text()
-    override var UploaderTitle : String = userElement.getElementsByClass("hideonmobile")[0].text()
+            val avatarImage = container.getElementsByClass("comment_useravatar")[0]
+            val uploaderAvatar: String = avatarImage.attr("src")
 
-    private val dateText : String = userElement.getElementsByClass("popup_date")[0].attr("title")
-    private val df = DateFormatter(dateText)
-    override var Date = df.toYYYYMMDDhhmm()
+            val cells = container.getElementsByClass("cell")
+            val userElement = cells[1]
+            val usernameElement = userElement.getElementsByClass("comment_username")[0]
+            var uploaderName: String = usernameElement.child(0).text()
+            val uploaderTitle: String =
+                userElement.getElementsByClass("hideonmobile")[0].text()
+
+            val dateText: String =
+                userElement.getElementsByClass("popup_date")[0].attr("title")
+            val df = DateFormatter(dateText)
+            val date = df.toYYYYMMDDhhmm()
+
+            return PostComment(id, content, uploaderAvatar, uploaderName, uploaderTitle, date)
+        }
+    }
 }

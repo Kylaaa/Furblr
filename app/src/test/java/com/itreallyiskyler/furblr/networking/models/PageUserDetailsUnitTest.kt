@@ -8,7 +8,7 @@ class PageUserDetailsUnitTest {
     @Test
     fun constructor_parsesPage() {
         val EXAMPLE_BODY : String = ResourceFetcher.ReadTextFromResource("exampleUser.html")
-        val user = PageUserDetails("blitzdrachin", EXAMPLE_BODY)
+        val user = PageUserDetails.parseFromHttp(EXAMPLE_BODY)
 
         assertEquals(user.username, "blitzdrachin")
         assertEquals(user.avatarId, 1645982594)
