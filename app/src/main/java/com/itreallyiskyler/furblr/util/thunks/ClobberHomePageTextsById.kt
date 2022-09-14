@@ -1,11 +1,11 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.CommentLocationId
-import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.ui.home.HomePageTextPost
 
-fun ClobberHomePageTextsById(dbImpl : AppDatabase,
-                             assetIds : List<Long>) : List<HomePageTextPost> {
+fun ClobberHomePageTextsById(assetIds : List<Long>) : List<HomePageTextPost> {
+    val dbImpl = SingletonManager.get().DBManager.getDB()
     val commentsDao = dbImpl.commentsDao()
     val journalsDao = dbImpl.journalsDao()
     val usersDao = dbImpl.usersDao()
@@ -29,7 +29,8 @@ fun ClobberHomePageTextsById(dbImpl : AppDatabase,
             }
             catch (ex : Exception)
             {
-                print("Failed to attribute user to journal #${post.id}")
+                SingletonManager.get().LoggingManager.getChannel().logError(
+                    "Failed to attribute user to journal #${post.id}")
             }
         }
     }

@@ -3,14 +3,13 @@ package com.itreallyiskyler.furblr.ui.auth;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieSyncManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.itreallyiskyler.furblr.managers.SingletonManager;
 import com.itreallyiskyler.furblr.networking.requests.RequestHome;
 import com.itreallyiskyler.furblr.networking.requests.RequestLogin;
-import com.itreallyiskyler.furblr.util.AuthManager;
 import com.itreallyiskyler.furblr.util.CommandWithArgs2;
 
 import java.net.MalformedURLException;
@@ -111,7 +110,7 @@ public class WebLoginWebViewClient extends WebViewClient {
     {
         // TODO : check if session is _actually_ authenticated
         //AuthManager.INSTANCE.isAuthenticated();
-        AuthManager.INSTANCE.getUserLoggedIn().fire(null);
+        SingletonManager.Companion.get().getAuthManager().getUserLoggedIn().fire(null);
         return true;
     }
 
@@ -160,6 +159,6 @@ public class WebLoginWebViewClient extends WebViewClient {
 
     public void initCookieSettings(WebView view)
     {
-        AuthManager.INSTANCE.enableCookieSettingsOnWebView(view);
+        SingletonManager.Companion.get().getAuthManager().enableCookieSettingsOnWebView(view);
     }
 }

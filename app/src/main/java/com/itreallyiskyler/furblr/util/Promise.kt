@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.util
 
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import okhttp3.internal.toImmutableList
 
 enum class PromiseState {
@@ -77,13 +78,20 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                 result = action(futurePromiseValue)
             }
             catch (ex : Exception) {
-                println("Promise rejected with exception : $ex")
-                ex.stackTrace.forEach { stackTraceElement -> println(stackTraceElement.toString()) }
+                val loggingChannel = SingletonManager.get().LoggingManager.getChannel()
+                val errMessage = ex.stackTrace.map {
+                        stackTraceElement -> stackTraceElement.toString()
+                }.joinToString(
+                    prefix = "Promise rejected with exception : $ex\n",
+                    separator = "\n"
+                )
+                loggingChannel.logError(errMessage)
+
                 try {
                     rejectorFunc(ex)
                 }
                 catch(rejectorEx : Exception) {
-                    println("Failed to reject a promise, as the rejector also threw an exception : $rejectorEx")
+                    loggingChannel.logError("Failed to reject a promise, as the rejector also threw an exception : $rejectorEx")
                 }
                 return
             }

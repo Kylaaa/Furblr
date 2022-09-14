@@ -2,10 +2,10 @@ package com.itreallyiskyler.furblr.networking.models
 
 
 interface IPostComment {
-    var Id : Long
-    var Content : String
-    var UploaderAvatar : String
-    var UploaderName : String
-    var UploaderTitle : String
-    var Date : String
+    val id : Long
+    val content : String
+    val uploaderAvatar : String
+    val uploaderName : String
+    val uploaderTitle : String
+    val date : String
 }

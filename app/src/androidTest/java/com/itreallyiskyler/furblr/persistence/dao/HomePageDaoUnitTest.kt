@@ -1,10 +1,10 @@
 package com.itreallyiskyler.furblr.persistence.dao
 
 import com.itreallyiskyler.furblr.enum.*
-import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.*
 import com.itreallyiskyler.furblr.util.DateFormatter
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
 

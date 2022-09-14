@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class PostTheme(val id:Int) {
+enum class PostTheme(override val id : Int) : IValueAccessor<Int> {
     // General Things
     All(0),
     Abstract(1),

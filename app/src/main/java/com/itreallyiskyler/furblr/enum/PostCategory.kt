@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class PostCategory(val id:Int) {
+enum class PostCategory(override val id : Int) : IValueAccessor<Int> {
     // Visual Art
     All(0),
     ArtworkDigital(1),

@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentDiscoverBinding
-import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 
 class DiscoverFragment : Fragment() {
 
@@ -37,14 +38,14 @@ class DiscoverFragment : Fragment() {
         searchAdapter = DiscoverSearchHeaderAdapter()
         discoverAdapter = DiscoverSectionAdapter(
             viewContext,
-            ContentManager.discoverVM.discoverDataSets)
+            SingletonManager.get().ContentManager.discoverVM.discoverDataSets)
         adapter = ConcatAdapter(searchAdapter, discoverAdapter)
         dashboardViewModel =
             ViewModelProvider(this).get(DiscoverViewModel::class.java)
 
         val searchConnection = searchAdapter!!.searchSignal.connect { keyword, searchOptions ->
             run {
-                ContentManager.fetchSearchPage(keyword, searchOptions).then(fun(_ : Any?) {
+                SingletonManager.get().ContentManager.fetchSearchPage(keyword, searchOptions).then(fun(_ : Any?) {
                     activity?.runOnUiThread {
                         navigateToSearchResults()
                     }

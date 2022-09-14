@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.enum
 
-enum class LogLevel(val value : Int) {
+enum class LogLevel(override val id : Int) : IValueAccessor<Int> {
     NONE(0),
     ERROR(1),
     WARNING(2),

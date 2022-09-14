@@ -1,6 +1,6 @@
 package com.itreallyiskyler.furblr.enum
 
-enum class PostKind(val id : Int) {
+enum class PostKind(override val id : Int) : IValueAccessor<Int> {
     Image(0),
     Journal(1),
     Writing(2),

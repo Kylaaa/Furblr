@@ -8,7 +8,8 @@ import android.webkit.WebView
 import com.itreallyiskyler.furblr.databinding.ActivityLoginBinding
 import com.itreallyiskyler.furblr.networking.requests.RequestLogin
 import com.itreallyiskyler.furblr.ui.main.MainActivity
-import com.itreallyiskyler.furblr.util.AuthManager
+import com.itreallyiskyler.furblr.managers.AuthManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
 
 class LoginActivity : AppCompatActivity() {
 
@@ -37,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         _wv.loadUrl(targetUrl)
 
         // listen for the login signal to fire
-        val loginCnx = AuthManager.UserLoggedIn.connect { onUserLogin() };
+        val loginCnx = SingletonManager.get().AuthManager.UserLoggedIn.connect { onUserLogin() };
         connections.add(loginCnx)
     }
 

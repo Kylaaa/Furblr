@@ -1,4 +1,4 @@
-package com.itreallyiskyler.furblr.persistence
+package com.itreallyiskyler.testhelpers.persistence
 
 import org.junit.Assert
 import org.junit.Test

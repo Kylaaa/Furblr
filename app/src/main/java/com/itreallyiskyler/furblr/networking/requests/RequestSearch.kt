@@ -1,8 +1,10 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageSearch
 import com.itreallyiskyler.furblr.networking.models.SearchOptions
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
 
 /*
@@ -39,8 +41,17 @@ The actual value can be defined by the checkbox itself, or the browser can send 
 class RequestSearch (
     private val keyword : String = "",
     private val searchOptions : SearchOptions = SearchOptions()
-) : IPageParser<PageSearch>,
-    BaseRequest(BuildConfig.BASE_URL, "search?q=$keyword") {
+) : BaseRequest(BuildConfig.BASE_URL, "search?q=$keyword") {
+
+    constructor(
+        keyword: String,
+        searchOptions: SearchOptions,
+        requestHandler: RequestHandler,
+        loggingChannel: LoggingChannel
+    ) : this(keyword, searchOptions) {
+        setRequestHandler(requestHandler)
+        setLoggingChannel(loggingChannel)
+    }
 
     private val DO_NOT_INCLUDE : String = ""
     private fun getFormValueForBool(boolValue : Boolean) : String {
@@ -49,11 +60,10 @@ class RequestSearch (
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageSearch {
-            return PageSearch(httpBody as String)
+            return PageSearch.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
-            // TODO("Not yet implemented")
-            println(message)
+            getLogChannel().logError("Failed to fetch search results with error : $message")
         }
 
         val optionalParams = mapOf(

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests" type="JUnit" factoryName="JUnit">
-    <module name="Furblr.app" />
+    <module name="Furblr.app.unitTest" />
     <option name="ALTERNATIVE_JRE_PATH" value="Android API 31 Platform" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />

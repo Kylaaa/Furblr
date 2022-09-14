@@ -1,31 +1,31 @@
 package com.itreallyiskyler.furblr.util.thunks
 
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.*
-import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.*
 
-private fun mapToNotificationList(notesList : List<INotification>) : List<Notification> {
-    return notesList.map {
-        Notification(
-            it.id,
-            it.kind.id,
-            it.sourcePost,
-            it.sourceName,
-            it.date
-        )
+fun PersistPageOthers(pagePostOthers: PageOthers) {
+    val notes : MutableList<Notification> = mutableListOf()
+    listOf(
+        pagePostOthers.comments,
+        pagePostOthers.favorites,
+        pagePostOthers.watches,
+        pagePostOthers.shouts).forEach {
+
+        val newNotesList = it.map {
+            Notification(
+                it.id,
+                it.kind.id,
+                it.sourcePost,
+                it.sourceName,
+                it.date
+            )
+        }
+        notes += newNotesList
     }
-}
 
-fun PersistPageOthers (dbImpl: AppDatabase,
-                        pagePostOthers: PageOthers) {
-    var notes : List<Notification> = listOf()
-
-    notes += mapToNotificationList(pagePostOthers.Comments)
-    notes += mapToNotificationList(pagePostOthers.Favorites)
-    notes += mapToNotificationList(pagePostOthers.Watches)
-    notes += mapToNotificationList(pagePostOthers.Shouts)
-
+    val notificationsDao = SingletonManager.get().DBManager.getDB().notificationsDao()
     notes.forEach {
-        dbImpl.notificationsDao().insertOrUpdateNotification(it)
+        notificationsDao.insertOrUpdateNotification(it)
     }
 }

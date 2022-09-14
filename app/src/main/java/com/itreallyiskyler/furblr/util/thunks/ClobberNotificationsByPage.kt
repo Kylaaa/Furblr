@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.util.thunks
 
 import com.itreallyiskyler.furblr.enum.NotificationId
-import com.itreallyiskyler.furblr.persistence.db.AppDatabase
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.persistence.entities.Notification
 import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.persistence.entities.View
@@ -9,16 +9,13 @@ import com.itreallyiskyler.furblr.ui.notifications.NotificationsPagePost
 import okhttp3.internal.toImmutableList
 import okhttp3.internal.toImmutableMap
 import java.lang.IndexOutOfBoundsException
-import java.util.*
 
-fun ClobberNotificationsByPage(dbImpl : AppDatabase,
-                                page : Int = 0,
-                                pageSize : Int = 40) : List<NotificationsPagePost> {
+fun ClobberNotificationsByPage(page : Int = 0, pageSize : Int = 40) : List<NotificationsPagePost> {
     // organize clusters of notifications by date
+    val dbImpl = SingletonManager.get().DBManager.getDB()
     val notificationsDao = dbImpl.notificationsDao()
     val viewsDao = dbImpl.viewsDao()
     val usersDao = dbImpl.usersDao()
-
 
     val notesByDate : MutableMap<String, MutableList<Notification>> = mutableMapOf()
     val userByNote  : MutableMap<Notification, User> = mutableMapOf()

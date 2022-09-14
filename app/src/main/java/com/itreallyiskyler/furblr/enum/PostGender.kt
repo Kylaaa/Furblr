@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class PostGender(val id: Int) {
+enum class PostGender(override val id : Int) : IValueAccessor<Int> {
     Any(0),
     Male(1),
     Female(2),
