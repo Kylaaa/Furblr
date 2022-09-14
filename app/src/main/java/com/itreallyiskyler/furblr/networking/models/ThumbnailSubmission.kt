@@ -32,7 +32,7 @@ import org.jsoup.nodes.Element
     </figure>
  */
 
-class ThumbnailSubmission(
+data class ThumbnailSubmission(
     override val postId: Long,
     override val creatorName: String,
     override val imageSrc: String,

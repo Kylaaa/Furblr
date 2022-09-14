@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class SearchRange(val id : String) {
+enum class SearchRange(override val id : String) : IValueAccessor<String> {
     Day("day"),
     ThreeDays("3days"),
     Week("week"),

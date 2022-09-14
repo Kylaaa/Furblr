@@ -2,10 +2,10 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class AgeRating {
-    General,
-    Mature,
-    Adult;
+enum class AgeRating(override val id: String) : IValueAccessor<String> {
+    General("general"),
+    Mature("mature"),
+    Adult("adult");
 
     companion object {
         /*
@@ -35,7 +35,7 @@ enum class AgeRating {
             if (classes.contains("mature")) { return AgeRating.Mature }
             if (classes.contains("adult")) { return AgeRating.Adult }
 
-            throw InvalidKeyException("Cannot find AgeRating in list of class names")
+            throw InvalidKeyException("Cannot find AgeRating in list of class names : $classes")
         }
     };
 }

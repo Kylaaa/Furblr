@@ -18,7 +18,7 @@ class LoggingChannel(
         if (level == LogLevel.NONE) {
             throw IndexOutOfBoundsException("LogLevel cannot be None")
         }
-        if (level.value <= logLevel.value) {
+        if (level.id <= logLevel.id) {
             messageHandler(message)
         }
     }

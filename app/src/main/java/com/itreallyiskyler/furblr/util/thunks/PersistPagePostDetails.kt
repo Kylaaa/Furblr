@@ -41,7 +41,7 @@ fun PersistPagePostDetails(
         hasFavorited = pagePostDetails.hasFavorited,
 
         // Metadata
-        rating = pagePostDetails.rating.toString(),
+        rating = pagePostDetails.rating.id,
         kind = pagePostDetails.kind.id,
         category = pagePostDetails.category.id,
         theme = pagePostDetails.theme.id,

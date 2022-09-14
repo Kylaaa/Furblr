@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class SearchOrderDirection(val id : String) {
+enum class SearchOrderDirection(override val id : String) : IValueAccessor<String> {
     Descending("desc"),
     Ascending("asc");
 

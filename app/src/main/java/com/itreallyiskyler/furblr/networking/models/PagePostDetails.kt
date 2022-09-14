@@ -179,11 +179,9 @@ data class PagePostDetails (
 
         private fun parseComments(commentContainers: Elements): List<IPostComment> {
             // TODO : figure out why parsing comments breaks
-            /*val comments = commentContainers.map { element ->
+            return commentContainers.mapNotNull { element ->
                 PostComment.parseFromElement(element)
             }
-            return comments*/
-            return listOf()
         }
 
         private fun parseCategory(element: Element): PostCategory {

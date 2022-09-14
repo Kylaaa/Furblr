@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class SearchOrderBy(val id : String) {
+enum class SearchOrderBy(override val id : String) : IValueAccessor<String> {
     Relevancy("relevancy"),
     Date("date"),
     Popularity("popularity");

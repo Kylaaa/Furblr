@@ -55,9 +55,7 @@ data class PageJournalDetails (
         }
 
         private fun parseComments(commentContainers: Elements): List<IPostComment> {
-            return commentContainers.map { element ->
-                PostComment.parseFromElement(element)
-            }
+            return commentContainers.mapNotNull { element -> PostComment.parseFromElement(element) }
         }
     }
 }

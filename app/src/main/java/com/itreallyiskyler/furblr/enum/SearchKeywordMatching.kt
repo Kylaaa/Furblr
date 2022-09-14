@@ -2,7 +2,7 @@ package com.itreallyiskyler.furblr.enum
 
 import java.security.InvalidKeyException
 
-enum class SearchKeywordMatching(val id : String) {
+enum class SearchKeywordMatching(override val id : String) : IValueAccessor<String> {
     All("all"),
     Anything("any"),
     Extended("extended");

@@ -2,6 +2,7 @@ package com.itreallyiskyler.furblr.networking.models
 
 import com.itreallyiskyler.furblr.util.DateFormatter
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 
 /*
     Example :
@@ -65,13 +66,19 @@ data class PostComment(
     override val date : String
 ) : IPostComment {
 
-    companion object : IParserElement<PostComment> {
-        override fun parseFromElement(container: Element): PostComment {
+    companion object : IParserElement<PostComment?> {
+        // TODO Figure out how to fail to parse an object
+        override fun parseFromElement(container: Element): PostComment? {
             // TODO : detect hidden comments
             // TODO : detect parent / child relationship to comments
             val idString: String = container.child(0).id()
             val id: Long = idString.split(":")[1].toLong()
-            val content: String = container.getElementsByClass("comment_text")[0].text()
+            val contentContainer: Elements = container.getElementsByClass("comment_text")
+            if (contentContainer.size == 0) {
+                return null
+                //throw IndexOutOfBoundsException("Couldn't parse the comment because it's hidden")
+            }
+            val content : String = contentContainer[0]?.text() ?: ""
 
             val avatarImage = container.getElementsByClass("comment_useravatar")[0]
             val uploaderAvatar: String = avatarImage.attr("src")
@@ -79,7 +86,7 @@ data class PostComment(
             val cells = container.getElementsByClass("cell")
             val userElement = cells[1]
             val usernameElement = userElement.getElementsByClass("comment_username")[0]
-            var uploaderName: String = usernameElement.child(0).text()
+            val uploaderName: String = usernameElement.child(0).text()
             val uploaderTitle: String =
                 userElement.getElementsByClass("hideonmobile")[0].text()
 
