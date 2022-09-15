@@ -1,5 +1,6 @@
 package com.itreallyiskyler.furblr.ui.discover
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import com.itreallyiskyler.furblr.R
@@ -12,12 +13,15 @@ import com.squareup.picasso.Picasso
 class DiscoverPreviewAdapter(
     initialDataSet : List<IHomePageContent> = listOf()
 ) : AdapterFactory<IHomePageContent>(
-    initialDataSet,
-    R.layout.listitem_discover_preview
+    initialDataSet
 ) {
     private val imageLoader : Picasso = Picasso.get()
 
-    override fun onRenderItem(view: View, content: IHomePageContent) {
+    override fun getLayoutId(viewType: Int): Int {
+        return R.layout.listitem_discover_preview
+    }
+
+    override fun onRenderItem(view: View, content: IHomePageContent, viewContext: Context) {
         val imagePostDetails = content as HomePageImagePost
 
         // Define UI Element bindings here

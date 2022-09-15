@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.FragmentNotificationsBinding
-import com.itreallyiskyler.furblr.managers.ContentManager
 import com.itreallyiskyler.furblr.managers.SingletonManager
 import okhttp3.internal.toImmutableList
 import kotlin.concurrent.thread

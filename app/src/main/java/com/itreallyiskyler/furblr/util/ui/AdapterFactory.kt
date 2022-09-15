@@ -1,37 +1,48 @@
 package com.itreallyiskyler.furblr.util.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class AdapterFactory<T>(
-    private val dataSet: List<T>,
-    private val layoutId: Int
-    ) : RecyclerView.Adapter<AdapterFactory.ViewHolder<T>>() {
+    protected var dataSet: List<T>,
+    ) : RecyclerView.Adapter<AdapterFactory.AdapterFactoryViewHolder<T>>() {
 
-    class ViewHolder<T>(
+    class AdapterFactoryViewHolder<T>(
         private val view:View,
-        private val renderFunc: (View, T) -> Unit
+        private val viewGroup:ViewGroup,
+        private val renderFunc: (View, T, Context) -> Unit
     ) : RecyclerView.ViewHolder(view) {
         fun bind(viewDetails: T) {
-            renderFunc(view, viewDetails)
+            renderFunc(view, viewDetails, viewGroup.context)
         }
     }
 
-    abstract fun onRenderItem(view: View, content : T)
+    abstract fun onRenderItem(view: View, content : T, viewContext: Context)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
-        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
-        return ViewHolder(view, ::onRenderItem)
+    abstract fun getLayoutId(viewType: Int) : Int
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterFactoryViewHolder<T> {
+        val resourceId : Int = getLayoutId(viewType)
+        val view = LayoutInflater.from(parent.context).inflate(resourceId, parent, false)
+        return AdapterFactoryViewHolder(view, parent, ::onRenderItem)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
+    override fun onBindViewHolder(holder: AdapterFactoryViewHolder<T>, position: Int) {
         val postDetails = dataSet[position]
         holder.bind(postDetails)
     }
 
     override fun getItemCount(): Int {
         return dataSet.count()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateData(newDataSet : List<T> = listOf()) {
+        dataSet = newDataSet
+        notifyDataSetChanged()
     }
 }
