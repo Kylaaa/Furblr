@@ -37,7 +37,6 @@ class DiscoverFragment : Fragment() {
 
         searchAdapter = DiscoverSearchHeaderAdapter()
         discoverAdapter = DiscoverSectionAdapter(
-            viewContext,
             SingletonManager.get().ContentManager.discoverVM.discoverDataSets)
         adapter = ConcatAdapter(searchAdapter, discoverAdapter)
         dashboardViewModel =
