@@ -2,11 +2,12 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
 }
+apply plugin: 'kotlin-android'
 
 android {
     defaultConfig {
-        minSdk 26
-        targetSdk 31
+        minSdk 33
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
@@ -36,4 +37,6 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-ksp:1.4.0-rc-dev-experimental-20200828'
 
     implementation project(path: ':app')
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
