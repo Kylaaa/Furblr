@@ -48,8 +48,8 @@ data class PageUserDetails(
             val nickname: String = "" //namesContainer.child(1).text()
             val dateJoined: String = ""
 
-            val avatarContainer = doc.getElementsByClass("user-nav-avatar")[0]
-            val avatarSrc: String = avatarContainer.attr("src")!!
+            val avatarContainer = doc.getElementsByTag("userpage-nav-avatar")[0]
+            val avatarSrc: String = avatarContainer.getElementsByTag("img")[0].attr("src")!!
                 .substring(BuildConfig.ASSET_URL.length - "https:".length)
             val avatarId: Long = avatarSrc.split("/")[0].toLong()
 
@@ -66,9 +66,8 @@ data class PageUserDetails(
 
         private fun getUsername(document: Document): String {
             try {
-                val namesContainer = document.getElementsByClass("username")[0]
-                val usernameContainer = namesContainer.child(0)
-                val username = usernameContainer.text().trim().substring(1)
+                val namesContainer = document.getElementsByTag("username")[0]
+                val username = namesContainer.text().trim().substring(1)
                 return username
             } catch (ex: Exception) {
                 throw(Exception(
