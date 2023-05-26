@@ -10,8 +10,8 @@ class PageJournalDetailsUnitTest {
         val EXAMPLE_BODY : String = ResourceFetcher.ReadTextFromResource("exampleJournal.html")
         val journal = PageJournalDetails.parseFromHttp(EXAMPLE_BODY)
 
-        assertEquals(journal.artist, "LynxWolf")
-        assertEquals(journal.comments.size, 3)
-        assertEquals(journal.title, "Out of town for 4 days.")
+        assertEquals(journal.artist, "Redsmock")
+        assertEquals(journal.comments.size, 0)
+        assertEquals(journal.title, "Shiba Inu chubby man\uD83D\uDC09")
     }
 }
