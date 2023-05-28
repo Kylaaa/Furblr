@@ -18,7 +18,7 @@ data class PageJournalDetails (
             val doc: Document = Jsoup.parse(body)
 
             // creator information
-            val creatorContainer: Element = doc.getElementsByClass("username")[0]
+            val creatorContainer: Element = doc.getElementsByTag("username")[0]
             val artist: String = parseArtist(creatorContainer)
 
             // header information
@@ -38,8 +38,7 @@ data class PageJournalDetails (
         }
 
         private fun parseArtist(element: Element): String {
-            val spanElements = element.select("h2")
-            return spanElements[0].text().substring(1)
+            return element.text().substring(1)
         }
 
         private fun parseTitle(element: Element): String {

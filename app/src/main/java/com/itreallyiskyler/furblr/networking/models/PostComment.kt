@@ -80,18 +80,17 @@ data class PostComment(
             }
             val content : String = contentContainer[0]?.text() ?: ""
 
-            val avatarImage = container.getElementsByClass("comment_useravatar")[0]
-            val uploaderAvatar: String = avatarImage.attr("src")
+            val avatarImages = container.getElementsByClass("comment_useravatar")
+            if (avatarImages.size == 0) {
+                return null
+            }
+            val uploaderAvatar: String = avatarImages[0].attr("src")
 
-            val cells = container.getElementsByClass("cell")
-            val userElement = cells[1]
-            val usernameElement = userElement.getElementsByClass("comment_username")[0]
-            val uploaderName: String = usernameElement.child(0).text()
-            val uploaderTitle: String =
-                userElement.getElementsByClass("hideonmobile")[0].text()
+            val usernameElement = container.getElementsByClass("comment_username")[0]
+            val uploaderName: String = usernameElement.text()
+            val uploaderTitle: String = container.getElementsByTag("comment-title")[0].text()
 
-            val dateText: String =
-                userElement.getElementsByClass("popup_date")[0].attr("title")
+            val dateText: String = container.getElementsByTag("comment-date")[0].child(0).attr("title")
             val df = DateFormatter(dateText)
             val date = df.toYYYYMMDDhhmm()
 

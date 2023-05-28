@@ -28,10 +28,10 @@ data class JournalStub(
             val titleContainer = container.getElementsByClass("journal_subject")[0]
             val title : String = titleContainer.text()
 
-            val author : String = links[1].child(0).text()
+            val author : String = links[1].text()
 
             val dateContainer = container.getElementsByTag("span")[0]
-            val dateText = dateContainer.attributes()["title"]
+            val dateText = dateContainer.child(0).attributes()["title"]
             val trimmedDateText = dateText.substring(dateText.indexOf(" ") + 1)
             val date : String = DateFormatter(trimmedDateText).toYYYYMMDDhhmm()
 
