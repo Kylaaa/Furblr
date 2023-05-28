@@ -1,11 +1,10 @@
 package com.itreallyiskyler.furblr.persistence.dao
 
-import com.itreallyiskyler.furblr.enum.CommentLocationId
-import com.itreallyiskyler.furblr.enum.ContentFeedId
-import com.itreallyiskyler.furblr.persistence.DBTestClass
+import com.itreallyiskyler.furblr.enum.*
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.*
 import com.itreallyiskyler.furblr.util.DateFormatter
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
 
@@ -17,11 +16,11 @@ class HomePageDaoUnitTest : DBTestClass() {
         val usersDao = db.usersDao()
         usersDao.insertOrUpdateUsers(testUserA, testUserB)
 
-        val testPostA = Post(1, testUserA.username, "Title 1", "Description 1", "testUrl/123", 0, 0, 0, "General", "12341", false, DateFormatter.createDate(2000, 1, 1, 0, 0))
-        val testPostB = Post(2, testUserA.username, "Title 2", "Description 2", "testUrl/456", 0, 0, 0, "Mature", "12341", false, DateFormatter.createDate(2000, 2, 1, 0, 0))
-        val testPostC = Post(3, testUserB.username, "Title 1", "Description 1", "testUrl/789", 0, 0, 0, "Adult", "12341", false, DateFormatter.createDate(2000, 3, 1, 0, 0))
-        val postsDao = db.postsDao()
-        postsDao.insertOrUpdate(testPostA, testPostB, testPostC)
+        val testPostA = View(1, testUserA.username, "Title 1", "Description 1", "https://testUrl.com/123.jpg", "https://testUrl.com/123.jpg", 1600, 1200, 0, 0, 0, "key123", false, DateFormatter.createDate(2000, 1, 1, 0, 0), AgeRating.General.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.Any.id)
+        val testPostB = View(2, testUserA.username, "Title 2", "Description 2", "https://testUrl.com/456.jpg", "https://testUrl.com/456.jpg", 1600, 1200, 0, 0, 0, "key456", false, DateFormatter.createDate(2000, 2, 1, 0, 0), AgeRating.Mature.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.Any.id)
+        val testPostC = View(3, testUserB.username, "Title 3", "Description 3", "https://testUrl.com/456.jpg", "https://testUrl.com/456.jpg", 1600, 1200, 0, 0, 0, "key789", false, DateFormatter.createDate(2000, 3, 1, 0, 0), AgeRating.Adult.name, PostKind.Image.id, PostCategory.All.id, PostTheme.All.id, PostGender.Any.id)
+        val viewsDao = db.viewsDao()
+        viewsDao.insertOrUpdate(testPostA, testPostB, testPostC)
 
         val feedIdA = FeedId.fromPost(ContentFeedId.Home, testPostA)
         val feedIdB = FeedId.fromPost(ContentFeedId.Search, testPostB)

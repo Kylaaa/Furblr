@@ -1,20 +1,25 @@
 package com.itreallyiskyler.furblr.networking.models
 
-import okhttp3.internal.toImmutableList
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
-class PageSubmissions (httpBody : String) {
-    private var doc : Document = Jsoup.parse(httpBody);
-    private var AllSubmissionElements : Elements = doc.select("figure");
+data class PageSubmissions(
+    val submissions : List<IThumbnail>
+) {
+    companion object : IParserHttp<PageSubmissions>{
+        override fun parseFromHttp(httpBody : String): PageSubmissions {
+            val doc : Document = Jsoup.parse(httpBody)
+            val allSubmissionElements : Elements = doc.select("figure")
+            val submissions = parseSubmissions(allSubmissionElements)
+            return PageSubmissions(submissions)
+        }
 
-    val Submissions : Array<ThumbnailSubmission> = parseSubmissions(AllSubmissionElements);
-
-    private fun parseSubmissions(submissionElements: Elements) : Array<ThumbnailSubmission>
-    {
-        var submissions : MutableList<ThumbnailSubmission> = mutableListOf()
-        submissionElements.forEach { element -> submissions.add(ThumbnailSubmission(element))}
-        return submissions.toImmutableList().toTypedArray();
+        private fun parseSubmissions(elements: Elements) : List<ThumbnailSubmission>
+        {
+            return elements.map {
+                ThumbnailSubmission.parseFromElement(it)
+            }.toList()
+        }
     }
 }

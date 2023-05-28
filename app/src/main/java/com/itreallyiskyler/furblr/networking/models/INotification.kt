@@ -4,8 +4,9 @@ import com.itreallyiskyler.furblr.enum.NotificationId
 
 
 interface INotification {
-    var kind : NotificationId
-    var sourceName : String
-    var sourcePost : Long?
-    var date : String
+    val kind : NotificationId
+    val id : Long
+    val sourceName : String
+    val sourcePost : Long?
+    val date : String
 }

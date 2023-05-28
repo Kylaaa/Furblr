@@ -10,12 +10,15 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.ui.auth.LoginActivity
-import com.itreallyiskyler.furblr.util.AuthManager
-import com.itreallyiskyler.furblr.util.ContentManager
+import com.itreallyiskyler.furblr.managers.AuthManager
+import com.itreallyiskyler.furblr.managers.ContentManager
+import com.itreallyiskyler.furblr.managers.SingletonManager
+import com.itreallyiskyler.furblr.workers.ContentFetcherWorker
 
 // TODO : Create infinite scrolling view of paged results
 
@@ -27,22 +30,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        supportActionBar?.hide()
+
+        val workManager : WorkManager = WorkManager.getInstance(applicationContext)
+        ContentFetcherWorker.scheduleWork(workManager)
+
         // TODO : move this to Settings / profile page at some point
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         delegate.applyDayNight()
 
-        val contentDB = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "furblr-db"
-        ).build()
-        /*contentDB.run {
-            clearAllTables()
-        }*/
-        ContentManager.setDB(contentDB)
-
         // connect to some signals
-        val logoutCnx = AuthManager.UserLoggedOut.connect { gotoLogin() };
+        val logoutCnx = SingletonManager.get().AuthManager.UserLoggedOut.connect { gotoLogin() };
         connections.add(logoutCnx);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -68,13 +66,24 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        if (!AuthManager.isAuthenticated())
+        // subscribe to any relevant signals
+        SingletonManager.get().ContentManager.notesVM.UnreadCountChanged.connect {
+            val navView : BottomNavigationView = binding.navView
+            if (it > 0) {
+                navView.getOrCreateBadge(R.id.navigation_notifications).number = it
+            }
+            else {
+                navView.removeBadge(R.id.navigation_notifications)
+            }
+        }
+
+        if (!SingletonManager.get().AuthManager.isAuthenticated())
         {
             gotoLogin()
         }
         else
         {
-            ContentManager.fetchStartupData()
+            SingletonManager.get().ContentManager.fetchStartupData()
         }
     }
 
@@ -89,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // double check that we're still logged in
-        if (!AuthManager.isAuthenticated())
+        if (!SingletonManager.get().AuthManager.isAuthenticated())
         {
             gotoLogin()
         }

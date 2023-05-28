@@ -2,14 +2,11 @@ package com.itreallyiskyler.furblr
 
 import com.itreallyiskyler.furblr.enum.ContentFeedId
 import com.itreallyiskyler.furblr.enum.PostKind
-import com.itreallyiskyler.furblr.persistence.DBTestClass
 import com.itreallyiskyler.furblr.persistence.dao.ContentFeedDao
-import com.itreallyiskyler.furblr.persistence.dao.UsersDao
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
 import com.itreallyiskyler.furblr.persistence.entities.FeedId
-import com.itreallyiskyler.furblr.persistence.entities.Post
-import com.itreallyiskyler.furblr.persistence.entities.User
 import com.itreallyiskyler.furblr.util.DateFormatter
+import com.itreallyiskyler.testhelpers.persistence.DBTestClass
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
@@ -89,7 +86,7 @@ class ContentFeedDaoUnitTest : DBTestClass() {
         // insert feed items
         val postId : Long = 123
         val testFeedA = FeedId(ContentFeedId.Home.id, PostKind.Image.id, postId, DateFormatter.createDate(2000, 1, 1, 0, 0))
-        val testFeedB = FeedId(ContentFeedId.Home.id, PostKind.Text.id, postId, DateFormatter.createDate(2000, 1, 2, 0, 0))
+        val testFeedB = FeedId(ContentFeedId.Home.id, PostKind.Journal.id, postId, DateFormatter.createDate(2000, 1, 2, 0, 0))
         contentFeedDao.insertOrUpdate(testFeedA)
         contentFeedDao.insertOrUpdate(testFeedB)
 
@@ -105,17 +102,17 @@ class ContentFeedDaoUnitTest : DBTestClass() {
 
         // insert feed items
         val testFeedA = FeedId(ContentFeedId.Home.id, PostKind.Image.id, 1, DateFormatter.createDate(2000, 1, 1, 0, 0))
-        val testFeedB = FeedId(ContentFeedId.Home.id, PostKind.Text.id, 2, DateFormatter.createDate(2000, 1, 2, 0, 0))
+        val testFeedB = FeedId(ContentFeedId.Home.id, PostKind.Journal.id, 2, DateFormatter.createDate(2000, 1, 2, 0, 0))
         val testFeedC = FeedId(ContentFeedId.Search.id, PostKind.Image.id, 3, DateFormatter.createDate(2000, 1, 3, 0, 0))
         contentFeedDao.insertOrUpdate(testFeedA, testFeedB, testFeedC)
 
         // fetch and validate the items
-        val homeFeedItems = contentFeedDao.getPageFromFeed(ContentFeedId.Home.id)
+        val homeFeedItems = contentFeedDao.getPageFromFeed(listOf(ContentFeedId.Home.id))
         Assert.assertEquals(homeFeedItems.size, 2)
         Assert.assertEquals(homeFeedItems[0].feed, ContentFeedId.Home.id)
         Assert.assertEquals(homeFeedItems[1].feed, ContentFeedId.Home.id)
 
-        val searchFeedItems = contentFeedDao.getPageFromFeed(ContentFeedId.Search.id)
+        val searchFeedItems = contentFeedDao.getPageFromFeed(listOf(ContentFeedId.Search.id))
         Assert.assertEquals(searchFeedItems.size, 1)
         Assert.assertEquals(searchFeedItems[0].feed, ContentFeedId.Search.id)
     }
@@ -134,13 +131,13 @@ class ContentFeedDaoUnitTest : DBTestClass() {
             val hour = Random.nextInt(0, 23)
             val minute = Random.nextInt(0, 59)
             val date = DateFormatter.createDate(year, month, day, hour, minute)
-            val kind = if (Random.nextBoolean()) PostKind.Image.id else PostKind.Text.id
+            val kind = if (Random.nextBoolean()) PostKind.Image.id else PostKind.Journal.id
             val testFeedId = FeedId(ContentFeedId.Home.id, kind, id.toLong(), date)
             contentFeedDao.insertOrUpdate(testFeedId)
         }
 
         // get a page of posts
-        val homeFeedItems = contentFeedDao.getPageFromFeed(ContentFeedId.Home.id, pageSize)
+        val homeFeedItems = contentFeedDao.getPageFromFeed(listOf(ContentFeedId.Home.id), pageSize)
         Assert.assertEquals(homeFeedItems.size, pageSize)
 
         // check that every post is in proper chronological order

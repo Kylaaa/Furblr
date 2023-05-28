@@ -1,6 +1,8 @@
 package com.itreallyiskyler.furblr.enum
 
-enum class ContentFeedId(val id : Int) {
+enum class ContentFeedId(override val id : Int) : IValueAccessor<Int> {
     Home(0),
-    Search(1)
+    Search(1),
+    Discover(2),
+    Other(3)
 }

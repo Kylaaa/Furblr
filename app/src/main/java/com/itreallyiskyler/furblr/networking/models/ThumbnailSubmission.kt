@@ -30,22 +30,35 @@ import org.jsoup.nodes.Element
             </label>
         </figcaption>
     </figure>
-
-
  */
 
-class ThumbnailSubmission(elementData: Element) : IThumbnail {
-    private var imageData = elementData.select("img")[0]
-    private var captionData = elementData.select("p")
-    private var metaData = elementData.className().split(" ");
+data class ThumbnailSubmission(
+    override val postId: Long,
+    override val creatorName: String,
+    override val imageSrc: String,
+    override val imageHeight: Float,
+    override val imageWidth: Float,
+    override val title: String,
+    override val ageRating : AgeRating
+) : IThumbnail {
 
-    override var postId: Long = elementData.id().split("-")[1].toLong();
-    override var creatorName: String = captionData[1].child(1).text()
-    override var imageSrc: String = "https:" + imageData.attr("src")
-    override var imageHeight: Float = imageData.attr("data-height").toFloat()
-    override var imageWidth: Float = imageData.attr("data-width").toFloat()
-    override var title: String = captionData[0].child(0).text()
-    override var ageRating: AgeRating = AgeRating.fromString(metaData[0]);
+    companion object : IParserElement<ThumbnailSubmission> {
+        override fun parseFromElement(container: Element): ThumbnailSubmission {
+            val imageData = container.select("img")[0]
+            val captionData = container.select("p")
+            val metaData = container.className().split(" ")
+
+            val postId: Long = container.id().split("-")[1].toLong();
+            val creatorName: String = captionData[1].child(1).text()
+            val imageSrc: String = "https:" + imageData.attr("src")
+            val imageHeight: Float = imageData.attr("data-height").toFloat()
+            val imageWidth: Float = imageData.attr("data-width").toFloat()
+            val title: String = captionData[0].child(0).text()
+            val ageRating: AgeRating = AgeRating.fromString(metaData[0])
+
+            return ThumbnailSubmission(postId, creatorName, imageSrc, imageHeight, imageWidth, title, ageRating)
+        }
+    }
 }
 
 

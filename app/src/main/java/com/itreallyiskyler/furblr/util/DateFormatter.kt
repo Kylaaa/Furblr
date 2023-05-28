@@ -1,6 +1,8 @@
 package com.itreallyiskyler.furblr.util
 
+import android.content.Context
 import java.lang.IndexOutOfBoundsException
+import com.itreallyiskyler.furblr.R
 
 class DateFormatter (longDate : String){
     companion object {
@@ -29,23 +31,61 @@ class DateFormatter (longDate : String){
         }
 
         fun createDate(year: Int, month : Int, day : Int, hour : Int, minute : Int) : String {
-            var fmt = "%04d-%02d-%02dT%02d:%02d"
+            val fmt = "%04d-%02d-%02dT%02d:%02d"
             return fmt.format(year, month, day, hour, minute)
+        }
+
+        fun convertToReadableDate(formattedDate : String, context : Context) : String {
+            // convert a date like 2000-01-01T01:01 to Jan 1, 2000
+            val year  : Int = formattedDate.substring(0, 4).toInt()
+            val month : Int = formattedDate.substring(5, 7).toInt()
+            val day   : Int = formattedDate.substring(8, 10).toInt()
+
+            val keys = listOf<Int>(
+                R.string.date_month_1,
+                R.string.date_month_2,
+                R.string.date_month_3,
+                R.string.date_month_4,
+                R.string.date_month_5,
+                R.string.date_month_6,
+                R.string.date_month_7,
+                R.string.date_month_8,
+                R.string.date_month_9,
+                R.string.date_month_10,
+                R.string.date_month_11,
+                R.string.date_month_12,
+            )
+            val monthString : String = context.getString(keys[month - 1])
+
+            val fmt = "%s %d, %d"
+            return fmt.format(monthString, day, year)
         }
     }
 
-    // split up a date string like this : Jul 19, 2020 04:14 PM
-    //private var rgx : Regex = Regex("([A-Za-z]+) ([0-9]+), ([0-9]{4}) ([0-9]{2}):([0-9]{2}) ([A-Z]{2})")
-    //private var groups = longDate.split(rgx)
-    private var groups = longDate.split(" ,", " ", ",", ":", ignoreCase = true)
-
-    val month : Int = DateFormatter.getIndexFromName(groups[0])
-    val day : Int = groups[1].toInt()
-    val year : Int = groups[3].toInt()
-    val hour : Int = groups[4].toInt() + (if (groups[6] == "PM") 12 else 0)
-    val min : Int = groups[5].toInt()
+    private val dateParts = getParts(longDate)
+    val year : Int  = dateParts[0]
+    val month : Int = dateParts[1]
+    val day : Int   = dateParts[2]
+    val hour : Int  = dateParts[3]
+    val min : Int   = dateParts[4]
 
     fun toYYYYMMDDhhmm() : String {
         return createDate(year, month, day, hour, min)
+    }
+
+    private fun getParts(longDate: String) : List<Int> {
+        // split up a date string like this : Jul 19, 2020 04:14 PM
+        var groups = longDate.split(" ,", " ", ",", ":", ignoreCase = true).toMutableList()
+        if (groups.size == 8) {
+            groups.removeAt(0)
+        }
+
+        val month : Int = DateFormatter.getIndexFromName(groups[0])
+        val day : Int = groups[1].filter { it.isDigit() }.toInt()
+        val year : Int = groups[3].toInt()
+        val hour : Int = groups[4].toInt() + (if (groups[6] == "PM") 12 else 0)
+        val min : Int = groups[5].toInt()
+
+        return listOf(year, month, day, hour, min)
     }
 }

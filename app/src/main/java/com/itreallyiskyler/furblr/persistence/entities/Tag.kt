@@ -8,8 +8,8 @@ const val TAGS_COLUMN_NAME_CONTENTS = "tagContents"
 
 @Entity(
     foreignKeys = arrayOf(
-        ForeignKey(entity = Post::class,
-            parentColumns = arrayOf("$POSTS_COLUMN_NAME_ID"),
+        ForeignKey(entity = View::class,
+            parentColumns = arrayOf("$VIEW_COLUMN_NAME_ID"),
             childColumns = arrayOf("$TAGS_COLUMN_NAME_POST_ID"),
             onDelete = ForeignKey.CASCADE
         )

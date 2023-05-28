@@ -12,20 +12,30 @@ import org.jsoup.nodes.Element
         <span title="on Nov 20, 2021 09:22 PM" class="popup_date">a day ago</span>
     </div>
  */
-class JournalStub (container : Element) {
+data class JournalStub(
+    val journalId : Long,
+    val title : String,
+    val author : String,
+    val date : String
+) {
+    companion object : IParserElement<JournalStub> {
+        override fun parseFromElement(container: Element): JournalStub {
+            val links = container.getElementsByTag("a")
+            val journalLink = links[0].attributes()["href"]
+            val journalLinkParts = journalLink.substring(1, journalLink.length - 1).split('/')
+            val journalId : Long = journalLinkParts[1].toLong()
 
-    private val links = container.getElementsByTag("a")
-    private val journalLink = links[0].attributes()["href"]
-    private val journalLinkParts = journalLink.substring(1, journalLink.length - 1).split('/')
-    val journalId : Long = journalLinkParts[1].toLong()
+            val titleContainer = container.getElementsByClass("journal_subject")[0]
+            val title : String = titleContainer.text()
 
-    private val titleContainer = container.getElementsByClass("journal_subject")[0]
-    val title : String = titleContainer.text()
+            val author : String = links[1].text()
 
-    val author : String = links[1].child(0).text()
+            val dateContainer = container.getElementsByTag("span")[0]
+            val dateText = dateContainer.child(0).attributes()["title"]
+            val trimmedDateText = dateText.substring(dateText.indexOf(" ") + 1)
+            val date : String = DateFormatter(trimmedDateText).toYYYYMMDDhhmm()
 
-    private val dateContainer = container.getElementsByTag("span")[0]
-    private val dateText = dateContainer.attributes()["title"]
-    private val trimmedDateText = dateText.substring(dateText.indexOf(" ") + 1)
-    val date : String = DateFormatter(trimmedDateText).toYYYYMMDDhhmm()
+            return JournalStub(journalId, title, author, date)
+        }
+    }
 }

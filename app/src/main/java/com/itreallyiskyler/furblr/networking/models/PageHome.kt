@@ -1,33 +1,30 @@
 package com.itreallyiskyler.furblr.networking.models
 
-class PageHome (private val httpBody : String) {
-    val RecentSubmissions : Array<ThumbnailSubmission> = parseSubmissions(httpBody);
-    val RecentWritings : Array<ThumbnailWriting> = parseWriting(httpBody);
-    val RecentMusic : Array<ThumbnailAudio> = parseAudio(httpBody);
-    val RecentCrafting : Array<ThumbnailCrafting> = parseCrafting(httpBody);
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 
-    fun isLoginPage () : Boolean {
-        return httpBody.contains("Please log in!")
+data class PageHome (
+    val recentSubmissions : List<IThumbnail>,
+    val recentWritings : List<IThumbnail>,
+    val recentMusic : List<IThumbnail>,
+    val recentCrafting : List<IThumbnail>
+) {
+
+    companion object : IParserHttp<PageHome> {
+        override fun parseFromHttp(body: String): PageHome {
+            val doc : Document = Jsoup.parse(body)
+            val sections = doc.select("section")
+
+            val recentSubmissions = parseSubmissions(sections[1])
+            val recentWritings = parseSubmissions(sections[3])
+            val recentMusic = parseSubmissions(sections[5])
+            val recentCrafting = parseSubmissions(sections[7])
+            return PageHome(recentSubmissions, recentWritings, recentMusic, recentCrafting)
+        }
+        private fun parseSubmissions(section: Element) : List<IThumbnail> {
+            val elements = section.select("figure")
+            return elements.map { ThumbnailSubmission.parseFromElement(it) }.toList()
+        }
     }
-
-    private fun parseSubmissions(httpBody: String) : Array<ThumbnailSubmission>
-    {
-        return emptyArray<ThumbnailSubmission>();
-    }
-
-    private fun parseWriting(httpBody: String) : Array<ThumbnailWriting>
-    {
-        return emptyArray<ThumbnailWriting>();
-    }
-
-    private fun parseAudio(httpBody: String) : Array<ThumbnailAudio>
-    {
-        return emptyArray<ThumbnailAudio>();
-    }
-
-    private fun parseCrafting(httpBody: String) : Array<ThumbnailCrafting>
-    {
-        return emptyArray<ThumbnailCrafting>();
-    }
-
 }

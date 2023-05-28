@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sortRange">
+        <item>@string/sort_window_all</item>
+        <item>@string/sort_window_30day</item>
+        <item>@string/sort_window_7day</item>
+        <item>@string/sort_window_3day</item>
+        <item>@string/sort_window_1day</item>
+    </string-array>
+    <string-array name="sortRangeValues">
+        <item>all</item>
+        <item>month</item>
+        <item>week</item>
+        <item>3day</item>
+        <item>day</item>
+    </string-array>
+</resources>

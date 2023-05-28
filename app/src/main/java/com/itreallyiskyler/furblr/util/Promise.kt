@@ -1,7 +1,7 @@
 package com.itreallyiskyler.furblr.util
 
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import okhttp3.internal.toImmutableList
-import kotlin.concurrent.thread
 
 enum class PromiseState {
     Pending,
@@ -78,7 +78,21 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                 result = action(futurePromiseValue)
             }
             catch (ex : Exception) {
-                rejectorFunc(ex)
+                val loggingChannel = SingletonManager.get().LoggingManager.getChannel()
+                val errMessage = ex.stackTrace.map {
+                        stackTraceElement -> stackTraceElement.toString()
+                }.joinToString(
+                    prefix = "Promise rejected with exception : $ex\n",
+                    separator = "\n"
+                )
+                loggingChannel.logError(errMessage)
+
+                try {
+                    rejectorFunc(ex)
+                }
+                catch(rejectorEx : Exception) {
+                    loggingChannel.logError("Failed to reject a promise, as the rejector also threw an exception : $rejectorEx")
+                }
                 return
             }
 
@@ -153,7 +167,7 @@ class Promise(action: (resolve: GenericCallback, reject: GenericCallback) -> Uni
                         }
                         catch (ex : Exception)
                         {
-                            println(ex)
+                            println("Promise rejected with exception : $ex")
                             rejectorFunc(ex)
                         }
                     }

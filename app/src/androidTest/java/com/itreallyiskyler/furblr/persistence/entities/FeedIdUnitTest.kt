@@ -1,12 +1,8 @@
 package com.itreallyiskyler.furblr
 
 import com.itreallyiskyler.furblr.persistence.entities.*
-import org.junit.Assert
-import org.junit.Test
+import com.itreallyiskyler.testhelpers.persistence.EntitiesTestClass
 
-class FeedIdUnitTest {
-    @Test
-    fun tableNameMatchesEntity() {
-        Assert.assertEquals(FeedId::class.java.simpleName.lowercase(), FEED_TABLE_NAME)
-    }
+class FeedIdUnitTest : EntitiesTestClass(FeedId::class.java, FEED_TABLE_NAME) {
+
 }

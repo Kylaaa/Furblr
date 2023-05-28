@@ -1,13 +1,43 @@
 package com.itreallyiskyler.furblr.ui.discover
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.itreallyiskyler.furblr.R
+import com.itreallyiskyler.furblr.ui.home.IHomePageContent
+import com.itreallyiskyler.furblr.util.Signal2
+import com.itreallyiskyler.furblr.util.SynchronizedLiveDataList
 
 class DiscoverViewModel : ViewModel() {
+    val DiscoverPageContentUpdated = Signal2<Int, IHomePageContent>()
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is a discovery Fragment"
+    val discoverDataSets = listOf(
+        Pair(R.string.ui_discover_section_submissions, SynchronizedLiveDataList<IHomePageContent>(listOf())),
+        Pair(R.string.ui_discover_section_writing, SynchronizedLiveDataList<IHomePageContent>(listOf())),
+        Pair(R.string.ui_discover_section_music, SynchronizedLiveDataList<IHomePageContent>(listOf())),
+    )
+
+    // helper functions
+    private var discoverPagePosts : MutableList<IHomePageContent> = mutableListOf()
+    private var discoverPageIndices : HashMap<Long, Int> = hashMapOf()
+    private fun indexDiscoverPagePosts(imagePosts : List<IHomePageContent>){
+        for (i in imagePosts.indices) {
+            val post = imagePosts[i]
+            discoverPageIndices[post.contentId] = i
+        }
     }
-    val text: LiveData<String> = _text
+
+    private fun setDataSetPosts(index : Int, content : List<IHomePageContent>)
+    {
+        discoverPagePosts = content.toMutableList()
+        indexDiscoverPagePosts(discoverPagePosts)
+        discoverDataSets[index].second.loadData(content)
+    }
+    fun setNewSubmissionsData(content : List<IHomePageContent>){
+        setDataSetPosts(0, content)
+    }
+    fun setNewWritingData(content : List<IHomePageContent>){
+        setDataSetPosts(1, content)
+    }
+    fun setNewMusicData(content : List<IHomePageContent>){
+        setDataSetPosts(2, content)
+    }
 }

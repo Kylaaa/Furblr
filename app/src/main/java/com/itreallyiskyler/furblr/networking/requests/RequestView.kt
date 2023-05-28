@@ -1,27 +1,29 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PagePostDetails
-import com.itreallyiskyler.furblr.networking.models.PageSubmissions
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import okhttp3.ResponseBody
-import java.io.IOException
-import java.lang.Exception
 
-class RequestView(
-    val postId : Long) : IPageParser<PagePostDetails>,
-    BaseRequest(BuildConfig.BASE_URL, "view/$postId/") {
+class RequestView(val postId : Long)
+    : BaseRequest(BuildConfig.BASE_URL, "view/$postId/") {
+
+    constructor(
+        postId: Long,
+        requestHandler: RequestHandler,
+        loggingChannel: LoggingChannel
+    ) : this(postId) {
+        setRequestHandler(requestHandler)
+        setLoggingChannel(loggingChannel)
+    }
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PagePostDetails {
-            return PagePostDetails(httpBody as String);
+            return PagePostDetails.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
-            TODO("Not yet implemented")
-            println(message as Exception);
+            getLogChannel().logError("Failed to fetch view details : $message")
         }
 
         return GET().then(success, failure)

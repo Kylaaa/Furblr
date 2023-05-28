@@ -1,20 +1,27 @@
 package com.itreallyiskyler.furblr.networking.requests
 
 import com.itreallyiskyler.furblr.BuildConfig
+import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.networking.models.PageOthers
+import com.itreallyiskyler.furblr.util.LoggingChannel
 import com.itreallyiskyler.furblr.util.Promise
-import java.lang.Exception
 
-class RequestNotifications() : IPageParser<PageOthers>,
-    BaseRequest(BuildConfig.BASE_URL, "msg/others/") {
+class RequestNotifications() : BaseRequest(BuildConfig.BASE_URL, "msg/others/") {
+
+    constructor(
+        requestHandler: RequestHandler,
+        loggingChannel: LoggingChannel
+    ) : this() {
+        setRequestHandler(requestHandler)
+        setLoggingChannel(loggingChannel)
+    }
 
     override fun fetchContent() : Promise {
         var success = fun(httpBody : Any?) : PageOthers {
-            return PageOthers(httpBody as String)
+            return PageOthers.parseFromHttp(httpBody as String)
         }
         var failure = fun(message : Any?) {
-            //TODO("Not yet implemented")
-            println(message as Exception);
+            getLogChannel().logError("Failed to fetch Notifications : $message")
         }
 
         return GET().then(success, failure)

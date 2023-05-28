@@ -24,6 +24,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false">
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.AuthManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.ContentManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.DBManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.LoggingManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.NetworkingManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.itreallyiskyler.furblr.managers.SingletonManagerInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 
 </manifest>
