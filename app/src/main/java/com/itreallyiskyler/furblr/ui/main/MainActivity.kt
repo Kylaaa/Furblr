@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.databinding.ActivityMainBinding
 import com.itreallyiskyler.furblr.persistence.db.AppDatabase
@@ -17,6 +18,7 @@ import com.itreallyiskyler.furblr.ui.auth.LoginActivity
 import com.itreallyiskyler.furblr.managers.AuthManager
 import com.itreallyiskyler.furblr.managers.ContentManager
 import com.itreallyiskyler.furblr.managers.SingletonManager
+import com.itreallyiskyler.furblr.workers.ContentFetcherWorker
 
 // TODO : Create infinite scrolling view of paged results
 
@@ -29,6 +31,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         supportActionBar?.hide()
+
+        val workManager : WorkManager = WorkManager.getInstance(applicationContext)
+        ContentFetcherWorker.scheduleWork(workManager)
 
         // TODO : move this to Settings / profile page at some point
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
