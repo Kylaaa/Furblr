@@ -51,6 +51,12 @@
     <string name="ui_discover_section_music">Music and Audio</string>
     <string name="ui_discover_section_crafting">Fursuiting and Crafting</string>
 
+    <string name="ui_profile_about">About</string>
+    <string name="ui_profile_gallery">Gallery</string>
+    <string name="ui_profile_scraps">Scraps</string>
+    <string name="ui_profile_favorites">Favorites</string>
+    <string name="ui_profile_commissions">Commissions</string>
+
     <string name="sort_relevancy">Relevancy</string>
     <string name="sort_date">Date</string>
     <string name="sort_popularity">Popularity</string>

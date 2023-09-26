@@ -6,19 +6,77 @@
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
 
-    <ScrollView
-        android:id="@+id/svProfile"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ImageView
+        android:id="@+id/imgProfilePic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SpeakableTextPresentCheck">
+        tools:src="@tools:sample/avatars" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tlProfileSections"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgProfilePic"
+        app:tabIndicatorColor="?android:attr/colorActivatedHighlight"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="?android:attr/colorActivatedHighlight"
+        app:tabTextColor="?attr/colorAccent">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProfileAbout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+            android:text="@string/ui_profile_about" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProfileGallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_profile_gallery" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProfileScraps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_profile_scraps" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProfileFavorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_profile_favorites" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProfileCommissions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_profile_commissions" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <TextView
+        android:id="@+id/txtProfileJoinDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/txtProfileUsername"
+        app:layout_constraintTop_toBottomOf="@+id/txtProfileUsername"
+        tools:text="JOIN_DATE" />
+
+    <TextView
+        android:id="@+id/txtProfileUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/imgProfilePic"
+        app:layout_constraintTop_toTopOf="@+id/imgProfilePic"
+        tools:text="~USERNAME" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

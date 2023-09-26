@@ -33,35 +33,6 @@ const val USERS_COLUMN_NAME_FAVE_WEBSITE = "faveWebsite"
 const val USERS_COLUMN_NAME_FAVE_FOODS = "faveFoods"
 const val USERS_COLUMN_NAME_FAVE_QUOTES = "faveQuotes"
 const val USERS_COLUMN_NAME_FAVE_ARTISTS = "faveArtists"
-const val USERS_COLUMN_NAME_SITE_HOME = "siteHome"
-const val USERS_COLUMN_NAME_SITE_BLIZZARD_BATTLENET = "siteBlizzardBattlenet"
-const val USERS_COLUMN_NAME_SITE_DEALERSDEN = "siteDealersDen"
-const val USERS_COLUMN_NAME_SITE_DEVIANTART = "siteDeviantart"
-const val USERS_COLUMN_NAME_SITE_DISCORD = "siteDiscord"
-const val USERS_COLUMN_NAME_SITE_FACEBOOK = "siteFacebook"
-const val USERS_COLUMN_NAME_SITE_FURBUY = "siteFurbuy"
-const val USERS_COLUMN_NAME_SITE_FURRYNETWORK = "siteFurryNetwork"
-const val USERS_COLUMN_NAME_SITE_IMVU = "siteImvu"
-const val USERS_COLUMN_NAME_SITE_INKBUNNY = "siteInkBunny"
-const val USERS_COLUMN_NAME_SITE_KOFI = "siteKoFi"
-const val USERS_COLUMN_NAME_SITE_MICROSOFT_XBOXLIVE = "siteMicrosoftXBoxLive"
-const val USERS_COLUMN_NAME_SITE_NINTENDO_3DS = "siteNintendo3DS"
-const val USERS_COLUMN_NAME_SITE_NINTENDO_SWITCH = "siteNintendoSwitch"
-const val USERS_COLUMN_NAME_SITE_NINTENDO_WIIU = "siteNintendoWiiU"
-const val USERS_COLUMN_NAME_SITE_PATREON = "sitePatreon"
-const val USERS_COLUMN_NAME_SITE_PICARTO = "sitePicarto"
-const val USERS_COLUMN_NAME_SITE_SECONDLIFE = "siteSecondLife"
-const val USERS_COLUMN_NAME_SITE_SKYPE = "siteSkype"
-const val USERS_COLUMN_NAME_SITE_SOFURRY = "siteSoFurry"
-const val USERS_COLUMN_NAME_SITE_SONY_PSN = "siteSonyPSN"
-const val USERS_COLUMN_NAME_SITE_STEAM = "siteSteam"
-const val USERS_COLUMN_NAME_SITE_TELEGRAM = "siteTelegram"
-const val USERS_COLUMN_NAME_SITE_TRANSFUR = "siteTransfur"
-const val USERS_COLUMN_NAME_SITE_TUMBLR = "siteTumblr"
-const val USERS_COLUMN_NAME_SITE_TWITCHTV = "siteTwitchTV"
-const val USERS_COLUMN_NAME_SITE_TWITTER = "siteTwitter"
-const val USERS_COLUMN_NAME_SITE_WEASYL = "siteWeasyl"
-const val USERS_COLUMN_NAME_SITE_YOUTUBE = "siteYouTube"
 
 @Entity
 data class User(
@@ -95,35 +66,4 @@ data class User(
     @ColumnInfo(name = "$USERS_COLUMN_NAME_FAVE_FOODS") var faveFoods : String? = "",
     @ColumnInfo(name = "$USERS_COLUMN_NAME_FAVE_QUOTES") var faveQuotes : String? = "",
     @ColumnInfo(name = "$USERS_COLUMN_NAME_FAVE_ARTISTS") var faveArtists : String? = "",
-
-    // links
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_HOME") var siteHome : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_BLIZZARD_BATTLENET") var siteBlizzardBattlenet : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_DEALERSDEN") var siteDealersDen : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_DEVIANTART") var siteDeviantArt : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_DISCORD") var siteDiscord : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_FACEBOOK") var siteFacebook : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_FURBUY") var siteFurbuy : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_FURRYNETWORK") var siteFurryNetwork : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_IMVU") var siteImvu : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_INKBUNNY") var siteInkBunny : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_KOFI") var siteKoFi : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_MICROSOFT_XBOXLIVE") var siteMicrosoftXboxLive : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_NINTENDO_3DS") var siteNintendo3ds : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_NINTENDO_WIIU") var siteNintendoWiiU : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_NINTENDO_SWITCH") var siteNintendoSwitch : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_PATREON") var sitePatreon : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_PICARTO") var sitePicarto : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_SECONDLIFE") var siteSecondLife : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_SKYPE") var siteSkype : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_SOFURRY") var siteSoFurry : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_SONY_PSN") var siteSonyPSN : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_STEAM") var siteSteam : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_TELEGRAM") var siteTelegram : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_TRANSFUR") var siteTransfur : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_TUMBLR") var siteTumblr : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_TWITCHTV") var siteTwitchTv : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_TWITTER") var siteTwitter : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_WEASYL") var siteWeasyl : String? = "",
-    @ColumnInfo(name = "$USERS_COLUMN_NAME_SITE_YOUTUBE") var siteYoutube : String? = "",
 )
