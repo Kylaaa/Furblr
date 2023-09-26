@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.itreallyiskyler.furblr.persistence.dao.*
 import com.itreallyiskyler.furblr.persistence.entities.*
 
-@Database(version = 1,
+@Database(version = 2,
     entities = [
         BlacklistedTag::class,
         Comment::class,
