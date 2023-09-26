@@ -17,6 +17,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import kotlin.Unit;
+
 
 public class WebLoginWebViewClient extends WebViewClient {
     String HOME_PATH = new RequestHome().getUrl().getPath();
@@ -28,89 +30,22 @@ public class WebLoginWebViewClient extends WebViewClient {
     public WebLoginWebViewClient(){
         _routes = new HashMap<String, CommandWithArgs2<Boolean, WebView, String>>() {{
            put(HOME_PATH, (view, url) -> setAsLoggedIn());
-           put(LOGIN_PATH, (view, url) -> removeExtraLoginPageElements(view));
+           put(LOGIN_PATH, (view, url) -> checkAuthentication());
         }};
-
-        _removableClasses = new String[]{
-            "mobile-navigation",
-            "leaderboardAd"
-        };
-
-        _removableIds = new String[]{
-            "ddmenu",
-            "header",
-            "footer",
-            "cookie-notification"
-        };
     };
 
-    private String getRemoveElementJS() {
-        // define the JS function
-        ArrayList<String> js = new ArrayList<String>();
-        js.add("var removeElement = function(name, isId) {");
-            js.add("try {");
-                js.add("if (isId) {");
-                    js.add("var item = document.getElementById(name);");
-                    js.add("item.remove();");
-                js.add("} else {");
-                    js.add("var items = document.getElementsByClassName(name);");
-                    js.add("for (var i = 0; i < items.length; i++) {");
-                        js.add("items[i].remove();");
-                    js.add("}");
-                js.add("}");
-            js.add("} catch(e){");
-                js.add("console.log(e);");
-            js.add("};");
-        js.add("};");
-        js.add("var removeTargetElements = function() {");
-
-
-        // remove all of the known elements from the page
-        for (String className : _removableClasses) {
-            js.add(String.format("removeElement(\"%s\", false);", className));
-        }
-        for (String idName : _removableIds) {
-            js.add(String.format("removeElement(\"%s\", true);", idName));
+    private Boolean checkAuthentication(){
+        if (SingletonManager.Companion.get().getAuthManager().isAuthenticated()) {
+            return setAsLoggedIn();
         }
 
-        // close the custom handler
-        js.add("};");
-
-        // add event listeners to try to handle when the page loads
-        js.add("document.addEventListener(\"DOMContentLoaded\", removeTargetElements);");
-        js.add("window.onload = removeTargetElements;");
-        js.add("removeTargetElements();");
-
-        // convert it to a string for injection into the page
-        String jsBlob = TextUtils.join(" ", js);
-        return jsBlob;
-    }
-
-    private Boolean removeExtraLoginPageElements(WebView view)
-    {
-        // remove elements from the view so the user can't navigate places
-        /*String js = getRemoveElementJS();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            view.evaluateJavascript(js, new ValueCallback<String>() {
-                @Override
-                public void onReceiveValue(String s) {
-                    Log.println(Log.INFO, "JS", s);
-                }
-            });
-        } else {
-            String legacyJs = "javascript:" + js;
-            view.loadUrl(legacyJs);
-        }*/
-
-        // no-opt
-        return false;
+        return true;
     }
 
     private Boolean setAsLoggedIn()
     {
         // TODO : check if session is _actually_ authenticated
-        //AuthManager.INSTANCE.isAuthenticated();
-        SingletonManager.Companion.get().getAuthManager().getUserLoggedIn().fire(null);
+        SingletonManager.Companion.get().getAuthManager().getUserLoggedIn().fire(Unit.INSTANCE);
         return true;
     }
 
@@ -127,19 +62,6 @@ public class WebLoginWebViewClient extends WebViewClient {
     }
 
     @Override
-    public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
-
-        /*String path = getPath(url);
-        if (path == LOGIN_PATH)
-        {
-            CommandWithArgs2<Boolean, WebView, String> cmd = _routes.get(LOGIN_PATH);
-            cmd.invoke(view, url);
-        }*/
-        CookieSyncManager.getInstance().sync();
-    }
-
-    @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
     {
         String url = request.getUrl().toString();
@@ -147,7 +69,6 @@ public class WebLoginWebViewClient extends WebViewClient {
         String path = getPath(url);
 
         Log.println(Log.INFO, "WV", path);
-        //if (_routes.containsKey(path))
         if (path.compareTo(HOME_PATH) == 0)
         {
             CommandWithArgs2<Boolean, WebView, String> cmd = _routes.get(HOME_PATH);

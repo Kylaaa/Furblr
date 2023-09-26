@@ -43,10 +43,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun onUserLogin() {
-        val gotoHomeIntent : Intent = Intent(this, MainActivity::class.java).apply {
+        /*val gotoHomeIntent : Intent = Intent(this, MainActivity::class.java).apply {
             putExtra("test", "test")
         }
         startActivity(gotoHomeIntent)
+        */
+        finish();
     }
 
     override fun onDestroy() {

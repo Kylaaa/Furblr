@@ -16,6 +16,7 @@ class AuthManager(
     override fun isAuthenticated() : Boolean {
         try {
             val sessionCookies = CookieManager.getInstance().getCookie(BuildConfig.BASE_URL)
+            loggingChannel.logTrace("Session Cookies : $sessionCookies")
             val cookiesArr = sessionCookies.split(";")
 
             val cookieDict: MutableMap<String, String> = mutableMapOf()

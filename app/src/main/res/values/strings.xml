@@ -7,7 +7,7 @@
     <string name="title_profile">Profile</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">Login</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -36,6 +36,8 @@
     <string name="date_month_10">October</string>
     <string name="date_month_11">November</string>
     <string name="date_month_12">December</string>
+
+    <string name="ui_home_please_wait_while_loading">Please wait while your feed loads...</string>
 
     <string name="ui_discover_search_hint">whatcha ya lookin\' for?</string>
     <string name="ui_discover_title_order">Order the results by…</string>
