@@ -4,20 +4,19 @@ import android.content.Context
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.PostKind
 import com.itreallyiskyler.furblr.networking.requests.RequestAvatarUrl
-import com.itreallyiskyler.furblr.managers.ContentManager
 import com.itreallyiskyler.furblr.managers.SingletonManager
 import com.itreallyiskyler.furblr.util.ui.AdapterFactory
-import com.squareup.picasso.Picasso
 import java.lang.IllegalArgumentException
 import kotlin.Exception
 
@@ -30,7 +29,6 @@ class HomePageAdapter(
     private val LAYOUT_JOURNAL : Int = 2
     private val LAYOUT_MUSIC : Int = 3
     private val LAYOUT_WRITING : Int = 4
-    private val loader = Picasso.get()
 
     override fun getItemViewType(position: Int): Int {
         val itemAtIndex : IHomePageContent = dataSet[position]
@@ -98,7 +96,16 @@ class HomePageAdapter(
         val layoutTags : FlexboxLayout = view.findViewById(R.id.layoutTags)
 
         val postUrl = imagePostDetails.postData.submissionImgUrl
-        loader.load(postUrl).into(postImageView)
+        var width = imagePostDetails.postData.submissionImgSizeWidth
+        var height = imagePostDetails.postData.submissionImgSizeHeight
+        var requestOptions = RequestOptions()
+            .fitCenter()
+            .format(DecodeFormat.PREFER_ARGB_8888)
+            .override(width, height)
+        Glide.with(view)
+            .load(postUrl)
+            .apply(requestOptions)
+            .into(postImageView)
 
         creatorTextView.text = imagePostDetails.postCreator.username
         titleTextView.text = imagePostDetails.postData.title
@@ -115,7 +122,7 @@ class HomePageAdapter(
         val avatarUrl = RequestAvatarUrl(
             imagePostDetails.postCreator.username,
             imagePostDetails.postCreator.avatarId).getUrl().toString()
-        loader.load(avatarUrl).into(avatarImageView)
+        Glide.with(view).load(avatarUrl).into(avatarImageView)
 
         layoutTags.removeAllViews()
         val viewInflater = LayoutInflater.from(viewContext)
@@ -172,7 +179,7 @@ class HomePageAdapter(
         val avatarUrl = RequestAvatarUrl(
             textPostDetails.postCreator.username,
             textPostDetails.postCreator.avatarId).getUrl().toString()
-        loader.load(avatarUrl).into(avatarImageView)
+        Glide.with(view).load(avatarUrl).into(avatarImageView)
     }
 
     private fun bindMusicPost(view : View, content : IHomePageContent, viewContext: Context) {
