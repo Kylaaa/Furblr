@@ -8,12 +8,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
 import com.itreallyiskyler.furblr.R
 import com.itreallyiskyler.furblr.enum.NotificationId
 import com.itreallyiskyler.furblr.persistence.entities.Notification
 import com.itreallyiskyler.furblr.util.DateFormatter
 import com.itreallyiskyler.furblr.util.ui.AdapterFactory
-import com.squareup.picasso.Picasso
 import java.lang.Exception
 import java.lang.IndexOutOfBoundsException
 
@@ -21,8 +21,6 @@ import java.lang.IndexOutOfBoundsException
 class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = listOf()) :
     AdapterFactory<NotificationsPagePost>(initialDataSet)
 {
-    private val loader = Picasso.get()
-
     override fun getLayoutId(viewType: Int): Int {
         return R.layout.listitem_day_of_notifications
     }
@@ -99,7 +97,7 @@ class NotificationsPageAdapter(initialDataSet : List<NotificationsPagePost> = li
         if (originalPost != null) {
             postImageView.visibility = View.VISIBLE
             val postUrl = originalPost?.submissionImgUrl
-            loader.load(postUrl).into(postImageView)
+            Glide.with(targetView).load(postUrl).into(postImageView)
         }
         else {
             postImageView.visibility = View.GONE
